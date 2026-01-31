@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayWatch – Mega Gry</title>
+<title> Mega Gry</title>
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white; text-align:center;}
 header,footer{background:#0d1b33;padding:20px;}
@@ -17,39 +17,24 @@ img{max-width:100%;border-radius:10px;}
 <body>
 
 <header>
-<h1>🎮 PlayWatch – Mega Gry</h1>
+<h1> Mega Gry </h1>
 <p>Punkty: <span id="points">0</span> | Rebirth: <span id="rebirths">0</span></p>
 <p>Następny rebirth: <span id="nextReq">100000</span> pkt</p>
 </header>
 
-<!-- KOŁO FORTUNY -->
 <section>
-<h2>🎡 Koło Fortuny</h2>
+<h2> Koło Fortuny</h2>
 <button onclick="spin()">Zakręć</button>
 <div id="wheel" class="game-box"></div>
 </section>
 
-<!-- LOSOWANIE LICZB -->
 <section>
-<h2>🔢 Losowanie 1–100</h2>
+<h2> Losowanie 1–100</h2>
 <button onclick="draw()">Losuj</button>
 <div id="drawRes" class="game-box"></div>
-</section>
 
-<!-- SZACHY -->
 <section>
-<h2>♟️ Szachowa zagadka</h2>
-<img id="chessImg">
-<br><br>
-<input id="chessInput" placeholder="Np. mat w jednym">
-<button onclick="checkChess()">Sprawdź</button>
-<button onclick="nextChess()">Losuj</button>
-<div id="chessRes" class="game-box"></div>
-</section>
-
-<!-- FILMY -->
-<section>
-<h2>🎬 Zgadnij postać</h2>
+<h2> Zgadnij postać</h2>
 <img id="movieImg">
 <br><br>
 <input id="movieInput" placeholder="Imię postaci">
@@ -58,9 +43,9 @@ img{max-width:100%;border-radius:10px;}
 <div id="movieRes" class="game-box"></div>
 </section>
 
-<!-- KLIKACZ + REBIRTH -->
+
 <section>
-<h2>🖱️ Klikacz</h2>
+<h2> Klikacz</h2>
 <button onclick="clickPoint()">Kliknij +1 pkt</button>
 <button onclick="doRebirth()">Rebirth</button>
 <div>Kliknięcia: <span id="clicks">0</span></div>
@@ -73,7 +58,6 @@ img{max-width:100%;border-radius:10px;}
 <script>
 let points=0, clicks=0, rebirths=0;
 
-// FUNKCJE POMOCNICZE
 function add(p){ points+=p; updateUI(); }
 function updateUI(){
   document.getElementById("points").innerText=points;
@@ -82,44 +66,30 @@ function updateUI(){
   document.getElementById("clicks").innerText=clicks;
 }
 
-// KOŁO FORTUNY
 function spin(){
   let w=Math.floor(Math.random()*500)+1;
   add(w);
   document.getElementById("wheel").innerText="+"+w+" pkt";
 }
 
-// LOSOWANIE LICZB
 function draw(){
   let n=Math.floor(Math.random()*100)+1;
   add(n);
   document.getElementById("drawRes").innerText="Wylosowano: "+n+" pkt dodane!";
 }
 
-// KLIKACZ
 function clickPoint(){ clicks++; add(1); }
 
-// REBIRTH 100k → 1M → 10M → 100M
 function rebirthCost(){ return 100000 * Math.pow(10, rebirths); }
 function doRebirth(){
   if(points>=rebirthCost()){
     points=0; clicks=0; rebirths++;
-    alert("🔥 Rebirth wykonany!");
+    alert(" Rebirth wykonany!");
     updateUI();
   } else { alert("❌ Za mało punktów do rebirth!"); }
 }
 
-// SZACHY – działające obrazy publiczne
-const chessPuzzles=[
-  {answer:"mat w jednym", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/chess1.png"},
-  {answer:"widełki", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/chess2.png"}
-];
-let currentChess;
-function nextChess(){
-  currentChess = chessPuzzles[Math.floor(Math.random()*chessPuzzles.length)];
-  document.getElementById("chessImg").src=currentChess.img;
-  document.getElementById("chessRes").innerText="";
-  document.getElementById("chessInput").value="";
+
 }
 function checkChess(){
   let v=document.getElementById("chessInput").value.toLowerCase();
@@ -129,14 +99,14 @@ function checkChess(){
   } else {
     document.getElementById("chessRes").innerText="❌ Źle: "+currentChess.answer;
   }
-}
+  
 nextChess();
 
-// ZGADNIJ POSTAĆ – działające obrazy
+
 const movies=[
-  {name:"Eleven", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/eleven.jpg"},
-  {name:"Wednesday", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/wednesday.jpg"},
-  {name:"Furioza", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/furioza.jpg"}
+  {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
+  {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
+  {name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"}
 ];
 let currentMovie;
 function nextMovie(){
