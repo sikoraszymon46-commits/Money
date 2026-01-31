@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wypłaty – PlayWatch</title>
+<style>
+body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white; text-align:center;}
+header,footer{background:#0d1b33;padding:20px;}
+section{max-width:900px;margin:20px auto;background:rgba(0,0,0,0.6);padding:20px;border-radius:12px;text-align:left;}
+button { padding:10px 15px; margin:5px; cursor:pointer; border:none; border-radius:5px; background:#ff9800; color:#000; font-weight:bold;}
+input { padding:8px; border-radius:5px; border:none; width:150px;}
+a { color:#ff9800; text-decoration:none;}
+a:hover { text-decoration:underline;}
+table { width:100%; border-collapse:collapse; margin-top:10px;}
+th, td { border:1px solid #fff; padding:8px; text-align:center;}
+th { background:rgba(255,255,255,0.2); }
+</style>
+</head>
+<body>
+
+<header>
+<h1>💰 Wypłaty – PlayWatch</h1>
+<p><a href="index.html">Strona główna</a> | <a href="regulamin.html">Regulamin</a> | <a href="polityka-prywatnosci.html">Polityka prywatności</a></p>
+</header>
+
+<section>
+<h2>Twoje saldo punktów</h2>
+<p>Saldo punktów: <span id="points">0</span></p>
+<p>Kurs: 5 000 000 pkt = 1 zł</p>
+
+<h2>Poproś o wypłatę</h2>
+<input id="withdrawAmount" type="number" placeholder="Ile zł chcesz wypłacić?">
+<button onclick="requestWithdraw()">Poproś o wypłatę</button>
+<p id="withdrawMsg"></p>
+<p>Minimalna wypłata: 30 zł</p>
+</section>
+
+<section>
+<h2>Historia wypłat</h2>
+<table>
+<tr><th>#</th><th>Kwota (zł)</th><th>Data</th></tr>
+<tbody id="historyTable">
+<!-- Wiersze historii będą dodawane dynamicznie -->
+</tbody>
+</table>
+</section>
+
+<script>
+let points = 50000000; // przykładowe punkty początkowe
+let history = []; // tablica historii wypłat
+
+function updateUI(){
+    document.getElementById("points").innerText = points;
+    renderHistory();
+}
+
+function requestWithdraw(){
+    const amount = parseFloat(document.getElementById("withdrawAmount").value);
+    if(isNaN(amount) || amount <= 0){
+        document.getElementById("withdrawMsg").innerText = "❌ Podaj poprawną kwotę!";
+        return;
+    }
+    if(amount < 30){
+        document.getElementById("withdrawMsg").innerText = "❌ Minimalna wypłata to 30 zł!";
+        return;
+    }
+    const pointsNeeded = amount * 5000000; // 5 mln pkt = 1 zł
+    if(points < pointsNeeded){
+        document.getElementById("withdrawMsg").innerText = "❌ Nie masz tylu punktów!";
+        return;
+    }
+
+    // odejmij punkty
+    points -= pointsNeeded;
+
+    // dodaj do historii
+    const now = new Date();
+    history.push({amount: amount, date: now.toLocaleString()});
+
+    document.getElementById("withdrawMsg").innerText = `✅ Poproszono o wypłatę ${amount} zł.`;
+    document.getElementById("withdrawAmount").value = "";
+    updateUI();
+}
+
+function renderHistory(){
+    const tbody = document.getElementById("historyTable");
+    tbody.innerHTML = "";
+    history.forEach((item, index)=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${index+1}</td><td>${item.amount}</td><td>${item.date}</td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// inicjalizacja
+updateUI();
+</script>
+
+<footer>
+<p>© 2026 PlayWatch – Wszystkie prawa zastrzeżone</p>
+<p>
+<a href="regulamin.html">Regulamin</a> | 
+<a href="polityka-prywatnosci.html">Polityka prywatności</a>
+</p>
+</footer>
+
+</body>
+</html>
