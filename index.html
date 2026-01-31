@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayWatch – Gry Rozrywkowe</title>
+<title>PlayWatch – Gry</title>
 
 <style>
 body{
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to right,#1e3c72,#2a5298);
-  color:#fff;
   margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(to right,#1e3c72,#2a5298);
+  color:#fff;
 }
-header, footer{
-  text-align:center;
-  padding:20px;
+header,footer{
   background:#0d1b33;
+  padding:20px;
+  text-align:center;
 }
 section{
   max-width:900px;
@@ -26,12 +26,12 @@ section{
 }
 button{
   padding:10px 15px;
-  margin:5px;
+  background:#ff9800;
   border:none;
   border-radius:6px;
-  background:#ff9800;
   font-weight:bold;
   cursor:pointer;
+  margin:5px;
 }
 input{
   padding:8px;
@@ -46,36 +46,64 @@ img{
   margin-top:10px;
   font-weight:bold;
 }
+
+/* GEOMETRY DASH */
+#dashGame{
+  width:100%;
+  height:150px;
+  background:#111;
+  position:relative;
+  overflow:hidden;
+  border-radius:10px;
+}
+#player{
+  width:30px;
+  height:30px;
+  background:#00e5ff;
+  position:absolute;
+  bottom:10px;
+  left:20px;
+}
+.obstacle{
+  width:30px;
+  height:30px;
+  background:red;
+  position:absolute;
+  bottom:10px;
+  right:-40px;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🎮 PlayWatch – Gry Online</h1>
-<p>Punkty, zabawa i minigry</p>
-<p>Punkty: <span id="points">0</span></p>
+<h1>🎮 PlayWatch</h1>
+<p>Punkty: <span id="points">0</span> | Rebirth: <span id="rebirths">0</span></p>
 </header>
 
-<!-- KOŁO FORTUNY -->
+<!-- KOŁO -->
 <section>
 <h2>🎡 Koło Fortuny</h2>
-<button onclick="spinWheel()">Zakręć</button>
-<div id="wheelResult" class="game-box"></div>
+<button onclick="spin()">Zakręć</button>
+<div id="wheel"></div>
 </section>
 
-<!-- LOSOWANIE LICZB -->
+<!-- LOSOWANIE -->
 <section>
-<h2>🔢 Losowanie liczby (1–100)</h2>
-<button onclick="drawNumber()">Losuj</button>
-<div id="numberResult" class="game-box"></div>
+<h2>🔢 Losowanie 1–100</h2>
+<button onclick="draw()">Losuj</button>
+<div id="drawRes"></div>
 </section>
 
-<!-- GEOMETRY DASH MINI -->
+<!-- GEOMETRY DASH -->
 <section>
-<h2>🟦 Mini Geometry Dash</h2>
+<h2>🟦 Geometry Dash</h2>
+<div id="dashGame">
+  <div id="player"></div>
+</div>
 <button onclick="jump()">Skok</button>
-<div id="dashResult" class="game-box"></div>
+<div id="dashInfo"></div>
 </section>
 
 <!-- SZACHY -->
@@ -86,7 +114,7 @@ img{
 <input id="chessInput" placeholder="np. mat w jednym">
 <button onclick="checkChess()">Sprawdź</button>
 <button onclick="nextChess()">Losuj</button>
-<div id="chessResult" class="game-box"></div>
+<div id="chessRes"></div>
 </section>
 
 <!-- FILMY -->
@@ -97,75 +125,107 @@ img{
 <input id="movieInput" placeholder="Imię postaci">
 <button onclick="checkMovie()">Sprawdź</button>
 <button onclick="nextMovie()">Losuj</button>
-<div id="movieResult" class="game-box"></div>
+<div id="movieRes"></div>
 </section>
 
 <!-- KLIKACZ -->
 <section>
 <h2>🖱️ Klikacz</h2>
 <button onclick="clicker()">Kliknij</button>
-<button onclick="rebirth()">Rebirth (–100 pkt)</button>
-<div class="game-box">Kliknięcia: <span id="clicks">0</span></div>
+<button onclick="rebirth()">Rebirth (–100)</button>
+<div>Kliknięcia: <span id="clicks">0</span></div>
 </section>
 
 <footer>
-<p>© PlayWatch</p>
+© PlayWatch
 </footer>
 
 <script>
-let points = 0;
-let clicks = 0;
+let points=0, clicks=0, rebirths=0;
 
-function addPoints(p){
-  points += p;
-  document.getElementById("points").innerText = points;
+/* PUNKTY */
+function add(p){
+ points+=p;
+ document.getElementById("points").innerText=points;
 }
 
 /* KOŁO */
-function spinWheel(){
-  let win = Math.floor(Math.random()*500)+1;
-  addPoints(win);
-  document.getElementById("wheelResult").innerText =
-    "Wylosowałeś "+win+" pkt!";
+function spin(){
+ let w=Math.floor(Math.random()*500)+1;
+ add(w);
+ document.getElementById("wheel").innerText="+"+w+" pkt";
 }
 
 /* LOSOWANIE */
-function drawNumber(){
-  let n = Math.floor(Math.random()*100)+1;
-  document.getElementById("numberResult").innerText =
-    "Wylosowana liczba: "+n;
+function draw(){
+ document.getElementById("drawRes").innerText=
+ "Wylosowano: "+(Math.floor(Math.random()*100)+1);
 }
 
-/* GEOMETRY */
+/* GEOMETRY DASH */
+let jumping=false;
+let obstacle=document.createElement("div");
+obstacle.className="obstacle";
+document.getElementById("dashGame").appendChild(obstacle);
+
+let obsX=900;
+setInterval(()=>{
+ obsX-=5;
+ obstacle.style.right=obsX+"px";
+ if(obsX<-40){
+  obsX=900;
+  add(5);
+ }
+ let player=document.getElementById("player");
+ let pBottom=parseInt(player.style.bottom||10);
+ if(obsX<60 && obsX>20 && pBottom<30){
+  document.getElementById("dashInfo").innerText="❌ Przegrałeś";
+  obsX=900;
+ }
+},30);
+
 function jump(){
-  if(Math.random()>0.4){
-    addPoints(10);
-    document.getElementById("dashResult").innerText="✔️ Skok udany +10 pkt";
-  }else{
-    document.getElementById("dashResult").innerText="❌ Przegrałeś";
+ if(jumping) return;
+ jumping=true;
+ let player=document.getElementById("player");
+ let up=0;
+ let jumpInt=setInterval(()=>{
+  up+=5;
+  player.style.bottom=(10+up)+"px";
+  if(up>=60){
+   clearInterval(jumpInt);
+   let down=setInterval(()=>{
+    up-=5;
+    player.style.bottom=(10+up)+"px";
+    if(up<=0){
+     clearInterval(down);
+     jumping=false;
+    }
+   },20);
   }
+ },20);
 }
 
 /* SZACHY */
-const chessPuzzles=[
+const chess=[
  {a:"mat w jednym",i:"https://upload.wikimedia.org/wikipedia/commons/5/5d/Chess_diagram.svg"},
  {a:"widełki",i:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Knight_fork_example.png"}
 ];
-let currentChess;
+let ch;
 
 function nextChess(){
- currentChess = chessPuzzles[Math.floor(Math.random()*chessPuzzles.length)];
- document.getElementById("chessImg").src=currentChess.i;
- document.getElementById("chessResult").innerText="";
+ ch=chess[Math.floor(Math.random()*chess.length)];
+ document.getElementById("chessImg").src=ch.i;
+ document.getElementById("chessRes").innerText="";
  document.getElementById("chessInput").value="";
 }
 function checkChess(){
  let v=document.getElementById("chessInput").value.toLowerCase();
- if(v.includes(currentChess.a)){
-   addPoints(20);
-   document.getElementById("chessResult").innerText="✅ Dobrze +20 pkt";
+ if(v.includes(ch.a)){
+  add(20);
+  document.getElementById("chessRes").innerText="✅ Dobrze";
  }else{
-   document.getElementById("chessResult").innerText="❌ Źle: "+currentChess.a;
+  document.getElementById("chessRes").innerText="❌ "+ch.a;
  }
 }
 nextChess();
@@ -176,21 +236,21 @@ const movies=[
  {n:"Wednesday",i:"https://upload.wikimedia.org/wikipedia/en/6/6b/Wednesday_Addams_2022.jpg"},
  {n:"Golden",i:"https://upload.wikimedia.org/wikipedia/pl/5/59/Furioza_film.jpg"}
 ];
-let currentMovie;
+let mv;
 
 function nextMovie(){
- currentMovie = movies[Math.floor(Math.random()*movies.length)];
- document.getElementById("movieImg").src=currentMovie.i;
- document.getElementById("movieResult").innerText="";
+ mv=movies[Math.floor(Math.random()*movies.length)];
+ document.getElementById("movieImg").src=mv.i;
+ document.getElementById("movieRes").innerText="";
  document.getElementById("movieInput").value="";
 }
 function checkMovie(){
  let v=document.getElementById("movieInput").value.toLowerCase();
- if(v===currentMovie.n.toLowerCase()){
-   addPoints(20);
-   document.getElementById("movieResult").innerText="✅ Dobrze +20 pkt";
+ if(v===mv.n.toLowerCase()){
+  add(20);
+  document.getElementById("movieRes").innerText="✅ Dobrze";
  }else{
-   document.getElementById("movieResult").innerText="❌ To "+currentMovie.n;
+  document.getElementById("movieRes").innerText="❌ To "+mv.n;
  }
 }
 nextMovie();
@@ -198,16 +258,17 @@ nextMovie();
 /* KLIKACZ */
 function clicker(){
  clicks++;
- addPoints(1);
+ add(1);
  document.getElementById("clicks").innerText=clicks;
 }
 function rebirth(){
  if(points>=100){
-   points=0;
-   clicks=0;
-   document.getElementById("points").innerText=0;
-   document.getElementById("clicks").innerText=0;
-   alert("Rebirth wykonany!");
+  points=0;
+  clicks=0;
+  rebirths++;
+  document.getElementById("points").innerText=0;
+  document.getElementById("clicks").innerText=0;
+  document.getElementById("rebirths").innerText=rebirths;
  }
 }
 </script>
