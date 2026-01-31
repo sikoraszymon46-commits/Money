@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> Mega Gry </title>
+<title>PlayWatch – Mega Gry EDU</title>
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white; text-align:center;}
 header,footer{background:#0d1b33;padding:20px;}
@@ -17,7 +17,7 @@ img{max-width:100%;border-radius:10px;}
 <body>
 
 <header>
-<h1> Mega Gry </h1>
+<h1>🎮 PlayWatch – Mega Gry EDU</h1>
 <p>Punkty: <span id="points">0</span> | Rebirth: <span id="rebirths">0</span></p>
 <p>Następny rebirth: <span id="nextReq">100000</span> pkt</p>
 </header>
@@ -36,6 +36,16 @@ img{max-width:100%;border-radius:10px;}
 <div id="drawRes" class="game-box"></div>
 </section>
 
+<!-- SZACHY -->
+<section>
+<h2>♟️ Szachowa zagadka</h2>
+<img id="chessImg">
+<br><br>
+<input id="chessInput" placeholder="Np. mat w jednym">
+<button onclick="checkChess()">Sprawdź</button>
+<button onclick="nextChess()">Losuj</button>
+<div id="chessRes" class="game-box"></div>
+</section>
 
 <!-- FILMY -->
 <section>
@@ -110,16 +120,41 @@ function doRebirth(){
     alert("🔥 Rebirth wykonany!");
     updateUI();
   } else { alert("❌ Za mało punktów do rebirth!"); }
+}
 
+// ===================
+// SZACHY
+// ===================
+const chessPuzzles=[
+  {answer:"mat w jednym", img:"https://i.imgur.com/8Q3jKx1.png"},
+  {answer:"widełki", img:"https://i.imgur.com/U3a5DgE.png"},
+  {answer:"szach-mat", img:"https://i.imgur.com/VfX0TtP.png"}
+];
+let currentChess;
+function nextChess(){
+  currentChess = chessPuzzles[Math.floor(Math.random()*chessPuzzles.length)];
+  document.getElementById("chessImg").src=currentChess.img;
+  document.getElementById("chessRes").innerText="";
+  document.getElementById("chessInput").value="";
+}
+function checkChess(){
+  let v=document.getElementById("chessInput").value.toLowerCase();
+  if(v.includes(currentChess.answer)){
+    add(20);
+    document.getElementById("chessRes").innerText="✅ Dobrze +20 pkt ×2!";
+  } else {
+    document.getElementById("chessRes").innerText="❌ Źle: "+currentChess.answer;
+  }
+}
 nextChess();
 
 // ===================
 // ZGADNIJ POSTAĆ
 // ===================
 const movies=[
-  {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
-  {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
-  {name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
+  {name:"Eleven", img:"https://i.imgur.com/m9i0I4h.jpg"},
+  {name:"Wednesday", img:"https://i.imgur.com/0fQp3gM.jpg"},
+  {name:"Furioza", img:"https://i.imgur.com/7uFZjzG.jpg"},
   {name:"Tony Stark", img:"https://i.imgur.com/1y6yG0d.jpg"},
   {name:"Harry Potter", img:"https://i.imgur.com/ZnD7PS2.jpg"}
 ];
