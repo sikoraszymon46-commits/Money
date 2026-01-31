@@ -60,6 +60,15 @@ img{border-radius:10px;}
 <button onclick="doRebirth()">Rebirth</button>
 <div>Kliknięcia: <span id="clicks">0</span></div>
 </section>
+<section>
+<h2>💰 Wypłata punktów na pieniądze</h2>
+<p>Saldo punktów: <span id="points">0</span></p>
+<p>Twoje zgłoszone wypłaty: <span id="requestedMoney">0</span> zł</p>
+<p>Kurs: 5 000 000 pkt = 1 zł</p>
+<input id="withdrawAmount" type="number" placeholder="Ile zł chcesz wypłacić?">
+<button onclick="requestWithdraw()">Poproś o wypłatę</button>
+<div id="withdrawMsg" class="game-box"></div>
+</section>
 
 <footer>
 <p>© 2026 PlayWatch – Wszystkie prawa zastrzeżone</p>
@@ -204,6 +213,37 @@ nextMovie();
 
 updateUI();
 </script>
+let requestedMoney = 0; // zgłoszone wypłaty
+let points = 0; // Twoja zmienna punktów z gry
+
+function updateUI() {
+    document.getElementById("points").innerText = points;
+    document.getElementById("requestedMoney").innerText = requestedMoney;
+}
+
+function requestWithdraw() {
+    const amount = parseFloat(document.getElementById("withdrawAmount").value);
+    if(isNaN(amount) || amount <= 0){
+        document.getElementById("withdrawMsg").innerText = "❌ Podaj poprawną kwotę!";
+        return;
+    }
+    
+    const pointsNeeded = amount * 5000000; // 5 mln pkt = 1 zł
+    if(points < pointsNeeded){
+        document.getElementById("withdrawMsg").innerText = "❌ Nie masz tylu punktów!";
+        return;
+    }
+    
+    points -= pointsNeeded;
+    requestedMoney += amount;
+    updateUI();
+    
+    document.getElementById("withdrawMsg").innerText = `✅ Poproszono o wypłatę ${amount} zł.`;
+    document.getElementById("withdrawAmount").value = "";
+}
+
+// przy starcie strony
+updateUI();
 
 </body>
 </html>
