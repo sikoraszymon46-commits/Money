@@ -4,51 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PlayWatch – Mega Gry</title>
-
 <style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to right,#1e3c72,#2a5298);
-  color:white;
-  text-align:center;
-}
-header,footer{
-  background:#0d1b33;
-  padding:20px;
-}
-section{
-  max-width:900px;
-  margin:20px auto;
-  background:rgba(0,0,0,0.6);
-  padding:20px;
-  border-radius:12px;
-}
-button{
-  padding:10px 15px;
-  margin:5px;
-  font-weight:bold;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:#ff9800;
-}
-input{
-  padding:8px;
-  border-radius:5px;
-  border:none;
-}
-img{
-  max-width:100%;
-  border-radius:10px;
-}
-.game-box{
-  margin-top:10px;
-  font-weight:bold;
-}
+body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white; text-align:center;}
+header,footer{background:#0d1b33;padding:20px;}
+section{max-width:900px;margin:20px auto;background:rgba(0,0,0,0.6);padding:20px;border-radius:12px;}
+button{padding:10px 15px;margin:5px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;background:#ff9800;}
+input{padding:8px;border-radius:5px;border:none;}
+img{max-width:100%;border-radius:10px;}
+.game-box{margin-top:10px;font-weight:bold;}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -108,49 +73,8 @@ img{
 <script>
 let points=0, clicks=0, rebirths=0;
 
-// PUNKTY
-function add(p){
-  points += p;
-  updateUI();
-}
-
-// KOŁO FORTUNY
-function spin(){
-  let w = Math.floor(Math.random()*500)+1;
-  add(w);
-  document.getElementById("wheel").innerText="+"+w+" pkt";
-}
-
-// LOSOWANIE
-function draw(){
-  let n = Math.floor(Math.random()*100)+1;
-  document.getElementById("drawRes").innerText="Wylosowano: "+n;
-}
-
-// KLIKACZ
-function clickPoint(){
-  clicks++;
-  add(1);
-  document.getElementById("clicks").innerText=clicks;
-}
-
-// REBIRTH (100k → 1M → 10M → 100M...)
-function rebirthCost(){
-  return 100000 * Math.pow(10, rebirths);
-}
-function doRebirth(){
-  if(points>=rebirthCost()){
-    points=0;
-    clicks=0;
-    rebirths++;
-    alert("🔥 Rebirth wykonany!");
-    updateUI();
-  } else {
-    alert("❌ Za mało punktów do rebirth!");
-  }
-}
-
-// UPDATE UI
+// FUNKCJE POMOCNICZE
+function add(p){ points+=p; updateUI(); }
 function updateUI(){
   document.getElementById("points").innerText=points;
   document.getElementById("rebirths").innerText=rebirths;
@@ -158,10 +82,37 @@ function updateUI(){
   document.getElementById("clicks").innerText=clicks;
 }
 
+// KOŁO FORTUNY
+function spin(){
+  let w=Math.floor(Math.random()*500)+1;
+  add(w);
+  document.getElementById("wheel").innerText="+"+w+" pkt";
+}
+
+// LOSOWANIE LICZB
+function draw(){
+  let n=Math.floor(Math.random()*100)+1;
+  add(n);
+  document.getElementById("drawRes").innerText="Wylosowano: "+n+" pkt dodane!";
+}
+
+// KLIKACZ
+function clickPoint(){ clicks++; add(1); }
+
+// REBIRTH 100k → 1M → 10M → 100M
+function rebirthCost(){ return 100000 * Math.pow(10, rebirths); }
+function doRebirth(){
+  if(points>=rebirthCost()){
+    points=0; clicks=0; rebirths++;
+    alert("🔥 Rebirth wykonany!");
+    updateUI();
+  } else { alert("❌ Za mało punktów do rebirth!"); }
+}
+
 // SZACHY
 const chessPuzzles=[
-  {answer:"mat w jednym", img:"https://upload.wikimedia.org/wikipedia/commons/5/5d/Chess_diagram.svg"},
-  {answer:"widełki", img:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Knight_fork_example.png"}
+  {answer:"mat w jednym", img:"https://i.imgur.com/tfEudGa.png"},
+  {answer:"widełki", img:"https://i.imgur.com/R1Pz8Yp.png"}
 ];
 let currentChess;
 function nextChess(){
@@ -171,7 +122,7 @@ function nextChess(){
   document.getElementById("chessInput").value="";
 }
 function checkChess(){
-  let v = document.getElementById("chessInput").value.toLowerCase();
+  let v=document.getElementById("chessInput").value.toLowerCase();
   if(v.includes(currentChess.answer)){
     add(20);
     document.getElementById("chessRes").innerText="✅ Dobrze +20 pkt";
@@ -183,9 +134,9 @@ nextChess();
 
 // ZGADNIJ POSTAĆ
 const movies=[
-  {name:"Eleven", img:"https://upload.wikimedia.org/wikipedia/en/3/38/Eleven_Stranger_Things.jpg"},
-  {name:"Wednesday", img:"https://upload.wikimedia.org/wikipedia/en/6/6b/Wednesday_Addams_2022.jpg"},
-  {name:"Golden", img:"https://upload.wikimedia.org/wikipedia/pl/5/59/Furioza_film.jpg"}
+  {name:"Eleven", img:"https://i.imgur.com/MPkKqLt.jpg"},
+  {name:"Wednesday", img:"https://i.imgur.com/ZVklS5y.jpg"},
+  {name:"Furioza", img:"https://i.imgur.com/0vV7uLP.jpg"}
 ];
 let currentMovie;
 function nextMovie(){
@@ -204,7 +155,6 @@ function checkMovie(){
   }
 }
 nextMovie();
-
 updateUI();
 </script>
 
