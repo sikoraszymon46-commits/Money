@@ -3,49 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayWatch – Mega Gry</title>
+<title>PlayWatch – Gry Rozrywkowe</title>
 
 <style>
-body {
-  margin:0;
+body{
   font-family: Arial, sans-serif;
   background: linear-gradient(to right,#1e3c72,#2a5298);
   color:#fff;
+  margin:0;
 }
-header, footer {
-  background:#0d1b33;
-  padding:20px;
+header, footer{
   text-align:center;
-}
-section {
-  background: rgba(0,0,0,0.6);
-  margin:20px auto;
   padding:20px;
+  background:#0d1b33;
+}
+section{
   max-width:900px;
+  margin:20px auto;
+  background:rgba(0,0,0,0.6);
+  padding:20px;
   border-radius:12px;
 }
-button {
+button{
   padding:10px 15px;
   margin:5px;
   border:none;
   border-radius:6px;
+  background:#ff9800;
   font-weight:bold;
   cursor:pointer;
-  background:#ff9800;
 }
-.game-box {
-  margin-top:10px;
-  font-size:18px;
+input{
+  padding:8px;
+  border-radius:5px;
+  border:none;
 }
-canvas {
-  background:#111;
-  display:block;
-  margin:10px auto;
-  border-radius:10px;
-}
-img {
+img{
   max-width:100%;
   border-radius:10px;
+}
+.game-box{
+  margin-top:10px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -53,135 +52,163 @@ img {
 <body>
 
 <header>
-<h1>🎮 PlayWatch – Strefa Gier</h1>
-<p>Darmowe gry losowe, zręcznościowe i logiczne</p>
+<h1>🎮 PlayWatch – Gry Online</h1>
+<p>Punkty, zabawa i minigry</p>
+<p>Punkty: <span id="points">0</span></p>
 </header>
-
-<section>
-<h2>O stronie</h2>
-<p>
-PlayWatch to strona z prostymi grami online: losowymi, zręcznościowymi
-i logicznymi. Wszystkie gry działają bez logowania i są przeznaczone
-do rozrywki użytkowników.
-</p>
-</section>
 
 <!-- KOŁO FORTUNY -->
 <section>
-<h2>🎡 Koło fortuny</h2>
-<button onclick="spin()">Zakręć</button>
+<h2>🎡 Koło Fortuny</h2>
+<button onclick="spinWheel()">Zakręć</button>
 <div id="wheelResult" class="game-box"></div>
 </section>
 
-<!-- LOSOWANIE -->
+<!-- LOSOWANIE LICZB -->
 <section>
 <h2>🔢 Losowanie liczby (1–100)</h2>
 <button onclick="drawNumber()">Losuj</button>
 <div id="numberResult" class="game-box"></div>
 </section>
 
-<!-- GEOMETRY DASH -->
+<!-- GEOMETRY DASH MINI -->
 <section>
 <h2>🟦 Mini Geometry Dash</h2>
-<p>Kliknij w canvas, aby skoczyć</p>
-<canvas id="dash" width="400" height="150"></canvas>
+<button onclick="jump()">Skok</button>
+<div id="dashResult" class="game-box"></div>
 </section>
 
 <!-- SZACHY -->
 <section>
 <h2>♟️ Szachowa zagadka</h2>
-<p>Jaki to motyw szachowy?</p>
-<img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_example.svg">
-<div class="game-box">Odpowiedź: Mat w jednym</div>
+<img id="chessImg">
+<br><br>
+<input id="chessInput" placeholder="np. mat w jednym">
+<button onclick="checkChess()">Sprawdź</button>
+<button onclick="nextChess()">Losuj</button>
+<div id="chessResult" class="game-box"></div>
 </section>
 
-<!-- ZGADYWANIE POSTACI -->
+<!-- FILMY -->
 <section>
 <h2>🎬 Zgadnij postać</h2>
-<button onclick="guessCharacter()">Losuj postać</button>
-<div id="characterResult" class="game-box"></div>
+<img id="movieImg">
+<br><br>
+<input id="movieInput" placeholder="Imię postaci">
+<button onclick="checkMovie()">Sprawdź</button>
+<button onclick="nextMovie()">Losuj</button>
+<div id="movieResult" class="game-box"></div>
 </section>
 
 <!-- KLIKACZ -->
 <section>
 <h2>🖱️ Klikacz</h2>
-<p>Punkty: <span id="clicks">0</span></p>
 <button onclick="clicker()">Kliknij</button>
-</section>
-
-<!-- REBIRTH -->
-<section>
-<h2>🔁 Rebirth</h2>
-<button onclick="rebirth()">Reset + bonus</button>
-<div id="rebirthInfo" class="game-box"></div>
+<button onclick="rebirth()">Rebirth (–100 pkt)</button>
+<div class="game-box">Kliknięcia: <span id="clicks">0</span></div>
 </section>
 
 <footer>
-<p>© 2026 PlayWatch</p>
+<p>© PlayWatch</p>
 </footer>
 
 <script>
-/* KOŁO FORTUNY */
-function spin(){
-  const pts = Math.floor(Math.random()*500)+1;
+let points = 0;
+let clicks = 0;
+
+function addPoints(p){
+  points += p;
+  document.getElementById("points").innerText = points;
+}
+
+/* KOŁO */
+function spinWheel(){
+  let win = Math.floor(Math.random()*500)+1;
+  addPoints(win);
   document.getElementById("wheelResult").innerText =
-    "Wylosowano: "+pts+" punktów";
+    "Wylosowałeś "+win+" pkt!";
 }
 
 /* LOSOWANIE */
 function drawNumber(){
-  const n = Math.floor(Math.random()*100)+1;
+  let n = Math.floor(Math.random()*100)+1;
   document.getElementById("numberResult").innerText =
     "Wylosowana liczba: "+n;
 }
 
-/* GEOMETRY DASH */
-const canvas = document.getElementById("dash");
-const ctx = canvas.getContext("2d");
-let y = 110, vy = 0;
-canvas.onclick = ()=>{ if(y>=110) vy = -12; };
-
-function loop(){
-  ctx.clearRect(0,0,400,150);
-  vy += 0.8;
-  y += vy;
-  if(y>110){ y=110; vy=0; }
-  ctx.fillStyle="lime";
-  ctx.fillRect(50,y,20,20);
-  ctx.fillStyle="red";
-  ctx.fillRect(300,110,20,20);
-  requestAnimationFrame(loop);
+/* GEOMETRY */
+function jump(){
+  if(Math.random()>0.4){
+    addPoints(10);
+    document.getElementById("dashResult").innerText="✔️ Skok udany +10 pkt";
+  }else{
+    document.getElementById("dashResult").innerText="❌ Przegrałeś";
+  }
 }
-loop();
 
-/* POSTACIE */
-const characters = [
- "Eleven (Stranger Things)",
- "Dustin (Stranger Things)",
- "Furioza – Golden",
- "Wednesday Addams",
- "Lombard – Kazimierz"
+/* SZACHY */
+const chessPuzzles=[
+ {a:"mat w jednym",i:"https://upload.wikimedia.org/wikipedia/commons/5/5d/Chess_diagram.svg"},
+ {a:"widełki",i:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Knight_fork_example.png"}
 ];
-function guessCharacter(){
-  const c = characters[Math.floor(Math.random()*characters.length)];
-  document.getElementById("characterResult").innerText = c;
+let currentChess;
+
+function nextChess(){
+ currentChess = chessPuzzles[Math.floor(Math.random()*chessPuzzles.length)];
+ document.getElementById("chessImg").src=currentChess.i;
+ document.getElementById("chessResult").innerText="";
+ document.getElementById("chessInput").value="";
 }
+function checkChess(){
+ let v=document.getElementById("chessInput").value.toLowerCase();
+ if(v.includes(currentChess.a)){
+   addPoints(20);
+   document.getElementById("chessResult").innerText="✅ Dobrze +20 pkt";
+ }else{
+   document.getElementById("chessResult").innerText="❌ Źle: "+currentChess.a;
+ }
+}
+nextChess();
+
+/* FILMY */
+const movies=[
+ {n:"Eleven",i:"https://upload.wikimedia.org/wikipedia/en/3/38/Eleven_Stranger_Things.jpg"},
+ {n:"Wednesday",i:"https://upload.wikimedia.org/wikipedia/en/6/6b/Wednesday_Addams_2022.jpg"},
+ {n:"Golden",i:"https://upload.wikimedia.org/wikipedia/pl/5/59/Furioza_film.jpg"}
+];
+let currentMovie;
+
+function nextMovie(){
+ currentMovie = movies[Math.floor(Math.random()*movies.length)];
+ document.getElementById("movieImg").src=currentMovie.i;
+ document.getElementById("movieResult").innerText="";
+ document.getElementById("movieInput").value="";
+}
+function checkMovie(){
+ let v=document.getElementById("movieInput").value.toLowerCase();
+ if(v===currentMovie.n.toLowerCase()){
+   addPoints(20);
+   document.getElementById("movieResult").innerText="✅ Dobrze +20 pkt";
+ }else{
+   document.getElementById("movieResult").innerText="❌ To "+currentMovie.n;
+ }
+}
+nextMovie();
 
 /* KLIKACZ */
-let clicks = 0;
 function clicker(){
-  clicks++;
-  document.getElementById("clicks").innerText = clicks;
+ clicks++;
+ addPoints(1);
+ document.getElementById("clicks").innerText=clicks;
 }
-
-/* REBIRTH */
-let rebirths = 0;
 function rebirth(){
-  clicks = 0;
-  rebirths++;
-  document.getElementById("clicks").innerText = clicks;
-  document.getElementById("rebirthInfo").innerText =
-    "Rebirthów: "+rebirths+" | Bonus x"+(rebirths+1);
+ if(points>=100){
+   points=0;
+   clicks=0;
+   document.getElementById("points").innerText=0;
+   document.getElementById("clicks").innerText=0;
+   alert("Rebirth wykonany!");
+ }
 }
 </script>
 
