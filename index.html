@@ -3,196 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayWatch – Mega Gry EDU</title>
+<title>PlayWatch – Mega Gry Edukacyjne</title>
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white; text-align:center;}
-header,footer{background:#0d1b33;padding:20px;}
-section{max-width:900px;margin:20px auto;background:rgba(0,0,0,0.6);padding:20px;border-radius:12px;}
-button{padding:10px 15px;margin:5px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;background:#ff9800;}
-input{padding:8px;border-radius:5px;border:none;width:180px;}
-img{border-radius:10px;}
-#movieImg {
-  width: 300px;       /* szerokość zdjęcia */
-  height: 400px;      /* wysokość zdjęcia */
-  object-fit: cover;  /* zachowuje proporcje i przycina nadmiar */
-  border-radius: 10px;
-}
-.game-box{margin-top:10px;font-weight:bold;}
+body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white;}
+header{background:#0d1b33; padding:20px; text-align:center;}
+header a { color:#ff9800; text-decoration:none; margin:0 10px; font-weight:bold;}
+header a:hover { text-decoration:underline;}
+main { max-width:1200px; margin:30px auto; padding:20px;}
+section { background:rgba(0,0,0,0.6); padding:20px; border-radius:12px; margin-bottom:30px;}
+h2,h3 { text-align:center; margin-top:0;}
+button { padding:10px 15px; border:none; border-radius:5px; background:#ff9800; color:#000; font-weight:bold; cursor:pointer; margin:5px;}
+button:hover { background:#ffc107; }
+img.character { max-width:200px; height:auto; display:block; margin:10px auto; border-radius:10px; }
+input { padding:8px; border-radius:5px; border:none; width:100%; max-width:200px; margin:10px 0; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th, td { border:1px solid #fff; padding:8px; text-align:center;}
+th { background:rgba(255,255,255,0.2); }
+footer{background:#0d1b33; text-align:center; padding:20px;}
+footer a { color:#ff9800; margin:0 5px; text-decoration:none; }
+footer a:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
 
 <header>
-<h1>🎮 PlayWatch – Mega Gry EDU</h1>
-<p>Punkty: <span id="points">0</span> | Rebirth: <span id="rebirths">0</span></p>
-<p>Następny rebirth: <span id="nextReq">100000</span> pkt</p>
+<h1>PlayWatch – Mega Gry Edukacyjne</h1>
+<p>
+<a href="index.html">Strona główna</a> | 
+<a href="regulamin.html">Regulamin</a> | 
+<a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
+<a href="wyplaty.html">Wypłaty</a>
+</p>
+<p style="text-align:center;">Saldo punktów: <span id="points">50000000</span></p>
 </header>
 
-<!-- KOŁO FORTUNY -->
+<main>
+
+<!-- Koło Fortuny -->
 <section>
 <h2>🎡 Koło Fortuny</h2>
-<button onclick="spin()">Zakręć</button>
-<div id="wheel" class="game-box"></div>
+<p>Wygrywasz punkty od 1 do 500</p>
+<button onclick="spinWheel()">Zakręć kołem</button>
+<p id="wheelResult"></p>
 </section>
 
-<!-- LOSOWANIE LICZB -->
+<!-- Losowanie Liczb -->
 <section>
-<h2>🔢 Losowanie 1–100</h2>
-<button onclick="draw()">Losuj</button>
-<div id="drawRes" class="game-box"></div>
+<h2>🎲 Losowanie Liczb (1-100)</h2>
+<button onclick="rollNumber()">Losuj liczbę</button>
+<p id="rollResult"></p>
 </section>
 
-<!-- FILMY -->
+<!-- Zgadnij Postać -->
 <section>
-<h2>🎬 Zgadnij postać</h2>
-<img id="movieImg">
-<br><br>
-<input id="movieInput" placeholder="Imię postaci">
-<button onclick="checkMovie()">Sprawdź</button>
-<button onclick="nextMovie()">Losuj</button>
-<div id="movieRes" class="game-box"></div>
+<h2>🕵️ Zgadnij Postać</h2>
+<img id="characterImg" class="character" src="">
+<input id="characterInput" type="text" placeholder="Wpisz imię postaci">
+<button onclick="guessCharacter()">Sprawdź</button>
+<p id="characterResult"></p>
 </section>
 
-<!-- KLIKACZ + REBIRTH -->
+<!-- Klikacz -->
 <section>
 <h2>🖱️ Klikacz</h2>
-<button onclick="clickPoint()">Kliknij +1 pkt</button>
-<button onclick="doRebirth()">Rebirth</button>
-<div>Kliknięcia: <span id="clicks">0</span></div>
+<p>Kliknij przycisk, aby zdobyć punkty</p>
+<button onclick="clicker()">Kliknij!</button>
+<p id="clickerResult">Punkty z kliknięć: 0</p>
+</section>
+
+<!-- Rebirth -->
+<section>
+<h2>🔄 Rebirth (x2 punkty)</h2>
+<button onclick="doRebirth()">Kup Rebirth (koszt: 50 000 000 pkt)</button>
+<p id="rebirthMsg">Twój mnożnik: <span id="rebirthMultiplier">1</span>x</p>
+</section>
+
+</main>
+
+<!-- Podstrona Wypłat -->
+<section style="max-width:700px; margin:30px auto; background:rgba(0,0,0,0.8); padding:30px; border-radius:12px;">
+<h2>💰 Wypłata</h2>
+<p style="text-align:center;">Saldo punktów: <span id="pointsPay">0</span></p>
+<p style="text-align:center;">Kurs: 5 000 000 pkt = 1 zł</p>
+<input id="withdrawAmount" type="number" placeholder="Ile zł chcesz wypłacić?">
+<button onclick="requestWithdraw()">Poproś o wypłatę</button>
+<p id="withdrawMsg" style="text-align:center;"></p>
+<p style="text-align:center;">Minimalna wypłata: 30 zł</p>
+<h3>Historia wypłat</h3>
+<table>
+<tr><th>#</th><th>Kwota (zł)</th><th>Data</th></tr>
+<tbody id="historyTable"></tbody>
+</table>
 </section>
 
 <footer>
 <p>© 2026 PlayWatch – Wszystkie prawa zastrzeżone</p>
-  <!DOCTYPE html>
-<html lang="pl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>O nas – PlayWatch</title>
-<style>
-body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white; text-align:center;}
-header,footer{background:#0d1b33;padding:20px;}
-section{max-width:900px;margin:20px auto;background:rgba(0,0,0,0.6);padding:20px;border-radius:12px;text-align:left;}
-a { color:#ff9800; text-decoration:none;}
-a:hover { text-decoration:underline;}
-</style>
-</head>
-<body>
-
-<header>
-<h1>👨‍💻 O nas – PlayWatch</h1>
-<p><a href="index.html">Strona główna</a></p>
-</header>
-
-  <footer>
-<p>© 2026 PlayWatch</p>
-<p style="margin-top:10px;">
-  <a href="regulamin.html">Regulamin</a> |
-  <a href="wyplaty.html">wypłaty</a> |
-  <a href="polityka-prywatnosci.html">Polityka prywatności</a> |
-  <a href="o-nas.html">O nas</a>
+<p>
+<a href="regulamin.html">Regulamin</a> | 
+<a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
+<a href="wyplaty.html">Wypłaty</a>
 </p>
 </footer>
 
-
-
-</body>
-</html>
-
-</footer>
-
 <script>
-// ===================
-// ZMIENNE GLOBALNE
-// ===================
-let points=0, clicks=0, rebirths=0;
+// Punkty i Rebirth
+let points = parseInt(localStorage.getItem("points")) || 50000000;
+let rebirthMultiplier = parseInt(localStorage.getItem("rebirthMultiplier")) || 1;
+let clickPoints = 0;
 
-// ===================
-// FUNKCJE POMOCNICZE
-// ===================
-function add(p){
-  if(rebirths>0) points += p*2;
-  else points += p;
-  updateUI();
-}
-function updateUI(){
-  document.getElementById("points").innerText=points;
-  document.getElementById("rebirths").innerText=rebirths;
-  document.getElementById("nextReq").innerText=rebirthCost();
-  document.getElementById("clicks").innerText=clicks;
-}
+// Historia wypłat
+let history = JSON.parse(localStorage.getItem("history")) || [];
 
-// ===================
-// KOŁO FORTUNY
-// ===================
-function spin(){
-  let w=Math.floor(Math.random()*500)+1;
-  add(w);
-  let display = (rebirths>0)? "+"+(w*2)+" pkt" : "+"+w+" pkt";
-  document.getElementById("wheel").innerText=display;
-}
-
-// ===================
-// LOSOWANIE LICZB (normalnie)
-// ===================
-function draw(){
-  let n=Math.floor(Math.random()*100)+1;
-  points += n;
-  updateUI();
-  document.getElementById("drawRes").innerText="Wylosowano: "+n+" pkt";
-}
-
-// ===================
-// KLIKACZ
-// ===================
-function clickPoint(){ clicks++; add(1); }
-
-// ===================
-// REBIRTH
-// ===================
-function rebirthCost(){ return 100000 * Math.pow(10, rebirths); }
-function doRebirth(){
-  if(points>=rebirthCost()){
-    points=0; clicks=0; rebirths++;
-    alert("🔥 Rebirth wykonany! Teraz wszystkie punkty są ×2!");
-    updateUI();
-  } else { alert("❌ Za mało punktów do rebirth!"); }
-}
-
-// ===================
-// ZGADNIJ POSTAĆ
-// ===================
-const movies=[
-  {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
-  {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
-  {name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
-  {name:"Tony Stark", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2025/02/iron-man-tony-stark-new-ultimate-redesign.jpg"},
-  {name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"},
-  {name:"Mariusz", img:"https://e-teatr.pl/files/multimedias/148083/chorosi__kipap_20220829_26L.jpg"},
-  {name:"Angelika", img:"https://d-art.ppstatic.pl/kadry/k/r/1/1a/18/61b896179ec53_o_large.jpg"},
-  {name:"Marzena", img:"https://i.iplsc.com/magdalena-waligorska-lisiecka/0007TPC6FH44B71M-C122-F4.jpg"}
+// Postacie
+const characters = [
+{name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
+{name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
+{name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
+{name:"Tony Stark", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2025/02/iron-man-tony-stark-new-ultimate-redesign.jpg"},
+{name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"},
+{name:"Mariusz", img:"https://e-teatr.pl/files/multimedias/148083/chorosi__kipap_20220829_26L.jpg"},
+{name:"Angelika", img:"https://d-art.ppstatic.pl/kadry/k/r/1/1a/18/61b896179ec53_o_large.jpg"},
+{name:"Marzena", img:"https://i.iplsc.com/magdalena-waligorska-lisiecka/0007TPC6FH44B71M-C122-F4.jpg"}
 ];
 
-let currentMovie;
-function nextMovie(){
-  currentMovie = movies[Math.floor(Math.random()*movies.length)];
-  document.getElementById("movieImg").src=currentMovie.img;
-  document.getElementById("movieRes").innerText="";
-  document.getElementById("movieInput").value="";
+let currentCharacter = 0;
+
+function updateUI(){
+    document.getElementById("points").innerText = points;
+    document.getElementById("pointsPay").innerText = points;
+    document.getElementById("rebirthMultiplier").innerText = rebirthMultiplier;
+    document.getElementById("clickerResult").innerText = "Punkty z kliknięć: " + clickPoints;
+    renderHistory();
+    localStorage.setItem("points", points);
+    localStorage.setItem("rebirthMultiplier", rebirthMultiplier);
+    localStorage.setItem("history", JSON.stringify(history));
 }
-function checkMovie(){
-  let v=document.getElementById("movieInput").value.toLowerCase();
-  if(v===currentMovie.name.toLowerCase()){
-    add(20);
-    let display = (rebirths>0)? "✅ Dobrze +20 pkt ×2!" : "✅ Dobrze +20 pkt";
-    document.getElementById("movieRes").innerText=display;
-  } else {
-    document.getElementById("movieRes").innerText="❌ To "+currentMovie.name;
-  }
+
+// Koło Fortuny
+function spinWheel(){
+    let won = Math.floor(Math.random()*500+1)*rebirthMultiplier;
+    points += won;
+    document.getElementById("wheelResult").innerText = "🎉 Wygrałeś "+won+" punktów!";
+    updateUI();
 }
-nextMovie();
+
+// Losowanie Liczb
+function rollNumber(){
+    let num = Math.floor(Math.random()*100+1);
+    document.getElementById("rollResult").innerText = "Wylosowana liczba: "+num;
+}
+
+// Zgadnij Postać
+function showCharacter(){
+    currentCharacter = Math.floor(Math.random()*characters.length);
+    document.getElementById("characterImg").src = characters[currentCharacter].img;
+}
+showCharacter();
+
+function guessCharacter(){
+    let answer = document.getElementById("characterInput").value.trim().toLowerCase();
+    let correct = characters[currentCharacter].name.toLowerCase();
+    if(answer === correct){
+        let won = 1000*rebirthMultiplier;
+        points += won;
+        document.getElementById("characterResult").innerText = "✔️ Poprawnie! Zdobywasz "+won+" punktów!";
+        showCharacter();
+        document.getElementById("characterInput").value = "";
+    } else {
+        document.getElementById("characterResult").innerText = "❌ Spróbuj jeszcze raz!";
+    }
+    updateUI();
+}
+
+// Klikacz
+function clicker(){
+    clickPoints += 100*rebirthMultiplier;
+    points += 100*rebirthMultiplier;
+    updateUI();
+}
+
+// Rebirth
+function doRebirth(){
+    const cost = 50000000;
+    if(points < cost){
+        document.getElementById("rebirthMsg").innerText = "❌ Nie masz wystarczająco punktów na Rebirth!";
+        return;
+    }
+    points -= cost;
+    rebirthMultiplier++;
+    document.getElementById("rebirthMsg").innerText = "Twój mnożnik: "+rebirthMultiplier+"x";
+    updateUI();
+}
+
+// Wypłaty
+function requestWithdraw(){
+    const amount = parseFloat(document.getElementById("withdrawAmount").value);
+    if(isNaN(amount) || amount <= 0){
+        document.getElementById("withdrawMsg").innerText = "❌ Podaj poprawną kwotę!";
+        return;
+    }
+    if(amount < 30){
+        document.getElementById("withdrawMsg").innerText = "❌ Minimalna wypłata to 30 zł!";
+        return;
+    }
+    const pointsNeeded = amount*5000000;
+    if(points < pointsNeeded){
+        document.getElementById("withdrawMsg").innerText = "❌ Nie masz tylu punktów!";
+        return;
+    }
+    points -= pointsNeeded;
+    const now = new Date();
+    history.push({amount: amount, date: now.toLocaleString()});
+    document.getElementById("withdrawMsg").innerText = "✅ Poproszono o wypłatę "+amount+" zł.";
+    document.getElementById("withdrawAmount").value = "";
+    updateUI();
+}
+
+// Historia wypłat
+function renderHistory(){
+    const tbody = document.getElementById("historyTable");
+    tbody.innerHTML = "";
+    history.forEach((item,index)=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${index+1}</td><td>${item.amount}</td><td>${item.date}</td>`;
+        tbody.appendChild(tr);
+    });
+}
 
 updateUI();
+</script>
 
 </body>
 </html>
