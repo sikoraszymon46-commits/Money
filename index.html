@@ -109,10 +109,10 @@ function doRebirth(){
   } else { alert("❌ Za mało punktów do rebirth!"); }
 }
 
-// SZACHY
+// SZACHY – działające obrazy publiczne
 const chessPuzzles=[
-  {answer:"mat w jednym", img:"https://i.imgur.com/tfEudGa.png"},
-  {answer:"widełki", img:"https://i.imgur.com/R1Pz8Yp.png"}
+  {answer:"mat w jednym", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/chess1.png"},
+  {answer:"widełki", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/chess2.png"}
 ];
 let currentChess;
 function nextChess(){
@@ -132,11 +132,11 @@ function checkChess(){
 }
 nextChess();
 
-// ZGADNIJ POSTAĆ
+// ZGADNIJ POSTAĆ – działające obrazy
 const movies=[
-  {name:"Eleven", img:"https://i.imgur.com/MPkKqLt.jpg"},
-  {name:"Wednesday", img:"https://i.imgur.com/ZVklS5y.jpg"},
-  {name:"Furioza", img:"https://i.imgur.com/0vV7uLP.jpg"}
+  {name:"Eleven", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/eleven.jpg"},
+  {name:"Wednesday", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/wednesday.jpg"},
+  {name:"Furioza", img:"https://raw.githubusercontent.com/SzymonSikora1/images/main/furioza.jpg"}
 ];
 let currentMovie;
 function nextMovie(){
@@ -155,6 +155,7 @@ function checkMovie(){
   }
 }
 nextMovie();
+
 updateUI();
 </script>
 
