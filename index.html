@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlayWatch – Mega Gry</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right,#1e3c72,#2a5298);
+  color:#fff;
+}
+header, footer {
+  background:#0d1b33;
+  padding:20px;
+  text-align:center;
+}
+section {
+  background: rgba(0,0,0,0.6);
+  margin:20px auto;
+  padding:20px;
+  max-width:900px;
+  border-radius:12px;
+}
+button {
+  padding:10px 15px;
+  margin:5px;
+  border:none;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#ff9800;
+}
+.game-box {
+  margin-top:10px;
+  font-size:18px;
+}
+canvas {
+  background:#111;
+  display:block;
+  margin:10px auto;
+  border-radius:10px;
+}
+img {
+  max-width:100%;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🎮 PlayWatch – Strefa Gier</h1>
+<p>Darmowe gry losowe, zręcznościowe i logiczne</p>
+</header>
+
+<section>
+<h2>O stronie</h2>
+<p>
+PlayWatch to strona z prostymi grami online: losowymi, zręcznościowymi
+i logicznymi. Wszystkie gry działają bez logowania i są przeznaczone
+do rozrywki użytkowników.
+</p>
+</section>
+
+<!-- KOŁO FORTUNY -->
+<section>
+<h2>🎡 Koło fortuny</h2>
+<button onclick="spin()">Zakręć</button>
+<div id="wheelResult" class="game-box"></div>
+</section>
+
+<!-- LOSOWANIE -->
+<section>
+<h2>🔢 Losowanie liczby (1–100)</h2>
+<button onclick="drawNumber()">Losuj</button>
+<div id="numberResult" class="game-box"></div>
+</section>
+
+<!-- GEOMETRY DASH -->
+<section>
+<h2>🟦 Mini Geometry Dash</h2>
+<p>Kliknij w canvas, aby skoczyć</p>
+<canvas id="dash" width="400" height="150"></canvas>
+</section>
+
+<!-- SZACHY -->
+<section>
+<h2>♟️ Szachowa zagadka</h2>
+<p>Jaki to motyw szachowy?</p>
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_example.svg">
+<div class="game-box">Odpowiedź: Mat w jednym</div>
+</section>
+
+<!-- ZGADYWANIE POSTACI -->
+<section>
+<h2>🎬 Zgadnij postać</h2>
+<button onclick="guessCharacter()">Losuj postać</button>
+<div id="characterResult" class="game-box"></div>
+</section>
+
+<!-- KLIKACZ -->
+<section>
+<h2>🖱️ Klikacz</h2>
+<p>Punkty: <span id="clicks">0</span></p>
+<button onclick="clicker()">Kliknij</button>
+</section>
+
+<!-- REBIRTH -->
+<section>
+<h2>🔁 Rebirth</h2>
+<button onclick="rebirth()">Reset + bonus</button>
+<div id="rebirthInfo" class="game-box"></div>
+</section>
+
+<footer>
+<p>© 2026 PlayWatch</p>
+</footer>
+
+<script>
+/* KOŁO FORTUNY */
+function spin(){
+  const pts = Math.floor(Math.random()*500)+1;
+  document.getElementById("wheelResult").innerText =
+    "Wylosowano: "+pts+" punktów";
+}
+
+/* LOSOWANIE */
+function drawNumber(){
+  const n = Math.floor(Math.random()*100)+1;
+  document.getElementById("numberResult").innerText =
+    "Wylosowana liczba: "+n;
+}
+
+/* GEOMETRY DASH */
+const canvas = document.getElementById("dash");
+const ctx = canvas.getContext("2d");
+let y = 110, vy = 0;
+canvas.onclick = ()=>{ if(y>=110) vy = -12; };
+
+function loop(){
+  ctx.clearRect(0,0,400,150);
+  vy += 0.8;
+  y += vy;
+  if(y>110){ y=110; vy=0; }
+  ctx.fillStyle="lime";
+  ctx.fillRect(50,y,20,20);
+  ctx.fillStyle="red";
+  ctx.fillRect(300,110,20,20);
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* POSTACIE */
+const characters = [
+ "Eleven (Stranger Things)",
+ "Dustin (Stranger Things)",
+ "Furioza – Golden",
+ "Wednesday Addams",
+ "Lombard – Kazimierz"
+];
+function guessCharacter(){
+  const c = characters[Math.floor(Math.random()*characters.length)];
+  document.getElementById("characterResult").innerText = c;
+}
+
+/* KLIKACZ */
+let clicks = 0;
+function clicker(){
+  clicks++;
+  document.getElementById("clicks").innerText = clicks;
+}
+
+/* REBIRTH */
+let rebirths = 0;
+function rebirth(){
+  clicks = 0;
+  rebirths++;
+  document.getElementById("clicks").innerText = clicks;
+  document.getElementById("rebirthInfo").innerText =
+    "Rebirthów: "+rebirths+" | Bonus x"+(rebirths+1);
+}
+</script>
+
+</body>
+</html>
