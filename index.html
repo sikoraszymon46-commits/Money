@@ -56,7 +56,7 @@ img{max-width:100%;border-radius:10px;}
 </section>
 
 <footer>
-<p>© 2026 PlayWatch </p>
+<p>© 2026 PlayWatch – Wszystkie prawa zastrzeżone</p>
 </footer>
 
 <script>
@@ -69,7 +69,6 @@ let points=0, clicks=0, rebirths=0;
 // FUNKCJE POMOCNICZE
 // ===================
 function add(p){
-  // punkty ×2 tylko jeśli jest rebirth
   if(rebirths>0) points += p*2;
   else points += p;
   updateUI();
@@ -92,11 +91,11 @@ function spin(){
 }
 
 // ===================
-// LOSOWANIE LICZB (normalnie, bez ×2)
+// LOSOWANIE LICZB (normalnie)
 // ===================
 function draw(){
   let n=Math.floor(Math.random()*100)+1;
-  points += n; // zawsze normalnie
+  points += n;
   updateUI();
   document.getElementById("drawRes").innerText="Wylosowano: "+n+" pkt";
 }
@@ -126,10 +125,12 @@ const movies=[
   {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
   {name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
   {name:"Tony Stark", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2025/02/iron-man-tony-stark-new-ultimate-redesign.jpg"},
-  {name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"}
-  {name:"Mariusz", img:"https://e-teatr.pl/files/multimedias/148083/chorosi__kipap_20220829_26L.jpg"}
-  {name:"Angelika", img:"https://d-art.ppstatic.pl/kadry/k/r/1/1a/18/61b896179ec53_o_large.jpg"}
+  {name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"},
+  {name:"Mariusz", img:"https://e-teatr.pl/files/multimedias/148083/chorosi__kipap_20220829_26L.jpg"},
+  {name:"Angelika", img:"https://d-art.ppstatic.pl/kadry/k/r/1/1a/18/61b896179ec53_o_large.jpg"},
   {name:"Marzena", img:"https://i.iplsc.com/magdalena-waligorska-lisiecka/0007TPC6FH44B71M-C122-F4.jpg"}
+];
+
 let currentMovie;
 function nextMovie(){
   currentMovie = movies[Math.floor(Math.random()*movies.length)];
