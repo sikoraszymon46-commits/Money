@@ -36,17 +36,6 @@ img{max-width:100%;border-radius:10px;}
 <div id="drawRes" class="game-box"></div>
 </section>
 
-<!-- SZACHY -->
-<section>
-<h2>♟️ Szachowa zagadka</h2>
-<img id="chessImg">
-<br><br>
-<input id="chessInput" placeholder="Np. mat w jednym">
-<button onclick="checkChess()">Sprawdź</button>
-<button onclick="nextChess()">Losuj</button>
-<div id="chessRes" class="game-box"></div>
-</section>
-
 <!-- FILMY -->
 <section>
 <h2>🎬 Zgadnij postać</h2>
@@ -79,7 +68,12 @@ let points=0, clicks=0, rebirths=0;
 // ===================
 // FUNKCJE POMOCNICZE
 // ===================
-function add(p){ points+=p*2; updateUI(); } // KAŻDY PUNKT ×2!
+function add(p){
+  // punkty ×2 tylko jeśli jest rebirth
+  if(rebirths>0) points += p*2;
+  else points += p;
+  updateUI();
+}
 function updateUI(){
   document.getElementById("points").innerText=points;
   document.getElementById("rebirths").innerText=rebirths;
@@ -93,16 +87,18 @@ function updateUI(){
 function spin(){
   let w=Math.floor(Math.random()*500)+1;
   add(w);
-  document.getElementById("wheel").innerText="+"+w*2+" pkt"; // wyświetlam już ×2
+  let display = (rebirths>0)? "+"+(w*2)+" pkt" : "+"+w+" pkt";
+  document.getElementById("wheel").innerText=display;
 }
 
 // ===================
-// LOSOWANIE LICZB
+// LOSOWANIE LICZB (normalnie, bez ×2)
 // ===================
 function draw(){
   let n=Math.floor(Math.random()*100)+1;
-  add(n);
-  document.getElementById("drawRes").innerText="Wylosowano: "+n+" pkt ×2 = "+(n*2);
+  points += n; // zawsze normalnie
+  updateUI();
+  document.getElementById("drawRes").innerText="Wylosowano: "+n+" pkt";
 }
 
 // ===================
@@ -117,36 +113,10 @@ function rebirthCost(){ return 100000 * Math.pow(10, rebirths); }
 function doRebirth(){
   if(points>=rebirthCost()){
     points=0; clicks=0; rebirths++;
-    alert("🔥 Rebirth wykonany!");
+    alert("🔥 Rebirth wykonany! Teraz wszystkie punkty są ×2!");
     updateUI();
   } else { alert("❌ Za mało punktów do rebirth!"); }
 }
-
-// ===================
-// SZACHY
-// ===================
-const chessPuzzles=[
-  {answer:"mat w jednym", img:"https://i.imgur.com/8Q3jKx1.png"},
-  {answer:"widełki", img:"https://i.imgur.com/U3a5DgE.png"},
-  {answer:"szach-mat", img:"https://i.imgur.com/VfX0TtP.png"}
-];
-let currentChess;
-function nextChess(){
-  currentChess = chessPuzzles[Math.floor(Math.random()*chessPuzzles.length)];
-  document.getElementById("chessImg").src=currentChess.img;
-  document.getElementById("chessRes").innerText="";
-  document.getElementById("chessInput").value="";
-}
-function checkChess(){
-  let v=document.getElementById("chessInput").value.toLowerCase();
-  if(v.includes(currentChess.answer)){
-    add(20);
-    document.getElementById("chessRes").innerText="✅ Dobrze +20 pkt ×2!";
-  } else {
-    document.getElementById("chessRes").innerText="❌ Źle: "+currentChess.answer;
-  }
-}
-nextChess();
 
 // ===================
 // ZGADNIJ POSTAĆ
@@ -169,7 +139,8 @@ function checkMovie(){
   let v=document.getElementById("movieInput").value.toLowerCase();
   if(v===currentMovie.name.toLowerCase()){
     add(20);
-    document.getElementById("movieRes").innerText="✅ Dobrze +20 pkt ×2!";
+    let display = (rebirths>0)? "✅ Dobrze +20 pkt ×2!" : "✅ Dobrze +20 pkt";
+    document.getElementById("movieRes").innerText=display;
   } else {
     document.getElementById("movieRes").innerText="❌ To "+currentMovie.name;
   }
