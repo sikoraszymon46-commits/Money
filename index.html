@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayWatch – Mega Gry Edukacyjne</title>
+<title>Ona – Mega Gry Edukacyjne</title>
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white;}
 header{background:#0d1b33; padding:20px; text-align:center;}
@@ -27,14 +27,14 @@ footer a:hover { text-decoration:underline; }
 <body>
 
 <header>
-<h1>PlayWatch – Mega Gry Edukacyjne</h1>
+<h1>Ona – Mega Gry Edukacyjne</h1>
 <p>
-<a href="index.html">Strona główna</a> | 
+<a href="ona.html">Ona</a> | 
 <a href="regulamin.html">Regulamin</a> | 
 <a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
 <a href="wyplaty.html">Wypłaty</a>
 </p>
-<p style="text-align:center;">Saldo punktów: <span id="points">50000000</span></p>
+<p style="text-align:center;">Saldo punktów: <span id="points">0</span></p>
 </header>
 
 <main>
@@ -83,7 +83,7 @@ footer a:hover { text-decoration:underline; }
 <section>
 <h2>🔄 Rebirth (x2 punkty)</h2>
 <div style="text-align:center;">
-<button onclick="doRebirth()">Kup Rebirth (koszt: 50 000 000 pkt)</button>
+<button onclick="doRebirth()">Kup Rebirth (koszt: <span id="rebirthCost">100000</span> pkt)</button>
 </div>
 <p id="rebirthMsg" style="text-align:center;">Twój mnożnik: <span id="rebirthMultiplier">1</span>x</p>
 </section>
@@ -109,7 +109,7 @@ footer a:hover { text-decoration:underline; }
 </main>
 
 <footer>
-<p>© 2026 PlayWatch – Wszystkie prawa zastrzeżone</p>
+<p>© 2026 Ona – Wszystkie prawa zastrzeżone</p>
 <p>
 <a href="regulamin.html">Regulamin</a> | 
 <a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
@@ -119,7 +119,7 @@ footer a:hover { text-decoration:underline; }
 
 <script>
 // Punkty i Rebirth
-let points = parseInt(localStorage.getItem("points")) || 50000000;
+let points = parseInt(localStorage.getItem("points")) || 0;
 let rebirthMultiplier = parseInt(localStorage.getItem("rebirthMultiplier")) || 1;
 let clickPoints = 0;
 
@@ -139,11 +139,13 @@ const characters = [
 ];
 
 let currentCharacter = 0;
+let rebirthCost = 100000;
 
 function updateUI(){
     document.getElementById("points").innerText = points;
     document.getElementById("pointsPay").innerText = points;
     document.getElementById("rebirthMultiplier").innerText = rebirthMultiplier;
+    document.getElementById("rebirthCost").innerText = rebirthCost;
     document.getElementById("clickerResult").innerText = "Punkty z kliknięć: " + clickPoints;
     renderHistory();
     localStorage.setItem("points", points);
@@ -162,7 +164,9 @@ function spinWheel(){
 // Losowanie Liczb
 function rollNumber(){
     let num = Math.floor(Math.random()*100+1);
-    document.getElementById("rollResult").innerText = "Wylosowana liczba: "+num;
+    points += num; // Dodaje punkty
+    document.getElementById("rollResult").innerText = "Wylosowana liczba: "+num+" (dodano do punktów)";
+    updateUI();
 }
 
 // Zgadnij Postać
@@ -189,20 +193,20 @@ function guessCharacter(){
 
 // Klikacz
 function clicker(){
-    clickPoints += 100*rebirthMultiplier;
-    points += 100*rebirthMultiplier;
+    clickPoints += 1*rebirthMultiplier;
+    points += 1*rebirthMultiplier;
     updateUI();
 }
 
 // Rebirth
 function doRebirth(){
-    const cost = 50000000;
-    if(points < cost){
+    if(points < rebirthCost){
         document.getElementById("rebirthMsg").innerText = "❌ Nie masz wystarczająco punktów na Rebirth!";
         return;
     }
-    points -= cost;
+    points -= rebirthCost;
     rebirthMultiplier++;
+    rebirthCost *= 10; // kolejne zero
     document.getElementById("rebirthMsg").innerText = "Twój mnożnik: "+rebirthMultiplier+"x";
     updateUI();
 }
