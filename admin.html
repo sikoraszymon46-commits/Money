@@ -6,14 +6,13 @@
 <title>Panel Admina – PlayWatch</title>
 <style>
 body { font-family: Arial,sans-serif; background: linear-gradient(to right,#1e3c72,#2a5298); color:#fff; text-align:center; margin:0;}
-header { background:#0d1b33; padding:20px;}
+header, footer { background:#0d1b33; padding:20px;}
 table { margin:20px auto; border-collapse: collapse; width:90%; background: rgba(0,0,0,0.6);}
 th, td { padding:12px; border:1px solid #fff;}
 button { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:2px;}
 .approve { background:#4CAF50; color:#000;}
 .reject { background:#f44336; color:#fff;}
-footer { margin-top:40px; padding:20px; background:#0d1b33;}
-footer a { color:#ff9800; margin:0 10px; text-decoration:none;}
+a { color:#ff9800; margin:0 10px; text-decoration:none;}
 </style>
 </head>
 <body>
@@ -39,12 +38,12 @@ footer a { color:#ff9800; margin:0 10px; text-decoration:none;}
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
 
 function updateTable(){
-  const table = document.getElementById("requestsTable");
+  const table=document.getElementById("requestsTable");
   table.querySelectorAll("tr:not(:first-child)").forEach(e=>e.remove());
 
   withdrawals.forEach((w,index)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
       <td>${index+1}</td>
       <td>${w.user}</td>
       <td>${w.firstName} ${w.lastName}</td>
@@ -62,14 +61,14 @@ function updateTable(){
 function approve(index){
   alert(`Wypłata dla ${withdrawals[index].user} zatwierdzona!`);
   withdrawals.splice(index,1);
-  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
+  localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
   updateTable();
 }
 
 function reject(index){
   alert(`Wypłata dla ${withdrawals[index].user} odrzucona!`);
   withdrawals.splice(index,1);
-  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
+  localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
   updateTable();
 }
 
