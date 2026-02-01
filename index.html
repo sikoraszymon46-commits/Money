@@ -29,9 +29,6 @@ footer a:hover { text-decoration:underline; }
 <header>
 <h1>Ona – Mega Gry Edukacyjne</h1>
 <p>
-<a href="ona.html">Ona</a> | 
-<a href="regulamin.html">Regulamin</a> | 
-<a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
 <a href="wyplaty.html">Wypłaty</a>
 </p>
 <p style="text-align:center;">Saldo punktów: <span id="points">0</span></p>
@@ -109,12 +106,12 @@ footer a:hover { text-decoration:underline; }
 </main>
 
 <footer>
-<p>© 2026 Ona – Wszystkie prawa zastrzeżone</p>
 <p>
+<a href="o-nas.html">O Nas</a> | 
 <a href="regulamin.html">Regulamin</a> | 
-<a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
-<a href="wyplaty.html">Wypłaty</a>
+<a href="polityka-prywatnosci.html">Polityka prywatności</a>
 </p>
+<p>© 2026 Ona – Wszystkie prawa zastrzeżone</p>
 </footer>
 
 <script>
@@ -164,8 +161,8 @@ function spinWheel(){
 // Losowanie Liczb
 function rollNumber(){
     let num = Math.floor(Math.random()*100+1);
-    points += num; // Dodaje punkty
-    document.getElementById("rollResult").innerText = "Wylosowana liczba: "+num+" (dodano do punktów)";
+    points += num; // Dodaje punkty normalnie
+    document.getElementById("rollResult").innerText = "Wylosowana liczba: "+num+" (dodano punkty)";
     updateUI();
 }
 
