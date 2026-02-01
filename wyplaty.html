@@ -66,15 +66,13 @@ footer a:hover { text-decoration:underline; }
 
 <main>
 <div class="withdrawPanel">
-<h2>Twoje saldo punktów</h2>
-<p style="text-align:center;">Saldo punktów: <span id="points">0</span></p>
 <p style="text-align:center;">Kurs: 5 000 000 pkt = 1 zł</p>
 
 <h2>Poproś o wypłatę</h2>
 <input id="withdrawAmount" type="number" placeholder="Ile zł chcesz wypłacić?">
 <button onclick="requestWithdraw()">Poproś o wypłatę</button>
 <p id="withdrawMsg" style="text-align:center;"></p>
-<p style="text-align:center;">Minimalna wypłata: 30 zł</p>
+<p style="text-align:center;">Minimalna kwota wypłaty: 30 zł</p>
 
 <h3>Historia wypłat</h3>
 <table>
@@ -85,8 +83,7 @@ footer a:hover { text-decoration:underline; }
 </main>
 
 <script>
-// Pobranie punktów z localStorage lub ustawienie przykładowych
-let points = parseInt(localStorage.getItem("points")) || 50000000; 
+// 
 let history = JSON.parse(localStorage.getItem("history")) || [];
 
 function updateUI(){
