@@ -43,13 +43,11 @@ footer a { color:#ff9800; margin:0 10px; text-decoration:none; }
 </footer>
 
 <script>
-// Wczytanie wszystkich wypłat z localStorage
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || {};
 
 // Funkcja odświeżania tabeli wniosków
 function updateTable(){
   const table = document.getElementById("requestsTable");
-  // Usuń stare wiersze poza nagłówkiem
   table.querySelectorAll("tr:not(:first-child)").forEach(e=>e.remove());
   
   let i=1;
@@ -76,8 +74,7 @@ function updateTable(){
 // Zatwierdzenie wniosku
 function approve(user,index){
   alert(`Wypłata dla ${user} zatwierdzona!`);
-  // Tutaj możesz odejmować punkty np. z users[user].points
-  withdrawals[user].splice(index,1); // usuń wniosek po zatwierdzeniu
+  withdrawals[user].splice(index,1);
   localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
   updateTable();
 }
@@ -85,7 +82,7 @@ function approve(user,index){
 // Odrzucenie wniosku
 function reject(user,index){
   alert(`Wypłata dla ${user} odrzucona!`);
-  withdrawals[user].splice(index,1); // usuń wniosek po odrzuceniu
+  withdrawals[user].splice(index,1);
   localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
   updateTable();
 }
