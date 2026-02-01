@@ -45,7 +45,6 @@ footer a { color:#ff9800; margin:0 10px; text-decoration:none; }
 <script>
 // Wczytanie wszystkich wypłat z localStorage
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || {};
-let users = JSON.parse(localStorage.getItem("users")) || {};
 
 // Funkcja odświeżania tabeli wniosków
 function updateTable(){
@@ -66,7 +65,7 @@ function updateTable(){
         <td>${w.date}</td>
         <td>
           <button class="approve" onclick="approve('${user}',${index})">✔</button>
-          <button class="reject" class="reject" onclick="reject('${user}',${index})">✖</button>
+          <button class="reject" onclick="reject('${user}',${index})">✖</button>
         </td>`;
       table.appendChild(tr);
       i++;
@@ -77,7 +76,7 @@ function updateTable(){
 // Zatwierdzenie wniosku
 function approve(user,index){
   alert(`Wypłata dla ${user} zatwierdzona!`);
-  // Tutaj można np. odejmować punkty: users[user].points -= withdrawals[user][index].amount;
+  // Tutaj możesz odejmować punkty np. z users[user].points
   withdrawals[user].splice(index,1); // usuń wniosek po zatwierdzeniu
   localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
   updateTable();
