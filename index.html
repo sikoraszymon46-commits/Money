@@ -7,8 +7,7 @@
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white;}
 header{background:#0d1b33; padding:20px; text-align:center;}
-header a { color:#ff9800; text-decoration:none; margin:0 10px; font-weight:bold;}
-header a:hover { text-decoration:underline;}
+header span { font-weight:bold; font-size:18px; }
 main { max-width:1000px; margin:30px auto; padding:0 20px;}
 section { background:rgba(0,0,0,0.6); padding:25px; border-radius:12px; margin-bottom:30px;}
 h2,h3 { text-align:center; margin-top:0;}
@@ -16,9 +15,6 @@ button { padding:10px 15px; border:none; border-radius:5px; background:#ff9800; 
 button:hover { background:#ffc107; }
 img.character { max-width:200px; height:auto; display:block; margin:10px auto; border-radius:10px; }
 input { padding:8px; border-radius:5px; border:none; width:100%; max-width:200px; margin:10px 0; display:block; margin-left:auto; margin-right:auto; }
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th, td { border:1px solid #fff; padding:8px; text-align:center;}
-th { background:rgba(255,255,255,0.2); }
 footer{background:#0d1b33; text-align:center; padding:20px;}
 footer a { color:#ff9800; margin:0 5px; text-decoration:none; }
 footer a:hover { text-decoration:underline; }
@@ -27,11 +23,7 @@ footer a:hover { text-decoration:underline; }
 <body>
 
 <header>
-<h1>Ona – Mega Gry Edukacyjne</h1>
-<p>
-<a href="wyplaty.html">Wypłaty</a>
-</p>
-<p style="text-align:center;">Saldo punktów: <span id="points">0</span></p>
+<p>Saldo punktów: <span id="points">0</span> | Rebirth: <span id="rebirthMultiplier">1</span>x</p>
 </header>
 
 <main>
@@ -82,25 +74,7 @@ footer a:hover { text-decoration:underline; }
 <div style="text-align:center;">
 <button onclick="doRebirth()">Kup Rebirth (koszt: <span id="rebirthCost">100000</span> pkt)</button>
 </div>
-<p id="rebirthMsg" style="text-align:center;">Twój mnożnik: <span id="rebirthMultiplier">1</span>x</p>
-</section>
-
-<!-- Podstrona Wypłat -->
-<section>
-<h2>💰 Wypłata</h2>
-<p style="text-align:center;">Saldo punktów: <span id="pointsPay">0</span></p>
-<p style="text-align:center;">Kurs: 5 000 000 pkt = 1 zł</p>
-<input id="withdrawAmount" type="number" placeholder="Ile zł chcesz wypłacić?">
-<div style="text-align:center;">
-<button onclick="requestWithdraw()">Poproś o wypłatę</button>
-</div>
-<p id="withdrawMsg" style="text-align:center;"></p>
-<p style="text-align:center;">Minimalna wypłata: 30 zł</p>
-<h3 style="text-align:center;">Historia wypłat</h3>
-<table>
-<tr><th>#</th><th>Kwota (zł)</th><th>Data</th></tr>
-<tbody id="historyTable"></tbody>
-</table>
+<p id="rebirthMsg" style="text-align:center;">Twój mnożnik: <span id="rebirthMultiplier2">1</span>x</p>
 </section>
 
 </main>
@@ -120,9 +94,6 @@ let points = parseInt(localStorage.getItem("points")) || 0;
 let rebirthMultiplier = parseInt(localStorage.getItem("rebirthMultiplier")) || 1;
 let clickPoints = 0;
 
-// Historia wypłat
-let history = JSON.parse(localStorage.getItem("history")) || [];
-
 // Postacie
 const characters = [
 {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
@@ -140,14 +111,11 @@ let rebirthCost = 100000;
 
 function updateUI(){
     document.getElementById("points").innerText = points;
-    document.getElementById("pointsPay").innerText = points;
     document.getElementById("rebirthMultiplier").innerText = rebirthMultiplier;
     document.getElementById("rebirthCost").innerText = rebirthCost;
     document.getElementById("clickerResult").innerText = "Punkty z kliknięć: " + clickPoints;
-    renderHistory();
     localStorage.setItem("points", points);
     localStorage.setItem("rebirthMultiplier", rebirthMultiplier);
-    localStorage.setItem("history", JSON.stringify(history));
 }
 
 // Koło Fortuny
@@ -198,49 +166,13 @@ function clicker(){
 // Rebirth
 function doRebirth(){
     if(points < rebirthCost){
-        document.getElementById("rebirthMsg").innerText = "❌ Nie masz wystarczająco punktów na Rebirth!";
+        alert("Nie masz wystarczająco punktów na Rebirth!");
         return;
     }
     points -= rebirthCost;
     rebirthMultiplier++;
     rebirthCost *= 10; // kolejne zero
-    document.getElementById("rebirthMsg").innerText = "Twój mnożnik: "+rebirthMultiplier+"x";
     updateUI();
-}
-
-// Wypłaty
-function requestWithdraw(){
-    const amount = parseFloat(document.getElementById("withdrawAmount").value);
-    if(isNaN(amount) || amount <= 0){
-        document.getElementById("withdrawMsg").innerText = "❌ Podaj poprawną kwotę!";
-        return;
-    }
-    if(amount < 30){
-        document.getElementById("withdrawMsg").innerText = "❌ Minimalna wypłata to 30 zł!";
-        return;
-    }
-    const pointsNeeded = amount*5000000;
-    if(points < pointsNeeded){
-        document.getElementById("withdrawMsg").innerText = "❌ Nie masz tylu punktów!";
-        return;
-    }
-    points -= pointsNeeded;
-    const now = new Date();
-    history.push({amount: amount, date: now.toLocaleString()});
-    document.getElementById("withdrawMsg").innerText = "✅ Poproszono o wypłatę "+amount+" zł.";
-    document.getElementById("withdrawAmount").value = "";
-    updateUI();
-}
-
-// Historia wypłat
-function renderHistory(){
-    const tbody = document.getElementById("historyTable");
-    tbody.innerHTML = "";
-    history.forEach((item,index)=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${index+1}</td><td>${item.amount}</td><td>${item.date}</td>`;
-        tbody.appendChild(tr);
-    });
 }
 
 updateUI();
