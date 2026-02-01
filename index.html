@@ -2,201 +2,209 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Platforma Gier</title>
+<title>PlayWatch – Gry Punktowe</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  color: #fff;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(to right,#1e3c72,#2a5298);
+  color:#fff;
 }
-
-/* ---------- HEADER ---------- */
-header {
-  text-align: center;
-  padding: 20px;
-  font-size: 28px;
-  font-weight: bold;
+header{
+  background:#0d1b33;
+  padding:15px;
+  text-align:center;
 }
-
-/* ---------- LOGIN ---------- */
-#loginBox {
-  max-width: 350px;
-  margin: 40px auto;
-  background: rgba(0,0,0,0.6);
-  padding: 20px;
-  border-radius: 10px;
+header h1{margin:5px 0;}
+#topBar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  max-width:1100px;
+  margin:auto;
 }
-
-#loginBox input, #loginBox button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 5px;
-  border: none;
+a{color:#ff9800;text-decoration:none;font-weight:bold}
+section{
+  background:rgba(0,0,0,.6);
+  max-width:900px;
+  margin:20px auto;
+  padding:20px;
+  border-radius:10px;
 }
-
-#loginBox button {
-  background: #00c853;
-  font-weight: bold;
-  cursor: pointer;
+button{
+  padding:10px 15px;
+  margin:5px;
+  border:none;
+  border-radius:5px;
+  background:#ff9800;
+  font-weight:bold;
+  cursor:pointer;
 }
-
-/* ---------- MAIN ---------- */
-#main {
-  display: none;
-  padding: 20px;
-  max-width: 900px;
-  margin: auto;
+input{
+  padding:8px;
+  border-radius:5px;
+  border:none;
 }
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+img{
+  width:200px;
+  height:auto;
+  border-radius:10px;
+  display:block;
+  margin:10px auto;
 }
-
-.points {
-  font-size: 18px;
-}
-
-a {
-  color: #00e5ff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-/* ---------- GAMES ---------- */
-.game {
-  background: rgba(0,0,0,0.6);
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
-button.game-btn {
-  padding: 10px 20px;
-  margin-top: 10px;
-  background: #2979ff;
-  border: none;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* ---------- FOOTER ---------- */
-footer {
-  margin-top: 50px;
-  padding: 20px;
-  text-align: center;
-  background: rgba(0,0,0,0.4);
-}
-footer a {
-  margin: 0 10px;
+footer{
+  background:#0d1b33;
+  text-align:center;
+  padding:20px;
+  margin-top:40px;
 }
 </style>
 </head>
 
 <body>
 
-<header>🎮 Platforma Gier</header>
-
-<!-- LOGIN -->
-<div id="loginBox">
-  <h2>Logowanie</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Hasło">
-  <button onclick="login()">Zaloguj</button>
-</div>
-
-<!-- MAIN -->
-<div id="main">
-
-  <div class="top-bar">
-    <div class="points">Punkty: <span id="points">0</span></div>
-    <a href="wyplaty.html">💸 Wypłaty</a>
+<header>
+  <div id="topBar">
+    <div>
+      Punkty: <b id="points">0</b> |
+      Rebirth: <b id="rebirth">0</b> |
+      Mnożnik: <b id="multiplier">x1</b>
+    </div>
+    <div>
+      <a href="wplaty.html">Wypłaty</a>
+    </div>
   </div>
+  <h1>PlayWatch – Mega Gry</h1>
+</header>
 
-  <!-- CLICKER -->
-  <div class="game">
-    <h3>🖱️ Klikacz</h3>
-    <p>1 klik = 1 punkt</p>
-    <button class="game-btn" onclick="clicker()">Kliknij</button>
-  </div>
+<!-- KLIKACZ -->
+<section>
+  <h2>🖱 Klikacz</h2>
+  <button onclick="clicker()">Kliknij +1 pkt</button>
+</section>
 
-  <!-- RANDOM -->
-  <div class="game">
-    <h3>🎲 Losowanie 1–100</h3>
-    <button class="game-btn" onclick="randomGame()">Losuj</button>
-    <p id="randomResult"></p>
-  </div>
+<!-- LOSOWANIE -->
+<section>
+  <h2>🎲 Losowanie 1–100</h2>
+  <button onclick="drawNumber()">Losuj</button>
+  <p id="drawResult"></p>
+</section>
 
-</div>
+<!-- KOŁO FORTUNY -->
+<section>
+  <h2>🎡 Koło Fortuny</h2>
+  <button onclick="wheel()">Zakręć</button>
+  <p id="wheelResult"></p>
+</section>
+
+<!-- ZGADNIJ POSTAĆ -->
+<section>
+  <h2>🎬 Zgadnij postać</h2>
+  <img id="charImg">
+  <input id="charInput" placeholder="Kto to?">
+  <button onclick="checkChar()">Sprawdź</button>
+  <p id="charResult"></p>
+</section>
+
+<!-- REBIRTH -->
+<section>
+  <h2>🔥 Rebirth</h2>
+  <p>Koszt: <b id="rebirthCost"></b> pkt</p>
+  <button onclick="doRebirth()">Zrób Rebirth</button>
+</section>
 
 <footer>
-  <a href="o-nas.html">O nas</a>
-  <a href="regulamin.html">Regulamin</a>
+  <a href="o-nas.html">O nas</a> |
+  <a href="regulamin.html">Regulamin</a> |
   <a href="polityka-prywatnosci.html">Polityka prywatności</a>
 </footer>
 
 <script>
-/* ---------- SESSION ---------- */
-if (localStorage.getItem("loggedIn") === "true") {
-  showMain();
+/* ====== STAN ====== */
+let points = Number(localStorage.getItem("points")) || 0;
+let rebirth = Number(localStorage.getItem("rebirth")) || 0;
+
+function multiplier(){
+  return rebirth + 1;
 }
 
-/* ---------- LOGIN ---------- */
-function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+function rebirthCost(){
+  if(rebirth === 0) return 100000;
+  return 10 ** (rebirth + 5);
+}
 
-  if (!email || !password) {
-    alert("Wpisz email i hasło");
-    return;
+/* ====== UPDATE ====== */
+function update(){
+  document.getElementById("points").innerText = points;
+  document.getElementById("rebirth").innerText = rebirth;
+  document.getElementById("multiplier").innerText = "x"+multiplier();
+  document.getElementById("rebirthCost").innerText = rebirthCost().toLocaleString();
+  localStorage.setItem("points", points);
+  localStorage.setItem("rebirth", rebirth);
+}
+
+/* ====== KLIKACZ ====== */
+function clicker(){
+  points += 1 * multiplier();
+  update();
+}
+
+/* ====== LOSOWANIE ====== */
+function drawNumber(){
+  const n = Math.floor(Math.random()*100)+1;
+  points += n; // BEZ mnożnika
+  document.getElementById("drawResult").innerText = "Wylosowano: "+n;
+  update();
+}
+
+/* ====== KOŁO ====== */
+function wheel(){
+  const win = Math.floor(Math.random()*500)+1;
+  points += win * multiplier();
+  document.getElementById("wheelResult").innerText = "Wygrana: "+win;
+  update();
+}
+
+/* ====== POSTACIE ====== */
+const characters = [
+ {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
+ {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
+ {name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
+ {name:"Tony Stark", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2025/02/iron-man-tony-stark-new-ultimate-redesign.jpg"},
+ {name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"}
+];
+
+let currentChar = characters[Math.floor(Math.random()*characters.length)];
+document.getElementById("charImg").src = currentChar.img;
+
+function checkChar(){
+  const val = document.getElementById("charInput").value.toLowerCase();
+  if(val === currentChar.name.toLowerCase()){
+    points += 200 * multiplier();
+    document.getElementById("charResult").innerText = "Dobrze! +200 pkt";
+    currentChar = characters[Math.floor(Math.random()*characters.length)];
+    document.getElementById("charImg").src = currentChar.img;
+  }else{
+    document.getElementById("charResult").innerText = "Źle";
   }
+  document.getElementById("charInput").value="";
+  update();
+}
 
-  localStorage.setItem("loggedIn", "true");
-  localStorage.setItem("userEmail", email);
-
-  if (!localStorage.getItem("points")) {
-    localStorage.setItem("points", "0");
+/* ====== REBIRTH ====== */
+function doRebirth(){
+  if(points >= rebirthCost()){
+    points = 0;
+    rebirth++;
+    update();
+  }else{
+    alert("Za mało punktów");
   }
-
-  showMain();
 }
 
-function showMain() {
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("main").style.display = "block";
-  updatePoints();
-}
-
-/* ---------- POINTS ---------- */
-function updatePoints() {
-  document.getElementById("points").innerText =
-    localStorage.getItem("points") || "0";
-}
-
-function addPoints(x) {
-  let p = parseInt(localStorage.getItem("points") || "0");
-  p += x;
-  localStorage.setItem("points", p);
-  updatePoints();
-}
-
-/* ---------- GAMES ---------- */
-function clicker() {
-  addPoints(1);
-}
-
-function randomGame() {
-  const n = Math.floor(Math.random() * 100) + 1;
-  document.getElementById("randomResult").innerText =
-    "Wylosowano: " + n + " (+ " + n + " pkt)";
-  addPoints(n);
-}
+update();
 </script>
 
 </body>
