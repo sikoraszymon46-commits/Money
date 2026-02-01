@@ -43,23 +43,21 @@ footer a { color:#ff9800; margin:0 10px; text-decoration:none;}
 </footer>
 
 <script>
-// --- dla testu ustawiamy zalogowanego użytkownika ---
+// --- symulacja zalogowanego użytkownika ---
 let loggedUser = localStorage.getItem("loggedUser") || "TestUser";
 localStorage.setItem("loggedUser", loggedUser);
 
-// Pobranie wszystkich wniosków
+// Pobranie wszystkich wniosków z localStorage lub utworzenie pustej tablicy
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
 
-// Funkcja aktualizacji historii
+// Funkcja aktualizacji historii użytkownika
 function updateHistory(){
   const list = document.getElementById("historyList");
   list.innerHTML = "";
-  withdrawals.forEach((w,i)=>{
-    if(w.user === loggedUser){
-      const li = document.createElement("li");
-      li.innerText = `${i+1}. ${w.firstName} ${w.lastName} | ${w.paypalEmail} | ${w.amount} zł – ${w.date}`;
-      list.appendChild(li);
-    }
+  withdrawals.filter(w=>w.user===loggedUser).forEach((w,i)=>{
+    const li = document.createElement("li");
+    li.innerText = `${i+1}. ${w.firstName} ${w.lastName} | ${w.paypalEmail} | ${w.amount} zł – ${w.date}`;
+    list.appendChild(li);
   });
 }
 
