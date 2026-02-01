@@ -3,143 +3,214 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wypłaty – PlayWatch</title>
+<title>Wypłaty – Ona</title>
+
 <style>
-body { 
-    margin:0; 
-    font-family:Arial,sans-serif; 
-    background:linear-gradient(to right,#1e3c72,#2a5298); 
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(to right,#1e3c72,#2a5298);
     color:white;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
 }
-header{ 
-    background:#0d1b33; 
-    padding:20px; 
-    text-align:center; 
+
+header{
+    background:#0d1b33;
+    padding:20px;
+    text-align:center;
 }
-header a { 
-    color:#ff9800; 
-    text-decoration:none; 
-    margin:0 10px; 
+
+header h1{
+    margin:0;
+    font-size:26px;
+}
+
+main{
+    max-width:900px;
+    margin:40px auto;
+    padding:0 20px;
+}
+
+section{
+    background:rgba(0,0,0,0.6);
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:30px;
+}
+
+h2{
+    text-align:center;
+    margin-top:0;
+}
+
+label{
+    display:block;
+    margin-top:15px;
     font-weight:bold;
 }
-header a:hover { text-decoration:underline; }
-main { 
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:40px 20px;
+
+input{
+    width:100%;
+    max-width:300px;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    margin-top:5px;
 }
-.withdrawPanel { 
-    background:rgba(0,0,0,0.8); 
-    padding:30px; 
-    border-radius:12px; 
-    width:100%; 
-    max-width:700px; 
+
+button{
+    margin-top:20px;
+    padding:12px 20px;
+    border:none;
+    border-radius:6px;
+    background:#ff9800;
+    color:#000;
+    font-weight:bold;
+    cursor:pointer;
 }
-.withdrawPanel h2,h3 { text-align:center; margin-top:0; }
-input { padding:10px; border-radius:5px; border:none; width:100%; margin:10px 0; }
-button { padding:12px 20px; border:none; border-radius:5px; background:#ff9800; color:#000; font-weight:bold; cursor:pointer; width:100%; margin-bottom:15px; }
-button:hover { background:#ffc107; }
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th, td { border:1px solid #fff; padding:10px; text-align:center; }
-th { background:rgba(255,255,255,0.2); }
-footer{background:#0d1b33; text-align:center; padding:20px;}
-footer a { color:#ff9800; margin:0 5px; text-decoration:none; }
-footer a:hover { text-decoration:underline; }
+
+button:hover{
+    background:#ffc107;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th, td{
+    border-bottom:1px solid rgba(255,255,255,0.2);
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    color:#ff9800;
+}
+
+footer{
+    background:#0d1b33;
+    padding:20px;
+    text-align:center;
+}
+
+footer a{
+    color:#ff9800;
+    margin:0 8px;
+    text-decoration:none;
+}
+
+footer a:hover{
+    text-decoration:underline;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>💰 Wypłaty – PlayWatch</h1>
-<p>
-<a href="index.html">Strona główna</a> | 
-<a href="regulamin.html">Regulamin</a> | 
-<a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
-<a href="wyplaty.html">Wypłaty</a>
-</p>
+<h1>💰 Wypłaty</h1>
 </header>
 
 <main>
-<div class="withdrawPanel">
-<p style="text-align:center;">Kurs: 5 000 000 pkt = 1 zł</p>
 
-<h2>Poproś o wypłatę</h2>
-<input id="withdrawAmount" type="number" placeholder="Ile zł chcesz wypłacić?">
-<button onclick="requestWithdraw()">Poproś o wypłatę</button>
-<p id="withdrawMsg" style="text-align:center;"></p>
-<p style="text-align:center;">Minimalna kwota wypłaty: 30 zł</p>
+<!-- Informacja -->
+<section>
+<h2>Informacje</h2>
+<p>
+• 5 000 000 punktów = <b>1 zł</b><br>
+• Minimalna wypłata: <b>30 zł</b><br>
+• Wypłaty są zatwierdzane <b>ręcznie</b><br>
+• Przelewy realizowane ręcznie przez administratora
+</p>
+</section>
 
-<h3>Historia wypłat</h3>
+<!-- Formularz wypłaty -->
+<section>
+<h2>Złóż wniosek o wypłatę</h2>
+
+<label>Kwota (zł)</label>
+<input type="number" id="amount" placeholder="np. 30">
+
+<label>Imię i nazwisko</label>
+<input type="text" id="name">
+
+<label>Numer konta bankowego</label>
+<input type="text" id="bank">
+
+<button onclick="requestWithdraw()">Złóż wniosek</button>
+
+<p id="msg" style="margin-top:15px; text-align:center;"></p>
+</section>
+
+<!-- Historia -->
+<section>
+<h2>Historia wypłat</h2>
+
 <table>
-<tr><th>#</th><th>Kwota (zł)</th><th>Data</th></tr>
-<tbody id="historyTable"></tbody>
+<thead>
+<tr>
+<th>Data</th>
+<th>Kwota</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="history">
+<tr>
+<td colspan="3">Brak wypłat</td>
+</tr>
+</tbody>
 </table>
-</div>
+
+</section>
+
 </main>
 
-<script>
-// 
-let history = JSON.parse(localStorage.getItem("history")) || [];
+<footer>
+<a href="index.html">Strona główna</a> |
+<a href="o-nas.html">O nas</a> |
+<a href="regulamin.html">Regulamin</a> |
+<a href="polityka-prywatnosci.html">Polityka prywatności</a>
+</footer>
 
-function updateUI(){
-    document.getElementById("points").innerText = points;
-    renderHistory();
-    localStorage.setItem("points", points);
-    localStorage.setItem("history", JSON.stringify(history));
-}
+<script>
+let historyTable = document.getElementById("history");
 
 function requestWithdraw(){
-    const amount = parseFloat(document.getElementById("withdrawAmount").value);
-    if(isNaN(amount) || amount <= 0){
-        document.getElementById("withdrawMsg").innerText = "❌ Podaj poprawną kwotę!";
-        return;
-    }
+    const amount = document.getElementById("amount").value;
+    const name = document.getElementById("name").value.trim();
+    const bank = document.getElementById("bank").value.trim();
+    const msg = document.getElementById("msg");
+
     if(amount < 30){
-        document.getElementById("withdrawMsg").innerText = "❌ Minimalna wypłata to 30 zł!";
-        return;
-    }
-    const pointsNeeded = amount * 5000000;
-    if(points < pointsNeeded){
-        document.getElementById("withdrawMsg").innerText = "❌ Nie masz tylu punktów!";
+        msg.innerText = "❌ Minimalna wypłata to 30 zł";
         return;
     }
 
-    points -= pointsNeeded;
-    const now = new Date();
-    history.push({amount: amount, date: now.toLocaleString()});
+    if(!name || !bank){
+        msg.innerText = "❌ Uzupełnij wszystkie dane";
+        return;
+    }
 
-    document.getElementById("withdrawMsg").innerText = `✅ Poproszono o wypłatę ${amount} zł.`;
-    document.getElementById("withdrawAmount").value = "";
-    updateUI();
+    msg.innerText = "✅ Wniosek wysłany! Oczekuje na zatwierdzenie";
+
+    if(historyTable.innerText.includes("Brak")){
+        historyTable.innerHTML = "";
+    }
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${new Date().toLocaleDateString()}</td>
+        <td>${amount} zł</td>
+        <td>⏳ Oczekuje</td>
+    `;
+    historyTable.prepend(row);
+
+    document.getElementById("amount").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("bank").value = "";
 }
-
-function renderHistory(){
-    const tbody = document.getElementById("historyTable");
-    tbody.innerHTML = "";
-    history.forEach((item,index)=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${index+1}</td><td>${item.amount}</td><td>${item.date}</td>`;
-        tbody.appendChild(tr);
-    });
-}
-
-// Inicjalizacja
-updateUI();
 </script>
-
-<footer>
-<p>© 2026 PlayWatch – Wszystkie prawa zastrzeżone</p>
-<p>
-<a href="regulamin.html">Regulamin</a> | 
-<a href="polityka-prywatnosci.html">Polityka prywatności</a> | 
-<a href="wyplaty.html">Wypłaty</a>
-</p>
-</footer>
 
 </body>
 </html>
