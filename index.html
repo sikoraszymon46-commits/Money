@@ -27,21 +27,23 @@ section {
   border-radius: 12px;
 }
 
+input {
+  padding: 10px;
+  margin: 6px;
+  width: 80%;
+  max-width: 300px;
+  border-radius: 6px;
+  border: none;
+}
+
 button {
-  padding: 10px 15px;
-  margin: 5px;
+  padding: 10px 18px;
+  margin: 6px;
   border: none;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
   background: #ff9800;
-}
-
-input {
-  padding: 8px;
-  border-radius: 5px;
-  border: none;
-  margin: 5px;
 }
 
 footer {
@@ -56,21 +58,21 @@ footer {
 
 <header>
   <h1>🎮 PlayWatch</h1>
-  <div id="topInfo"></div>
 </header>
 
 <!-- LOGOWANIE -->
 <section id="loginBox">
   <h2>Logowanie / Rejestracja</h2>
-  <input id="loginUser" placeholder="Login"><br>
-  <input id="loginPass" type="password" placeholder="Hasło"><br>
+  <input id="email" type="email" placeholder="Email"><br>
+  <input id="password" type="password" placeholder="Hasło"><br>
   <button onclick="login()">Zaloguj</button>
   <button onclick="register()">Zarejestruj</button>
 </section>
 
 <!-- APLIKACJA -->
 <section id="app" style="display:none;">
-  <h2>Witaj, <span id="userName"></span> 👋</h2>
+  <h2>Witaj, <span id="userEmail"></span></h2>
+
   <p>💰 Punkty: <b id="points">0</b></p>
   <p>🔥 Rebirth: <b id="rebirth">0</b></p>
 
@@ -78,29 +80,24 @@ footer {
 
   <hr>
 
-  <!-- KLIKACZ -->
   <h3>🖱 Klikacz</h3>
-  <button onclick="addPoints(1)">Kliknij (+1 pkt)</button>
+  <button onclick="addPoints()">Kliknij (+1 pkt)</button>
 
   <hr>
 
-  <!-- LOSOWANIE -->
   <h3>🎲 Losowanie 1–100</h3>
   <button onclick="draw()">Losuj</button>
   <p id="drawResult"></p>
 
   <hr>
 
-  <!-- REBIRTH -->
   <h3>♻ Rebirth</h3>
   <p>Koszt: <span id="rebirthCost"></span> pkt</p>
   <button onclick="doRebirth()">Rebirth</button>
 </section>
 
 <footer>
-  <a href="o-nas.html" style="color:#fff;">O nas</a> |
-  <a href="regulamin.html" style="color:#fff;">Regulamin</a> |
-  <a href="polityka-prywatnosci.html" style="color:#fff;">Polityka prywatności</a>
+  O nas | Regulamin | Polityka prywatności
 </footer>
 
 <script>
@@ -112,13 +109,13 @@ function saveUsers() {
 }
 
 function register() {
-  const u = loginUser.value;
-  const p = loginPass.value;
+  const e = email.value.trim();
+  const p = password.value.trim();
 
-  if (!u || !p) return alert("Uzupełnij dane");
-  if (users[u]) return alert("Użytkownik już istnieje");
+  if (!e || !p) return alert("Uzupełnij email i hasło");
+  if (users[e]) return alert("Email już zarejestrowany");
 
-  users[u] = {
+  users[e] = {
     password: p,
     points: 0,
     rebirth: 0,
@@ -126,23 +123,24 @@ function register() {
   };
 
   saveUsers();
-  alert("Konto utworzone, zaloguj się");
+  alert("Konto utworzone — możesz się zalogować");
 }
 
 function login() {
-  const u = loginUser.value;
-  const p = loginPass.value;
+  const e = email.value.trim();
+  const p = password.value.trim();
 
-  if (!users[u] || users[u].password !== p)
-    return alert("Złe dane");
+  if (!users[e] || users[e].password !== p)
+    return alert("Zły email lub hasło");
 
-  localStorage.setItem("loggedUser", u);
+  localStorage.setItem("loggedUser", e);
   showApp();
 }
 
 function logout() {
   localStorage.removeItem("loggedUser");
-  location.reload();
+  app.style.display = "none";
+  loginBox.style.display = "block";
 }
 
 function showApp() {
@@ -152,7 +150,7 @@ function showApp() {
   loginBox.style.display = "none";
   app.style.display = "block";
 
-  userName.innerText = loggedUser;
+  userEmail.innerText = loggedUser;
   updateUI();
 }
 
@@ -164,15 +162,15 @@ function updateUI() {
   saveUsers();
 }
 
-function addPoints(x) {
-  users[loggedUser].points += x;
+function addPoints() {
+  users[loggedUser].points += 1;
   updateUI();
 }
 
 function draw() {
   const n = Math.floor(Math.random() * 100) + 1;
   users[loggedUser].points += n;
-  drawResult.innerText = "Wylosowano: " + n + " pkt";
+  drawResult.innerText = "Wylosowano: " + n;
   updateUI();
 }
 
@@ -187,7 +185,7 @@ function doRebirth() {
   updateUI();
 }
 
-showApp();
+if (loggedUser) showApp();
 </script>
 
 </body>
