@@ -5,85 +5,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Admina – PlayWatch</title>
 <style>
-body { margin:0; font-family: Arial,sans-serif; background: linear-gradient(to right,#1e3c72,#2a5298); color:#fff; text-align:center;}
-header { background:#0d1b33; padding:20px; }
-header h1 { margin:0; }
+body { font-family: Arial,sans-serif; background: linear-gradient(to right,#1e3c72,#2a5298); color:#fff; text-align:center; margin:0;}
+header { background:#0d1b33; padding:20px;}
 table { margin:20px auto; border-collapse: collapse; width:90%; background: rgba(0,0,0,0.6);}
-th, td { padding:12px; border:1px solid #fff; }
-button { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:2px; }
-.approve { background:#4CAF50; color:#000; }
-.reject { background:#f44336; color:#fff; }
-footer { margin-top:40px; padding:20px; background:#0d1b33; }
-footer a { color:#ff9800; margin:0 10px; text-decoration:none; }
+th, td { padding:12px; border:1px solid #fff;}
+button { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin:2px;}
+.approve { background:#4CAF50; color:#000;}
+.reject { background:#f44336; color:#fff;}
+footer { margin-top:40px; padding:20px; background:#0d1b33;}
+footer a { color:#ff9800; margin:0 10px; text-decoration:none;}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>👑 Panel Admina</h1>
+<h1>👑 Panel Admina</h1>
 </header>
 
 <section>
-  <h2>Wnioski o wypłatę</h2>
-  <table id="requestsTable">
-    <tr>
-      <th>#</th>
-      <th>Użytkownik</th>
-      <th>Imię Nazwisko</th>
-      <th>Email PayPal</th>
-      <th>Kwota</th>
-      <th>Data</th>
-      <th>Akcja</th>
-    </tr>
-  </table>
+<h2>Wnioski o wypłatę</h2>
+<table id="requestsTable">
+<tr>
+<th>#</th><th>Użytkownik</th><th>Imię Nazwisko</th><th>Email PayPal</th><th>Kwota</th><th>Data</th><th>Akcja</th>
+</tr>
+</table>
 </section>
 
 <footer>
-  <a href="index.html">Strona główna</a>
+<a href="index.html">Strona główna</a>
 </footer>
 
 <script>
-let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || {};
+let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
 
-// Funkcja odświeżania tabeli wniosków
 function updateTable(){
   const table = document.getElementById("requestsTable");
   table.querySelectorAll("tr:not(:first-child)").forEach(e=>e.remove());
-  
-  let i=1;
-  for(const user in withdrawals){
-    withdrawals[user].forEach((w,index)=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${i}</td>
-        <td>${user}</td>
-        <td>${w.firstName} ${w.lastName}</td>
-        <td>${w.paypalEmail}</td>
-        <td>${w.amount} zł</td>
-        <td>${w.date}</td>
-        <td>
-          <button class="approve" onclick="approve('${user}',${index})">✔</button>
-          <button class="reject" onclick="reject('${user}',${index})">✖</button>
-        </td>`;
-      table.appendChild(tr);
-      i++;
-    });
-  }
+
+  withdrawals.forEach((w,index)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${index+1}</td>
+      <td>${w.user}</td>
+      <td>${w.firstName} ${w.lastName}</td>
+      <td>${w.paypalEmail}</td>
+      <td>${w.amount} zł</td>
+      <td>${w.date}</td>
+      <td>
+        <button class="approve" onclick="approve(${index})">✔</button>
+        <button class="reject" onclick="reject(${index})">✖</button>
+      </td>`;
+    table.appendChild(tr);
+  });
 }
 
-// Zatwierdzenie wniosku
-function approve(user,index){
-  alert(`Wypłata dla ${user} zatwierdzona!`);
-  withdrawals[user].splice(index,1);
-  localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
+function approve(index){
+  alert(`Wypłata dla ${withdrawals[index].user} zatwierdzona!`);
+  withdrawals.splice(index,1);
+  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
   updateTable();
 }
 
-// Odrzucenie wniosku
-function reject(user,index){
-  alert(`Wypłata dla ${user} odrzucona!`);
-  withdrawals[user].splice(index,1);
-  localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
+function reject(index){
+  alert(`Wypłata dla ${withdrawals[index].user} odrzucona!`);
+  withdrawals.splice(index,1);
+  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
   updateTable();
 }
 
