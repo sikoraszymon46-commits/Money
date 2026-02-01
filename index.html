@@ -3,186 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ona – Mega Gry Edukacyjne</title>
+<title>PlayWatch</title>
+
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:white;}
-header{background:#0d1b33; padding:20px; text-align:center;}
-header h1{margin:0; font-size:26px;}
-header a#wplatyLink{display:block; margin-top:10px; color:#ff9800; font-weight:bold; text-decoration:none; font-size:18px;}
-header a#wplatyLink:hover{color:#ffc107;}
-.status{margin:10px 0; text-align:center;}
-main { max-width:1000px; margin:30px auto; padding:0 20px;}
-section { background:rgba(0,0,0,0.6); padding:25px; border-radius:12px; margin-bottom:30px;}
-h2,h3 { text-align:center; margin-top:0;}
-button { padding:10px 15px; border:none; border-radius:5px; background:#ff9800; color:#000; font-weight:bold; cursor:pointer; margin:5px;}
-button:hover { background:#ffc107; }
-img.character { max-width:200px; height:auto; display:block; margin:10px auto; border-radius:10px; }
-input { padding:8px; border-radius:5px; border:none; width:100%; max-width:200px; margin:10px 0; display:block; margin-left:auto; margin-right:auto; }
-footer{background:#0d1b33; text-align:center; padding:20px;}
-footer a { color:#ff9800; margin:0 5px; text-decoration:none; }
-footer a:hover { text-decoration:underline; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #1e3c72, #2a5298);
+  color: #fff;
+  text-align: center;
+}
+
+header {
+  background: #0d1b33;
+  padding: 20px;
+}
+
+section {
+  max-width: 800px;
+  margin: 20px auto;
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+button {
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #ff9800;
+}
+
+input {
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+  margin: 5px;
+}
+
+footer {
+  margin-top: 40px;
+  padding: 20px;
+  background: #0d1b33;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>Ona – Mega Gry Edukacyjne</h1>
-<div class="status">
-<p>Saldo punktów: <span id="points">0</span> | Rebirth: <span id="rebirthMultiplier">1</span>x</p>
-</div>
-
-    
+  <h1>🎮 PlayWatch</h1>
+  <div id="topInfo"></div>
 </header>
 
-<main>
-
-<!-- Koło Fortuny -->
-<section>
-<h2>🎡 Koło Fortuny</h2>
-<p style="text-align:center;">Wygrywasz punkty od 1 do 500</p>
-<div style="text-align:center;">
-<button onclick="spinWheel()">Zakręć kołem</button>
-</div>
-<p id="wheelResult" style="text-align:center;"></p>
+<!-- LOGOWANIE -->
+<section id="loginBox">
+  <h2>Logowanie / Rejestracja</h2>
+  <input id="loginUser" placeholder="Login"><br>
+  <input id="loginPass" type="password" placeholder="Hasło"><br>
+  <button onclick="login()">Zaloguj</button>
+  <button onclick="register()">Zarejestruj</button>
 </section>
 
-<!-- Losowanie Liczb -->
-<section>
-<h2>🎲 Losowanie Liczb (1-100)</h2>
-<div style="text-align:center;">
-<button onclick="rollNumber()">Losuj liczbę</button>
-</div>
-<p id="rollResult" style="text-align:center;"></p>
-</section>
+<!-- APLIKACJA -->
+<section id="app" style="display:none;">
+  <h2>Witaj, <span id="userName"></span> 👋</h2>
+  <p>💰 Punkty: <b id="points">0</b></p>
+  <p>🔥 Rebirth: <b id="rebirth">0</b></p>
 
-<!-- Zgadnij Postać -->
-<section>
-<h2>🕵️ Zgadnij Postać</h2>
-<img id="characterImg" class="character" src="">
-<input id="characterInput" type="text" placeholder="Wpisz imię postaci">
-<div style="text-align:center;">
-<button onclick="guessCharacter()">Sprawdź</button>
-</div>
-<p id="characterResult" style="text-align:center;"></p>
-</section>
+  <button onclick="logout()">Wyloguj</button>
 
-<!-- Klikacz -->
-<section>
-<h2>🖱️ Klikacz</h2>
-<p style="text-align:center;">Kliknij przycisk, aby zdobyć punkty</p>
-<div style="text-align:center;">
-<button onclick="clicker()">Kliknij!</button>
-</div>
-<p id="clickerResult" style="text-align:center;">Punkty z kliknięć: 0</p>
-</section>
+  <hr>
 
-<!-- Rebirth -->
-<section>
-<h2>🔄 Rebirth (x punkty)</h2>
-<div style="text-align:center;">
-<button onclick="doRebirth()">Kup Rebirth (koszt: <span id="rebirthCost">100000</span> pkt)</button>
-</div>
-<p id="rebirthMsg" style="text-align:center;">Twój mnożnik: <span id="rebirthMultiplier2">1</span>x</p>
-</section>
+  <!-- KLIKACZ -->
+  <h3>🖱 Klikacz</h3>
+  <button onclick="addPoints(1)">Kliknij (+1 pkt)</button>
 
-</main>
+  <hr>
+
+  <!-- LOSOWANIE -->
+  <h3>🎲 Losowanie 1–100</h3>
+  <button onclick="draw()">Losuj</button>
+  <p id="drawResult"></p>
+
+  <hr>
+
+  <!-- REBIRTH -->
+  <h3>♻ Rebirth</h3>
+  <p>Koszt: <span id="rebirthCost"></span> pkt</p>
+  <button onclick="doRebirth()">Rebirth</button>
+</section>
 
 <footer>
-<p>
-<a href="o-nas.html">O Nas</a> | 
-<a href="wyplaty.html">Wypłaty</a> | 
-<a href="regulamin.html">Regulamin</a> | 
-<a href="polityka-prywatnosci.html">Polityka prywatności</a>
-</p>
-<p>© 2026 Ona – Wszystkie prawa zastrzeżone</p>
+  <a href="o-nas.html" style="color:#fff;">O nas</a> |
+  <a href="regulamin.html" style="color:#fff;">Regulamin</a> |
+  <a href="polityka-prywatnosci.html" style="color:#fff;">Polityka prywatności</a>
 </footer>
 
 <script>
-// Punkty i Rebirth
-let points = 0; // Start punktów = 0
-let rebirthMultiplier = 1;
-let clickPoints = 0;
+let users = JSON.parse(localStorage.getItem("users")) || {};
+let loggedUser = localStorage.getItem("loggedUser");
 
-// Postacie
-const characters = [
-{name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
-{name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
-{name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
-{name:"Tony Stark", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2025/02/iron-man-tony-stark-new-ultimate-redesign.jpg"},
-{name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"},
-{name:"Mariusz", img:"https://e-teatr.pl/files/multimedias/148083/chorosi__kipap_20220829_26L.jpg"},
-{name:"Angelika", img:"https://d-art.ppstatic.pl/kadry/k/r/1/1a/18/61b896179ec53_o_large.jpg"},
-{name:"Marzena", img:"https://i.iplsc.com/magdalena-waligorska-lisiecka/0007TPC6FH44B71M-C122-F4.jpg"}
-];
-
-let currentCharacter = 0;
-let rebirthCost = 100000;
-
-function updateUI(){
-    document.getElementById("points").innerText = points;
-    document.getElementById("rebirthMultiplier").innerText = rebirthMultiplier;
-    document.getElementById("rebirthCost").innerText = rebirthCost;
-    document.getElementById("clickerResult").innerText = "Punkty z kliknięć: " + clickPoints;
+function saveUsers() {
+  localStorage.setItem("users", JSON.stringify(users));
 }
 
-// Koło Fortuny
-function spinWheel(){
-    let won = Math.floor(Math.random()*500+1)*rebirthMultiplier;
-    points += won;
-    document.getElementById("wheelResult").innerText = "🎉 Wygrałeś "+won+" punktów!";
-    updateUI();
+function register() {
+  const u = loginUser.value;
+  const p = loginPass.value;
+
+  if (!u || !p) return alert("Uzupełnij dane");
+  if (users[u]) return alert("Użytkownik już istnieje");
+
+  users[u] = {
+    password: p,
+    points: 0,
+    rebirth: 0,
+    rebirthCost: 100000
+  };
+
+  saveUsers();
+  alert("Konto utworzone, zaloguj się");
 }
 
-// Losowanie Liczb
-function rollNumber(){
-    let num = Math.floor(Math.random()*100+1);
-    points += num*rebirthMultiplier;
-    document.getElementById("rollResult").innerText = "Wylosowana liczba: "+num+" (dodano punkty)";
-    updateUI();
+function login() {
+  const u = loginUser.value;
+  const p = loginPass.value;
+
+  if (!users[u] || users[u].password !== p)
+    return alert("Złe dane");
+
+  localStorage.setItem("loggedUser", u);
+  showApp();
 }
 
-// Zgadnij Postać
-function showCharacter(){
-    currentCharacter = Math.floor(Math.random()*characters.length);
-    document.getElementById("characterImg").src = characters[currentCharacter].img;
-}
-showCharacter();
-
-function guessCharacter(){
-    let answer = document.getElementById("characterInput").value.trim().toLowerCase();
-    let correct = characters[currentCharacter].name.toLowerCase();
-    if(answer === correct){
-        let won = 1000*rebirthMultiplier;
-        points += won;
-        document.getElementById("characterResult").innerText = "✔️ Poprawnie! Zdobywasz "+won+" punktów!";
-        showCharacter();
-        document.getElementById("characterInput").value = "";
-    } else {
-        document.getElementById("characterResult").innerText = "❌ Spróbuj jeszcze raz!";
-    }
-    updateUI();
+function logout() {
+  localStorage.removeItem("loggedUser");
+  location.reload();
 }
 
-// Klikacz
-function clicker(){
-    clickPoints += 1*rebirthMultiplier;
-    points += 1*rebirthMultiplier;
-    updateUI();
+function showApp() {
+  loggedUser = localStorage.getItem("loggedUser");
+  if (!loggedUser) return;
+
+  loginBox.style.display = "none";
+  app.style.display = "block";
+
+  userName.innerText = loggedUser;
+  updateUI();
 }
 
-// Rebirth
-function doRebirth(){
-    if(points < rebirthCost){
-        alert("Nie masz wystarczająco punktów na Rebirth!");
-        return;
-    }
-    points -= rebirthCost;
-    rebirthMultiplier++;
-    rebirthCost *= 10;
-    updateUI();
+function updateUI() {
+  const u = users[loggedUser];
+  points.innerText = u.points;
+  rebirth.innerText = u.rebirth;
+  rebirthCost.innerText = u.rebirthCost;
+  saveUsers();
 }
 
-updateUI();
+function addPoints(x) {
+  users[loggedUser].points += x;
+  updateUI();
+}
+
+function draw() {
+  const n = Math.floor(Math.random() * 100) + 1;
+  users[loggedUser].points += n;
+  drawResult.innerText = "Wylosowano: " + n + " pkt";
+  updateUI();
+}
+
+function doRebirth() {
+  const u = users[loggedUser];
+  if (u.points < u.rebirthCost)
+    return alert("Za mało punktów");
+
+  u.points = 0;
+  u.rebirth++;
+  u.rebirthCost *= 10;
+  updateUI();
+}
+
+showApp();
 </script>
 
 </body>
