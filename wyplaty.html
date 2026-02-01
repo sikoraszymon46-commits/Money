@@ -9,7 +9,7 @@ body { margin:0; font-family: Arial,sans-serif; background: linear-gradient(to r
 header { background:#0d1b33; padding:20px; }
 header h1 { margin:0; display:inline-block; }
 section { max-width:800px; margin:20px auto; background: rgba(0,0,0,0.6); padding:20px; border-radius:12px; }
-input, button { padding:10px; margin:6px; border-radius:6px; border:none; }
+input, button { padding:10px; margin:6px; border-radius:6px; border:none; width:200px; }
 button { background:#ff9800; cursor:pointer; font-weight:bold; }
 ul { text-align:left; list-style:none; padding-left:0; }
 footer { margin-top:40px; padding:20px; background:#0d1b33; }
@@ -24,7 +24,10 @@ footer a { color:#ff9800; margin:0 10px; text-decoration:none; }
 
 <section id="withdrawSection">
   <h2>Złóż wniosek o wypłatę</h2>
-  <input id="amount" type="number" placeholder="Kwota (min 30 zł)">
+  <input id="firstName" type="text" placeholder="Imię"><br>
+  <input id="lastName" type="text" placeholder="Nazwisko"><br>
+  <input id="paypalEmail" type="email" placeholder="Email PayPal"><br>
+  <input id="amount" type="number" placeholder="Kwota (min 30 zł)"><br>
   <button onclick="submitWithdraw()">Wyślij wniosek</button>
   <p id="message"></p>
 
@@ -46,35 +49,38 @@ if(!loggedUser){ alert("Musisz być zalogowany!"); location.href="index.html"; }
 
 // Pobranie całej struktury wypłat z localStorage
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || {};
-
-// Jeśli użytkownik nie ma jeszcze swojej tablicy, stwórz pustą
 if(!withdrawals[loggedUser]) withdrawals[loggedUser] = [];
 
-// Funkcja aktualizacji listy historii wypłat
+// Funkcja aktualizacji historii
 function updateHistory(){
   const list = document.getElementById("historyList");
   list.innerHTML = "";
   withdrawals[loggedUser].forEach((w,i)=>{
     const li = document.createElement("li");
-    li.innerText = `${i+1}. ${w.amount} zł – ${w.date}`;
+    li.innerText = `${i+1}. ${w.firstName} ${w.lastName} | ${w.paypalEmail} | ${w.amount} zł – ${w.date}`;
     list.appendChild(li);
   });
 }
 
 // Funkcja wysyłania wniosku
 function submitWithdraw(){
+  const f = firstName.value.trim();
+  const l = lastName.value.trim();
+  const p = paypalEmail.value.trim();
   const val = parseFloat(amount.value);
+
+  if(!f || !l || !p) { message.innerText="Uzupełnij wszystkie pola!"; return; }
   if(isNaN(val) || val < 30) { message.innerText="Minimalna kwota to 30 zł!"; return; }
 
   const date = new Date().toLocaleString();
-  withdrawals[loggedUser].push({amount: val, date});
-  localStorage.setItem("withdrawals", JSON.stringify(withdrawals)); // zapis do localStorage
+  withdrawals[loggedUser].push({firstName:f,lastName:l,paypalEmail:p,amount:val,date});
+  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
   message.innerText = "Wniosek wysłany!";
-  amount.value = "";
+  firstName.value = lastName.value = paypalEmail.value = amount.value = "";
   updateHistory();
 }
 
-// Wyświetl historię po załadowaniu strony
+// Wyświetl historię przy ładowaniu strony
 updateHistory();
 </script>
 </body>
