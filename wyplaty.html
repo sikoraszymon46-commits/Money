@@ -47,7 +47,7 @@ footer a { color:#ff9800; margin:0 10px; text-decoration:none; }
 let loggedUser = localStorage.getItem("loggedUser");
 if(!loggedUser){ alert("Musisz być zalogowany!"); location.href="index.html"; }
 
-// Pobranie całej struktury wypłat z localStorage
+// Wczytanie lub utworzenie obiektu wszystkich wypłat
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || {};
 if(!withdrawals[loggedUser]) withdrawals[loggedUser] = [];
 
@@ -73,8 +73,13 @@ function submitWithdraw(){
   if(isNaN(val) || val < 30) { message.innerText="Minimalna kwota to 30 zł!"; return; }
 
   const date = new Date().toLocaleString();
-  withdrawals[loggedUser].push({firstName:f,lastName:l,paypalEmail:p,amount:val,date});
+
+  // Dodanie wniosku do tablicy zalogowanego użytkownika
+  withdrawals[loggedUser].push({firstName:f,lastName:l,paypalEmail:p,amount:val,date:date});
+
+  // Zapisz wszystko do localStorage
   localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
+
   message.innerText = "Wniosek wysłany!";
   firstName.value = lastName.value = paypalEmail.value = amount.value = "";
   updateHistory();
