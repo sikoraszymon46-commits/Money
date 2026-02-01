@@ -4,80 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PlayWatch</title>
-
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #1e3c72, #2a5298);
-  color: #fff;
-  text-align: center;
-}
-
-header {
-  background: #0d1b33;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header h1 {
-  margin: 0;
-}
-
-section {
-  max-width: 900px;
-  margin: 20px auto;
-  background: rgba(0,0,0,0.6);
-  padding: 20px;
-  border-radius: 12px;
-}
-
-input {
-  padding: 10px;
-  margin: 6px;
-  width: 80%;
-  max-width: 300px;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  padding: 10px 18px;
-  margin: 6px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  background: #ff9800;
-}
-
-img.character {
-  width: 150px;
-  height: auto;
-  border-radius: 10px;
-  margin: 10px;
-}
-
-footer {
-  margin-top: 40px;
-  padding: 20px;
-  background: #0d1b33;
-}
-
-footer a {
-  color: #ff9800;
-  margin: 0 10px;
-  text-decoration: none;
-}
-
-#withdrawBtn {
-  background: #ff9800;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
+body { margin:0; font-family: Arial,sans-serif; background:linear-gradient(to right,#1e3c72,#2a5298); color:#fff; text-align:center;}
+header { background:#0d1b33; padding:20px; display:flex; justify-content:space-between; align-items:center;}
+header h1 { margin:0;}
+section { max-width:900px; margin:20px auto; background: rgba(0,0,0,0.6); padding:20px; border-radius:12px;}
+input,button { padding:10px; margin:6px; border-radius:6px; border:none;}
+button { background:#ff9800; cursor:pointer; font-weight:bold;}
+img.character { width:150px; height:auto; border-radius:10px; margin:10px;}
+footer { margin-top:40px; padding:20px; background:#0d1b33;}
+footer a { color:#ff9800; margin:0 10px; text-decoration:none;}
+#withdrawBtn { background:#ff9800; padding:8px 12px; border-radius:6px; cursor:pointer;}
 </style>
 </head>
 <body>
@@ -102,24 +39,20 @@ footer a {
   <button onclick="logout()">Wyloguj</button>
 
   <hr>
-
   <h3>🖱 Klikacz</h3>
   <button onclick="addPoints()">Kliknij (+1 pkt)</button>
 
   <hr>
-
   <h3>🎲 Losowanie 1–100</h3>
   <button onclick="draw()">Losuj</button>
   <p id="drawResult"></p>
 
   <hr>
-
   <h3>🎡 Koło Fortuny (1–500 pkt)</h3>
   <button onclick="spinWheel()">Zakręć!</button>
   <p id="wheelResult"></p>
 
   <hr>
-
   <h3>🎬 Zgadnij postać</h3>
   <div id="characterBox"></div>
   <input id="characterInput" placeholder="Wpisz imię postaci">
@@ -127,7 +60,6 @@ footer a {
   <p id="characterResult"></p>
 
   <hr>
-
   <h3>♻ Rebirth</h3>
   <p>Koszt: <span id="rebirthCost"></span> pkt</p>
   <button onclick="doRebirth()">Rebirth</button>
@@ -140,9 +72,11 @@ footer a {
 </footer>
 
 <script>
+// USERS
 let users = JSON.parse(localStorage.getItem("users")) || {};
 let loggedUser = localStorage.getItem("loggedUser");
 
+// POSTACIE
 const characters = [
   {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
   {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
@@ -153,67 +87,21 @@ const characters = [
   {name:"Angelika", img:"https://d-art.ppstatic.pl/kadry/k/r/1/1a/18/61b896179ec53_o_large.jpg"},
   {name:"Marzena", img:"https://i.iplsc.com/magdalena-waligorska-lisiecka/0007TPC6FH44B71M-C122-F4.jpg"}
 ];
-
 let currentCharacter;
 
+// FUNKCJE
 function saveUsers(){localStorage.setItem("users",JSON.stringify(users));}
-function register(){
-  const e=email.value.trim(),p=password.value.trim();
-  if(!e||!p)return alert("Uzupełnij email i hasło");
-  if(users[e])return alert("Email już zarejestrowany");
-  users[e]={password:p,points:0,rebirth:0,rebirthCost:100000};
-  saveUsers();alert("Konto utworzone — możesz się zalogować");
-}
-function login(){
-  const e=email.value.trim(),p=password.value.trim();
-  if(!users[e]||users[e].password!==p)return alert("Zły email lub hasło");
-  localStorage.setItem("loggedUser",e);
-  showApp();
-}
-function logout(){
-  localStorage.removeItem("loggedUser");
-  app.style.display="none";
-  loginBox.style.display="block";
-}
-function showApp(){
-  loggedUser=localStorage.getItem("loggedUser");
-  if(!loggedUser)return;
-  loginBox.style.display="none";
-  app.style.display="block";
-  userEmail.innerText=loggedUser;
-  updateUI();
-  nextCharacter();
-}
-function updateUI(){
-  const u=users[loggedUser];
-  points.innerText=u.points;
-  rebirth.innerText=u.rebirth;
-  rebirthCost.innerText=u.rebirthCost;
-  saveUsers();
-}
+function register(){const e=email.value.trim(),p=password.value.trim();if(!e||!p)return alert("Uzupełnij email i hasło");if(users[e])return alert("Email już zarejestrowany");users[e]={password:p,points:0,rebirth:0,rebirthCost:100000};saveUsers();alert("Konto utworzone — możesz się zalogować");}
+function login(){const e=email.value.trim(),p=password.value.trim();if(!users[e]||users[e].password!==p)return alert("Zły email lub hasło");localStorage.setItem("loggedUser",e);showApp();}
+function logout(){localStorage.removeItem("loggedUser");app.style.display="none";loginBox.style.display="block";}
+function showApp(){loggedUser=localStorage.getItem("loggedUser");if(!loggedUser)return;loginBox.style.display="none";app.style.display="block";userEmail.innerText=loggedUser;updateUI();nextCharacter();}
+function updateUI(){const u=users[loggedUser];points.innerText=u.points;rebirth.innerText=u.rebirth;rebirthCost.innerText=u.rebirthCost;saveUsers();}
 function addPoints(){users[loggedUser].points+=1;updateUI();}
 function draw(){const n=Math.floor(Math.random()*100)+1;users[loggedUser].points+=n;drawResult.innerText="Wylosowano: "+n;updateUI();}
 function spinWheel(){const n=Math.floor(Math.random()*500)+1;users[loggedUser].points+=n;wheelResult.innerText="Koło Fortuny wypadło: "+n+" pkt";updateUI();}
-function doRebirth(){
-  const u=users[loggedUser];
-  if(u.points<u.rebirthCost)return alert("Za mało punktów");
-  u.points=0;u.rebirth++;u.rebirthCost*=10;updateUI();
-}
-function nextCharacter(){
-  currentCharacter=characters[Math.floor(Math.random()*characters.length)];
-  characterBox.innerHTML=`<img class="character" src="${currentCharacter.img}" alt="Postać">`;
-  characterInput.value="";characterResult.innerText="";
-}
-function checkCharacter(){
-  const guess=characterInput.value.trim().toLowerCase();
-  if(guess===currentCharacter.name.toLowerCase()){
-    users[loggedUser].points+=50;
-    characterResult.innerText="Brawo! +50 pkt";
-    updateUI();
-    setTimeout(nextCharacter,1000);
-  }else characterResult.innerText="Spróbuj jeszcze raz!";
-}
-
+function doRebirth(){const u=users[loggedUser];if(u.points<u.rebirthCost)return alert("Za mało punktów");u.points=0;u.rebirth++;u.rebirthCost*=10;updateUI();}
+function nextCharacter(){currentCharacter=characters[Math.floor(Math.random()*characters.length)];characterBox.innerHTML=`<img class="character" src="${currentCharacter.img}" alt="Postać">`;characterInput.value="";characterResult.innerText="";}
+function checkCharacter(){const guess=characterInput.value.trim().toLowerCase();if(guess===currentCharacter.name.toLowerCase()){users[loggedUser].points+=50;characterResult.innerText="Brawo! +50 pkt";updateUI();setTimeout(nextCharacter,1000);}else characterResult.innerText="Spróbuj jeszcze raz!";}
 if(loggedUser) showApp();
 </script>
 </body>
