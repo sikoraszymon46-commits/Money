@@ -17,6 +17,13 @@ body {
 header {
   background: #0d1b33;
   padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
 }
 
 section {
@@ -58,16 +65,28 @@ footer {
   padding: 20px;
   background: #0d1b33;
 }
+
+footer a {
+  color: #ff9800;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+#withdrawBtn {
+  background: #ff9800;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 </style>
 </head>
-
 <body>
 
 <header>
   <h1>🎮 PlayWatch</h1>
+  <button id="withdrawBtn" onclick="location.href='wyplaty.html'">💵 Wypłaty</button>
 </header>
 
-<!-- LOGOWANIE -->
 <section id="loginBox">
   <h2>Logowanie / Rejestracja</h2>
   <input id="email" type="email" placeholder="Email"><br>
@@ -76,38 +95,31 @@ footer {
   <button onclick="register()">Zarejestruj</button>
 </section>
 
-<!-- APLIKACJA -->
 <section id="app" style="display:none;">
   <h2>Witaj, <span id="userEmail"></span> 👋</h2>
-
   <p>💰 Punkty: <b id="points">0</b></p>
   <p>🔥 Rebirth: <b id="rebirth">0</b></p>
-
   <button onclick="logout()">Wyloguj</button>
 
   <hr>
 
-  <!-- Klikacz -->
   <h3>🖱 Klikacz</h3>
   <button onclick="addPoints()">Kliknij (+1 pkt)</button>
 
   <hr>
 
-  <!-- Losowanie -->
   <h3>🎲 Losowanie 1–100</h3>
   <button onclick="draw()">Losuj</button>
   <p id="drawResult"></p>
 
   <hr>
 
-  <!-- Koło Fortuny -->
   <h3>🎡 Koło Fortuny (1–500 pkt)</h3>
   <button onclick="spinWheel()">Zakręć!</button>
   <p id="wheelResult"></p>
 
   <hr>
 
-  <!-- Zgadywanie postaci -->
   <h3>🎬 Zgadnij postać</h3>
   <div id="characterBox"></div>
   <input id="characterInput" placeholder="Wpisz imię postaci">
@@ -116,23 +128,21 @@ footer {
 
   <hr>
 
-  <!-- Rebirth -->
   <h3>♻ Rebirth</h3>
   <p>Koszt: <span id="rebirthCost"></span> pkt</p>
   <button onclick="doRebirth()">Rebirth</button>
-
 </section>
 
 <footer>
-  O nas | Regulamin | Polityka prywatności
+  <a href="o-nas.html">O nas</a> |
+  <a href="regulamin.html">Regulamin</a> |
+  <a href="polityka-prywatnosci.html">Polityka prywatności</a>
 </footer>
 
 <script>
-// === USERS ===
 let users = JSON.parse(localStorage.getItem("users")) || {};
 let loggedUser = localStorage.getItem("loggedUser");
 
-// === POSTACIE DO ZGADYWANIA ===
 const characters = [
   {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
   {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
@@ -146,117 +156,65 @@ const characters = [
 
 let currentCharacter;
 
-function saveUsers() {
-  localStorage.setItem("users", JSON.stringify(users));
+function saveUsers(){localStorage.setItem("users",JSON.stringify(users));}
+function register(){
+  const e=email.value.trim(),p=password.value.trim();
+  if(!e||!p)return alert("Uzupełnij email i hasło");
+  if(users[e])return alert("Email już zarejestrowany");
+  users[e]={password:p,points:0,rebirth:0,rebirthCost:100000};
+  saveUsers();alert("Konto utworzone — możesz się zalogować");
 }
-
-// === REJESTRACJA ===
-function register() {
-  const e = email.value.trim();
-  const p = password.value.trim();
-  if(!e || !p) return alert("Uzupełnij email i hasło");
-  if(users[e]) return alert("Email już zarejestrowany");
-
-  users[e] = {
-    password: p,
-    points: 0,
-    rebirth: 0,
-    rebirthCost: 100000
-  };
-  saveUsers();
-  alert("Konto utworzone — możesz się zalogować");
-}
-
-// === LOGOWANIE ===
-function login() {
-  const e = email.value.trim();
-  const p = password.value.trim();
-  if(!users[e] || users[e].password !== p) return alert("Zły email lub hasło");
-  localStorage.setItem("loggedUser", e);
+function login(){
+  const e=email.value.trim(),p=password.value.trim();
+  if(!users[e]||users[e].password!==p)return alert("Zły email lub hasło");
+  localStorage.setItem("loggedUser",e);
   showApp();
 }
-
-// === WYLOGUJ ===
-function logout() {
+function logout(){
   localStorage.removeItem("loggedUser");
-  app.style.display = "none";
-  loginBox.style.display = "block";
+  app.style.display="none";
+  loginBox.style.display="block";
 }
-
-// === SHOW APP ===
-function showApp() {
-  loggedUser = localStorage.getItem("loggedUser");
-  if(!loggedUser) return;
-  loginBox.style.display = "none";
-  app.style.display = "block";
-  userEmail.innerText = loggedUser;
+function showApp(){
+  loggedUser=localStorage.getItem("loggedUser");
+  if(!loggedUser)return;
+  loginBox.style.display="none";
+  app.style.display="block";
+  userEmail.innerText=loggedUser;
   updateUI();
   nextCharacter();
 }
-
-// === UPDATE UI ===
-function updateUI() {
-  const u = users[loggedUser];
-  points.innerText = u.points;
-  rebirth.innerText = u.rebirth;
-  rebirthCost.innerText = u.rebirthCost;
+function updateUI(){
+  const u=users[loggedUser];
+  points.innerText=u.points;
+  rebirth.innerText=u.rebirth;
+  rebirthCost.innerText=u.rebirthCost;
   saveUsers();
 }
-
-// === KLIKACZ ===
-function addPoints() {
-  users[loggedUser].points += 1;
-  updateUI();
+function addPoints(){users[loggedUser].points+=1;updateUI();}
+function draw(){const n=Math.floor(Math.random()*100)+1;users[loggedUser].points+=n;drawResult.innerText="Wylosowano: "+n;updateUI();}
+function spinWheel(){const n=Math.floor(Math.random()*500)+1;users[loggedUser].points+=n;wheelResult.innerText="Koło Fortuny wypadło: "+n+" pkt";updateUI();}
+function doRebirth(){
+  const u=users[loggedUser];
+  if(u.points<u.rebirthCost)return alert("Za mało punktów");
+  u.points=0;u.rebirth++;u.rebirthCost*=10;updateUI();
 }
-
-// === LOSOWANIE ===
-function draw() {
-  const n = Math.floor(Math.random()*100)+1;
-  users[loggedUser].points += n;
-  drawResult.innerText = "Wylosowano: "+n;
-  updateUI();
+function nextCharacter(){
+  currentCharacter=characters[Math.floor(Math.random()*characters.length)];
+  characterBox.innerHTML=`<img class="character" src="${currentCharacter.img}" alt="Postać">`;
+  characterInput.value="";characterResult.innerText="";
 }
-
-// === KOŁO FORTUNY ===
-function spinWheel() {
-  const n = Math.floor(Math.random()*500)+1;
-  users[loggedUser].points += n;
-  wheelResult.innerText = "Koło Fortuny wypadło: "+n+" pkt";
-  updateUI();
-}
-
-// === REBIRTH ===
-function doRebirth() {
-  const u = users[loggedUser];
-  if(u.points < u.rebirthCost) return alert("Za mało punktów");
-  u.points = 0;
-  u.rebirth++;
-  u.rebirthCost *= 10;
-  updateUI();
-}
-
-// === ZGADYWANIE POSTACI ===
-function nextCharacter() {
-  currentCharacter = characters[Math.floor(Math.random()*characters.length)];
-  characterBox.innerHTML = `<img class="character" src="${currentCharacter.img}" alt="Postać">`;
-  characterInput.value = "";
-  characterResult.innerText = "";
-}
-
-function checkCharacter() {
-  const guess = characterInput.value.trim().toLowerCase();
-  if(guess === currentCharacter.name.toLowerCase()) {
-    users[loggedUser].points += 50;
-    characterResult.innerText = "Brawo! +50 pkt";
+function checkCharacter(){
+  const guess=characterInput.value.trim().toLowerCase();
+  if(guess===currentCharacter.name.toLowerCase()){
+    users[loggedUser].points+=50;
+    characterResult.innerText="Brawo! +50 pkt";
     updateUI();
-    setTimeout(nextCharacter, 1000);
-  } else {
-    characterResult.innerText = "Spróbuj jeszcze raz!";
-  }
+    setTimeout(nextCharacter,1000);
+  }else characterResult.innerText="Spróbuj jeszcze raz!";
 }
 
 if(loggedUser) showApp();
 </script>
-
 </body>
 </html>
