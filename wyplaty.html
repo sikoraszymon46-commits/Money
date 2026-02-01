@@ -6,54 +6,49 @@
 <title>Wypłaty – PlayWatch</title>
 <style>
 body { font-family: Arial,sans-serif; background: linear-gradient(to right,#1e3c72,#2a5298); color:#fff; text-align:center; margin:0;}
-header { background:#0d1b33; padding:20px;}
-header h1 { margin:0;}
+header, footer { background:#0d1b33; padding:20px;}
 section { max-width:800px; margin:20px auto; background: rgba(0,0,0,0.6); padding:20px; border-radius:12px;}
 input, button { padding:10px; margin:6px; border-radius:6px; border:none; width:200px;}
 button { background:#ff9800; cursor:pointer; font-weight:bold;}
 ul { text-align:left; list-style:none; padding-left:0;}
-footer { margin-top:40px; padding:20px; background:#0d1b33;}
-footer a { color:#ff9800; margin:0 10px; text-decoration:none;}
+a { color:#ff9800; margin:0 10px; text-decoration:none;}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>💵 Wypłaty</h1>
+<h1>💵 Wypłaty</h1>
 </header>
 
 <section>
-  <h2>Złóż wniosek</h2>
-  <input id="firstName" placeholder="Imię"><br>
-  <input id="lastName" placeholder="Nazwisko"><br>
-  <input id="paypalEmail" placeholder="Email PayPal"><br>
-  <input id="amount" type="number" placeholder="Kwota (min 30 zł)"><br>
-  <button onclick="submitWithdraw()">Wyślij wniosek</button>
-  <p id="message"></p>
+<h2>Złóż wniosek</h2>
+<input id="firstName" placeholder="Imię"><br>
+<input id="lastName" placeholder="Nazwisko"><br>
+<input id="paypalEmail" placeholder="Email PayPal"><br>
+<input id="amount" type="number" placeholder="Kwota (min 30 zł)"><br>
+<button onclick="submitWithdraw()">Wyślij wniosek</button>
+<p id="message"></p>
 
-  <h3>Historia wniosków</h3>
-  <ul id="historyList"></ul>
+<h3>Historia wniosków</h3>
+<ul id="historyList"></ul>
 </section>
 
 <footer>
-  <a href="index.html">Strona główna</a> |
-  <a href="o-nas.html">O nas</a> |
-  <a href="regulamin.html">Regulamin</a> |
-  <a href="polityka-prywatnosci.html">Polityka prywatności</a>
+<a href="index.html">Strona główna</a> |
+<a href="o-nas.html">O nas</a> |
+<a href="regulamin.html">Regulamin</a> |
+<a href="polityka-prywatnosci.html">Polityka prywatności</a>
 </footer>
 
 <script>
-// --- symulacja zalogowanego użytkownika ---
-let loggedUser = localStorage.getItem("loggedUser") || "TestUser";
-localStorage.setItem("loggedUser", loggedUser);
+let loggedUser = localStorage.getItem("loggedUser");
+if(!loggedUser){ loggedUser="TestUser"; localStorage.setItem("loggedUser",loggedUser); }
 
-// Pobranie wszystkich wniosków z localStorage lub utworzenie pustej tablicy
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
 
-// Funkcja aktualizacji historii użytkownika
 function updateHistory(){
   const list = document.getElementById("historyList");
-  list.innerHTML = "";
+  list.innerHTML="";
   withdrawals.filter(w=>w.user===loggedUser).forEach((w,i)=>{
     const li = document.createElement("li");
     li.innerText = `${i+1}. ${w.firstName} ${w.lastName} | ${w.paypalEmail} | ${w.amount} zł – ${w.date}`;
@@ -61,23 +56,20 @@ function updateHistory(){
   });
 }
 
-// Funkcja wysyłania wniosku
 function submitWithdraw(){
-  const f = document.getElementById("firstName").value.trim();
-  const l = document.getElementById("lastName").value.trim();
-  const p = document.getElementById("paypalEmail").value.trim();
-  const val = parseFloat(document.getElementById("amount").value);
-
+  const f=document.getElementById("firstName").value.trim();
+  const l=document.getElementById("lastName").value.trim();
+  const p=document.getElementById("paypalEmail").value.trim();
+  const val=parseFloat(document.getElementById("amount").value);
   if(!f || !l || !p){ document.getElementById("message").innerText="Uzupełnij wszystkie pola!"; return; }
   if(isNaN(val) || val<30){ document.getElementById("message").innerText="Minimalna kwota to 30 zł!"; return; }
 
-  const date = new Date().toLocaleString();
+  const date=new Date().toLocaleString();
+  withdrawals.push({user:loggedUser, firstName:f,lastName:l,paypalEmail:p,amount:val,date:date});
+  localStorage.setItem("withdrawals",JSON.stringify(withdrawals));
 
-  withdrawals.push({user:loggedUser, firstName:f, lastName:l, paypalEmail:p, amount:val, date:date});
-  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
-
-  document.getElementById("message").innerText = "Wniosek wysłany!";
-  document.getElementById("firstName").value = document.getElementById("lastName").value = document.getElementById("paypalEmail").value = document.getElementById("amount").value = "";
+  document.getElementById("message").innerText="Wniosek wysłany!";
+  document.getElementById("firstName").value=document.getElementById("lastName").value=document.getElementById("paypalEmail").value=document.getElementById("amount").value="";
   updateHistory();
 }
 
