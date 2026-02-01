@@ -43,11 +43,14 @@ footer a { color:#ff9800; margin:0 10px; text-decoration:none; }
 </footer>
 
 <script>
-// Pobranie zalogowanego użytkownika
+// --- symulacja zalogowanego użytkownika (możesz zastąpić logowaniem) ---
 let loggedUser = localStorage.getItem("loggedUser");
-if(!loggedUser){ alert("Musisz być zalogowany!"); location.href="index.html"; }
+if(!loggedUser){ 
+  loggedUser = "TestUser"; 
+  localStorage.setItem("loggedUser", loggedUser);
+}
 
-// Wczytanie lub utworzenie obiektu wszystkich wypłat
+// Pobranie lub utworzenie obiektu wszystkich wypłat
 let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || {};
 if(!withdrawals[loggedUser]) withdrawals[loggedUser] = [];
 
@@ -74,10 +77,8 @@ function submitWithdraw(){
 
   const date = new Date().toLocaleString();
 
-  // Dodanie wniosku do tablicy zalogowanego użytkownika
   withdrawals[loggedUser].push({firstName:f,lastName:l,paypalEmail:p,amount:val,date:date});
 
-  // Zapisz wszystko do localStorage
   localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
 
   message.innerText = "Wniosek wysłany!";
@@ -85,7 +86,6 @@ function submitWithdraw(){
   updateHistory();
 }
 
-// Wyświetl historię przy ładowaniu strony
 updateHistory();
 </script>
 </body>
