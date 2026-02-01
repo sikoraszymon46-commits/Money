@@ -20,7 +20,7 @@ header {
 }
 
 section {
-  max-width: 800px;
+  max-width: 900px;
   margin: 20px auto;
   background: rgba(0,0,0,0.6);
   padding: 20px;
@@ -44,6 +44,13 @@ button {
   font-weight: bold;
   cursor: pointer;
   background: #ff9800;
+}
+
+img.character {
+  width: 150px;
+  height: auto;
+  border-radius: 10px;
+  margin: 10px;
 }
 
 footer {
@@ -71,7 +78,7 @@ footer {
 
 <!-- APLIKACJA -->
 <section id="app" style="display:none;">
-  <h2>Witaj, <span id="userEmail"></span></h2>
+  <h2>Witaj, <span id="userEmail"></span> 👋</h2>
 
   <p>💰 Punkty: <b id="points">0</b></p>
   <p>🔥 Rebirth: <b id="rebirth">0</b></p>
@@ -80,20 +87,40 @@ footer {
 
   <hr>
 
+  <!-- Klikacz -->
   <h3>🖱 Klikacz</h3>
   <button onclick="addPoints()">Kliknij (+1 pkt)</button>
 
   <hr>
 
+  <!-- Losowanie -->
   <h3>🎲 Losowanie 1–100</h3>
   <button onclick="draw()">Losuj</button>
   <p id="drawResult"></p>
 
   <hr>
 
+  <!-- Koło Fortuny -->
+  <h3>🎡 Koło Fortuny (1–500 pkt)</h3>
+  <button onclick="spinWheel()">Zakręć!</button>
+  <p id="wheelResult"></p>
+
+  <hr>
+
+  <!-- Zgadywanie postaci -->
+  <h3>🎬 Zgadnij postać</h3>
+  <div id="characterBox"></div>
+  <input id="characterInput" placeholder="Wpisz imię postaci">
+  <button onclick="checkCharacter()">Sprawdź</button>
+  <p id="characterResult"></p>
+
+  <hr>
+
+  <!-- Rebirth -->
   <h3>♻ Rebirth</h3>
   <p>Koszt: <span id="rebirthCost"></span> pkt</p>
   <button onclick="doRebirth()">Rebirth</button>
+
 </section>
 
 <footer>
@@ -101,19 +128,34 @@ footer {
 </footer>
 
 <script>
+// === USERS ===
 let users = JSON.parse(localStorage.getItem("users")) || {};
 let loggedUser = localStorage.getItem("loggedUser");
+
+// === POSTACIE DO ZGADYWANIA ===
+const characters = [
+  {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
+  {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
+  {name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
+  {name:"Tony Stark", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2025/02/iron-man-tony-stark-new-ultimate-redesign.jpg"},
+  {name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"},
+  {name:"Mariusz", img:"https://e-teatr.pl/files/multimedias/148083/chorosi__kipap_20220829_26L.jpg"},
+  {name:"Angelika", img:"https://d-art.ppstatic.pl/kadry/k/r/1/1a/18/61b896179ec53_o_large.jpg"},
+  {name:"Marzena", img:"https://i.iplsc.com/magdalena-waligorska-lisiecka/0007TPC6FH44B71M-C122-F4.jpg"}
+];
+
+let currentCharacter;
 
 function saveUsers() {
   localStorage.setItem("users", JSON.stringify(users));
 }
 
+// === REJESTRACJA ===
 function register() {
   const e = email.value.trim();
   const p = password.value.trim();
-
-  if (!e || !p) return alert("Uzupełnij email i hasło");
-  if (users[e]) return alert("Email już zarejestrowany");
+  if(!e || !p) return alert("Uzupełnij email i hasło");
+  if(users[e]) return alert("Email już zarejestrowany");
 
   users[e] = {
     password: p,
@@ -121,39 +163,38 @@ function register() {
     rebirth: 0,
     rebirthCost: 100000
   };
-
   saveUsers();
   alert("Konto utworzone — możesz się zalogować");
 }
 
+// === LOGOWANIE ===
 function login() {
   const e = email.value.trim();
   const p = password.value.trim();
-
-  if (!users[e] || users[e].password !== p)
-    return alert("Zły email lub hasło");
-
+  if(!users[e] || users[e].password !== p) return alert("Zły email lub hasło");
   localStorage.setItem("loggedUser", e);
   showApp();
 }
 
+// === WYLOGUJ ===
 function logout() {
   localStorage.removeItem("loggedUser");
   app.style.display = "none";
   loginBox.style.display = "block";
 }
 
+// === SHOW APP ===
 function showApp() {
   loggedUser = localStorage.getItem("loggedUser");
-  if (!loggedUser) return;
-
+  if(!loggedUser) return;
   loginBox.style.display = "none";
   app.style.display = "block";
-
   userEmail.innerText = loggedUser;
   updateUI();
+  nextCharacter();
 }
 
+// === UPDATE UI ===
 function updateUI() {
   const u = users[loggedUser];
   points.innerText = u.points;
@@ -162,30 +203,59 @@ function updateUI() {
   saveUsers();
 }
 
+// === KLIKACZ ===
 function addPoints() {
   users[loggedUser].points += 1;
   updateUI();
 }
 
+// === LOSOWANIE ===
 function draw() {
-  const n = Math.floor(Math.random() * 100) + 1;
+  const n = Math.floor(Math.random()*100)+1;
   users[loggedUser].points += n;
-  drawResult.innerText = "Wylosowano: " + n;
+  drawResult.innerText = "Wylosowano: "+n;
   updateUI();
 }
 
+// === KOŁO FORTUNY ===
+function spinWheel() {
+  const n = Math.floor(Math.random()*500)+1;
+  users[loggedUser].points += n;
+  wheelResult.innerText = "Koło Fortuny wypadło: "+n+" pkt";
+  updateUI();
+}
+
+// === REBIRTH ===
 function doRebirth() {
   const u = users[loggedUser];
-  if (u.points < u.rebirthCost)
-    return alert("Za mało punktów");
-
+  if(u.points < u.rebirthCost) return alert("Za mało punktów");
   u.points = 0;
   u.rebirth++;
   u.rebirthCost *= 10;
   updateUI();
 }
 
-if (loggedUser) showApp();
+// === ZGADYWANIE POSTACI ===
+function nextCharacter() {
+  currentCharacter = characters[Math.floor(Math.random()*characters.length)];
+  characterBox.innerHTML = `<img class="character" src="${currentCharacter.img}" alt="Postać">`;
+  characterInput.value = "";
+  characterResult.innerText = "";
+}
+
+function checkCharacter() {
+  const guess = characterInput.value.trim().toLowerCase();
+  if(guess === currentCharacter.name.toLowerCase()) {
+    users[loggedUser].points += 50;
+    characterResult.innerText = "Brawo! +50 pkt";
+    updateUI();
+    setTimeout(nextCharacter, 1000);
+  } else {
+    characterResult.innerText = "Spróbuj jeszcze raz!";
+  }
+}
+
+if(loggedUser) showApp();
 </script>
 
 </body>
