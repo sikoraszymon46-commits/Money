@@ -9,14 +9,14 @@ body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to rig
 header{background:#0d1b33; padding:20px; text-align:center;}
 header a { color:#ff9800; text-decoration:none; margin:0 10px; font-weight:bold;}
 header a:hover { text-decoration:underline;}
-main { max-width:1200px; margin:30px auto; padding:20px;}
-section { background:rgba(0,0,0,0.6); padding:20px; border-radius:12px; margin-bottom:30px;}
+main { max-width:1000px; margin:30px auto; padding:0 20px;}
+section { background:rgba(0,0,0,0.6); padding:25px; border-radius:12px; margin-bottom:30px;}
 h2,h3 { text-align:center; margin-top:0;}
 button { padding:10px 15px; border:none; border-radius:5px; background:#ff9800; color:#000; font-weight:bold; cursor:pointer; margin:5px;}
 button:hover { background:#ffc107; }
 img.character { max-width:200px; height:auto; display:block; margin:10px auto; border-radius:10px; }
-input { padding:8px; border-radius:5px; border:none; width:100%; max-width:200px; margin:10px 0; }
-table { width:100%; border-collapse:collapse; margin-top:10px; }
+input { padding:8px; border-radius:5px; border:none; width:100%; max-width:200px; margin:10px 0; display:block; margin-left:auto; margin-right:auto; }
+table { width:100%; border-collapse:collapse; margin-top:15px; }
 th, td { border:1px solid #fff; padding:8px; text-align:center;}
 th { background:rgba(255,255,255,0.2); }
 footer{background:#0d1b33; text-align:center; padding:20px;}
@@ -42,16 +42,20 @@ footer a:hover { text-decoration:underline; }
 <!-- Koło Fortuny -->
 <section>
 <h2>🎡 Koło Fortuny</h2>
-<p>Wygrywasz punkty od 1 do 500</p>
+<p style="text-align:center;">Wygrywasz punkty od 1 do 500</p>
+<div style="text-align:center;">
 <button onclick="spinWheel()">Zakręć kołem</button>
-<p id="wheelResult"></p>
+</div>
+<p id="wheelResult" style="text-align:center;"></p>
 </section>
 
 <!-- Losowanie Liczb -->
 <section>
 <h2>🎲 Losowanie Liczb (1-100)</h2>
+<div style="text-align:center;">
 <button onclick="rollNumber()">Losuj liczbę</button>
-<p id="rollResult"></p>
+</div>
+<p id="rollResult" style="text-align:center;"></p>
 </section>
 
 <!-- Zgadnij Postać -->
@@ -59,42 +63,50 @@ footer a:hover { text-decoration:underline; }
 <h2>🕵️ Zgadnij Postać</h2>
 <img id="characterImg" class="character" src="">
 <input id="characterInput" type="text" placeholder="Wpisz imię postaci">
+<div style="text-align:center;">
 <button onclick="guessCharacter()">Sprawdź</button>
-<p id="characterResult"></p>
+</div>
+<p id="characterResult" style="text-align:center;"></p>
 </section>
 
 <!-- Klikacz -->
 <section>
 <h2>🖱️ Klikacz</h2>
-<p>Kliknij przycisk, aby zdobyć punkty</p>
+<p style="text-align:center;">Kliknij przycisk, aby zdobyć punkty</p>
+<div style="text-align:center;">
 <button onclick="clicker()">Kliknij!</button>
-<p id="clickerResult">Punkty z kliknięć: 0</p>
+</div>
+<p id="clickerResult" style="text-align:center;">Punkty z kliknięć: 0</p>
 </section>
 
 <!-- Rebirth -->
 <section>
 <h2>🔄 Rebirth (x2 punkty)</h2>
+<div style="text-align:center;">
 <button onclick="doRebirth()">Kup Rebirth (koszt: 50 000 000 pkt)</button>
-<p id="rebirthMsg">Twój mnożnik: <span id="rebirthMultiplier">1</span>x</p>
+</div>
+<p id="rebirthMsg" style="text-align:center;">Twój mnożnik: <span id="rebirthMultiplier">1</span>x</p>
 </section>
 
-</main>
-
 <!-- Podstrona Wypłat -->
-<section style="max-width:700px; margin:30px auto; background:rgba(0,0,0,0.8); padding:30px; border-radius:12px;">
+<section>
 <h2>💰 Wypłata</h2>
 <p style="text-align:center;">Saldo punktów: <span id="pointsPay">0</span></p>
 <p style="text-align:center;">Kurs: 5 000 000 pkt = 1 zł</p>
 <input id="withdrawAmount" type="number" placeholder="Ile zł chcesz wypłacić?">
+<div style="text-align:center;">
 <button onclick="requestWithdraw()">Poproś o wypłatę</button>
+</div>
 <p id="withdrawMsg" style="text-align:center;"></p>
 <p style="text-align:center;">Minimalna wypłata: 30 zł</p>
-<h3>Historia wypłat</h3>
+<h3 style="text-align:center;">Historia wypłat</h3>
 <table>
 <tr><th>#</th><th>Kwota (zł)</th><th>Data</th></tr>
 <tbody id="historyTable"></tbody>
 </table>
 </section>
+
+</main>
 
 <footer>
 <p>© 2026 PlayWatch – Wszystkie prawa zastrzeżone</p>
