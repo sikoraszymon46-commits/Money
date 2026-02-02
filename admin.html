@@ -11,8 +11,8 @@
 body{background:#111;color:#fff;font-family:Arial}
 table{width:100%;border-collapse:collapse;margin-top:20px}
 th,td{border-bottom:1px solid #444;padding:8px;text-align:center}
-.ok{background:#4caf50;color:#fff}
-.no{background:#f44336;color:#fff}
+.ok{background:#4caf50;color:#fff;border-radius:4px}
+.no{background:#f44336;color:#fff;border-radius:4px}
 button{border:none;padding:5px 8px;cursor:pointer}
 </style>
 </head>
@@ -26,6 +26,7 @@ button{border:none;padding:5px 8px;cursor:pointer}
 <tr>
 <th>Imię</th>
 <th>Email</th>
+<th>Punkty</th>
 <th>Kwota</th>
 <th>Data</th>
 <th>Status</th>
@@ -49,7 +50,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-db.collection("withdrawals").onSnapshot(snapshot=>{
+// pobieranie wszystkich wniosków w czasie rzeczywistym
+db.collection("withdrawals").orderBy("date","desc")
+  .onSnapshot(snapshot=>{
   const list = document.getElementById("list");
   list.innerHTML="";
   snapshot.forEach(doc=>{
@@ -58,6 +61,7 @@ db.collection("withdrawals").onSnapshot(snapshot=>{
       <tr>
         <td>${d.name}</td>
         <td>${d.email}</td>
+        <td>${d.points}</td>
         <td>${d.amount} zł</td>
         <td>${d.date}</td>
         <td>${d.status}</td>
