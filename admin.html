@@ -9,17 +9,17 @@
 
 <style>
 body{background:#111;color:#fff;font-family:Arial}
-table{width:100%;border-collapse:collapse}
-td,th{border-bottom:1px solid #444;padding:8px;text-align:center}
-button{padding:5px}
-.ok{background:#4caf50}
-.no{background:#f44336}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{border-bottom:1px solid #444;padding:8px;text-align:center}
+.ok{background:#4caf50;color:#fff}
+.no{background:#f44336;color:#fff}
+button{border:none;padding:5px 8px;cursor:pointer}
 </style>
 </head>
 
 <body>
 
-<h1>Panel Admina</h1>
+<h1>Panel Admina – Wypłaty</h1>
 
 <table>
 <thead>
@@ -37,54 +37,40 @@ button{padding:5px}
 
 <script>
 const firebaseConfig = {
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVkqjA4Yw_cAyKJ5wZ_YojZmEsa_w3THs",
-    authDomain: "money-19005.firebaseapp.com",
-    projectId: "money-19005",
-    storageBucket: "money-19005.firebasestorage.app",
-    messagingSenderId: "843755877611",
-    appId: "1:843755877611:web:b62bfa25950a7a21227aae",
-    measurementId: "G-Z30W3GL7HN"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+  apiKey: "AIzaSyCVkqjA4Yw_cAyKJ5wZ_YojZmEsa_w3THs",
+  authDomain: "money-19005.firebaseapp.com",
+  projectId: "money-19005",
+  storageBucket: "money-19005.firebasestorage.app",
+  messagingSenderId: "843755877611",
+  appId: "1:843755877611:web:b62bfa25950a7a21227aae",
+  measurementId: "G-Z30W3GL7HN"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 db.collection("withdrawals").onSnapshot(snapshot=>{
+  const list = document.getElementById("list");
   list.innerHTML="";
   snapshot.forEach(doc=>{
-    const r = doc.data();
+    const d = doc.data();
     list.innerHTML += `
       <tr>
-        <td>${r.name}</td>
-        <td>${r.email}</td>
-        <td>${r.amount} zł</td>
-        <td>${r.date}</td>
-        <td>${r.status}</td>
+        <td>${d.name}</td>
+        <td>${d.email}</td>
+        <td>${d.amount} zł</td>
+        <td>${d.date}</td>
+        <td>${d.status}</td>
         <td>
-          <button class="ok" onclick="update('${doc.id}','Zatwierdzona')">✔</button>
-          <button class="no" onclick="update('${doc.id}','Odrzucona')">✖</button>
+          <button class="ok" onclick="setStatus('${doc.id}','Zatwierdzona')">✔</button>
+          <button class="no" onclick="setStatus('${doc.id}','Odrzucona')">✖</button>
         </td>
       </tr>
     `;
   });
 });
 
-function update(id,status){
+function setStatus(id,status){
   db.collection("withdrawals").doc(id).update({status});
 }
 </script>
