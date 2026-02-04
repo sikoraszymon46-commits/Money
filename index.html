@@ -35,22 +35,21 @@ footer a{margin:0 10px}
   <h3>Twoje saldo</h3>
   <p><strong>Punkty:</strong> <span id="points">0</span></p>
   <p><strong>Wartość:</strong> <span id="money">0</span> zł</p>
-  <p><strong>Rebirth:</strong> <span id="rebirth">0</span></p>
+  <p><strong>Rebirth:</strong> <span id="rebirth">100000</span></p>
 </div>
 
 <!-- Klikacz -->
 <div class="section">
   <h2 class="game-title">🖱️ Klikacz</h2>
-  <p class="desc">Każde kliknięcie dodaje 1 punkt. Gra uczy systematyczności.</p>
-  <button class="green" onclick="addPoint()">Kliknij (+1 pkt)</button>
+  <p class="desc">Każde kliknięcie dodaje 1 punkt × rebirth.</p>
+  <button class="green" onclick="addPoint()">Kliknij (+1 pkt × rebirth)</button>
 </div>
 
-<!-- Zgadnij liczbę 1–10 z mnożnikiem rebirth -->
+<!-- Zgadnij liczbę 1–10 -->
 <div class="section">
   <h2 class="game-title">🎲 Zgadnij liczbę (1–10)</h2>
   <p class="desc">
-    System losuje liczbę 1–10. Za poprawną odpowiedź punkty mnożą się przez (rebirth+1).  
-    Gra rozwija logiczne myślenie i analizę.
+    System losuje liczbę 1–10. Poprawna odpowiedź daje +150 pkt × rebirth.
   </p>
   <input type="number" id="guess10" placeholder="1–10">
   <button class="green" onclick="guessTen()">Sprawdź</button>
@@ -59,14 +58,14 @@ footer a{margin:0 10px}
 <!-- Koło Fortuny -->
 <div class="section">
   <h2 class="game-title">🎰 Koło Fortuny</h2>
-  <p class="desc">Zakręć kołem i zdobądź od 1 do 500 punktów.</p>
+  <p class="desc">Zakręć kołem i zdobądź 1–500 pkt × rebirth.</p>
   <button class="green" onclick="wheel()">Zakręć kołem</button>
 </div>
 
 <!-- Słowianiczki -->
 <div class="section">
   <h2 class="game-title">🔤 Słowianiczki</h2>
-  <p class="desc">Odpowiadaj na pytania i zdobywaj 250 pkt za poprawną odpowiedź.</p>
+  <p class="desc">Poprawna odpowiedź daje 250 pkt × rebirth.</p>
   <p><strong>Pytanie:</strong> Stolica Polski?</p>
   <input id="word" placeholder="Twoja odpowiedź">
   <button class="green" onclick="wordGame()">Sprawdź</button>
@@ -82,9 +81,8 @@ footer a{margin:0 10px}
 
 <script>
 let points = Number(localStorage.getItem("points")) || 0;
-let rebirth = Number(localStorage.getItem("rebirth")) || 0;
+let rebirth = Number(localStorage.getItem("rebirth")) || 100000;
 
-// Zgadnij liczbę 1–10
 let secret10 = Math.floor(Math.random()*10)+1;
 
 function save(){
@@ -99,18 +97,21 @@ function update(){
 }
 
 // Klikacz
-function addPoint(){ points += 1; save(); update(); }
+function addPoint(){
+  points += 1 * rebirth;
+  save(); update();
+}
 
-// Zgadnij liczbę 1–10 z mnożnikiem
+// Zgadnij 1–10
 function guessTen(){
   let g = Number(document.getElementById("guess10").value);
-  if(g === secret10){
-    let earned = 100 * (rebirth + 1); // punkty x (rebirth+1)
+  if(g===secret10){
+    let earned = 150 * rebirth;
     alert("Poprawnie! +"+earned+" pkt");
     points += earned;
     secret10 = Math.floor(Math.random()*10)+1;
   } else {
-    alert("Źle, spróbuj ponownie");
+    alert("Niepoprawna odpowiedź");
   }
   save(); update();
 }
@@ -118,8 +119,8 @@ function guessTen(){
 // Koło Fortuny 1–500
 function wheel(){
   let win = Math.floor(Math.random()*500)+1;
-  alert("Wygrałeś "+win+" pkt");
-  points += win;
+  points += win * rebirth;
+  alert("Wygrałeś "+(win*rebirth)+" pkt");
   save(); update();
 }
 
@@ -127,9 +128,10 @@ function wheel(){
 function wordGame(){
   let w = document.getElementById("word").value.toLowerCase();
   if(w==="warszawa"){
-    alert("Poprawnie! +250 pkt");
-    points += 250;
-  } else { alert("Niepoprawnie"); }
+    let earned = 250 * rebirth;
+    alert("Poprawna odpowiedź! +"+earned+" pkt");
+    points += earned;
+  } else { alert("Niepoprawna odpowiedź"); }
   save(); update();
 }
 
