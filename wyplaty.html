@@ -3,151 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <title>Wypłaty</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- FIREBASE SCRIPT -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{
-  background:linear-gradient(to right,#141e30,#243b55);
-  color:#fff;
-  font-family:Arial;
-}
-.box{
-  max-width:400px;
-  margin:50px auto;
-  background:rgba(0,0,0,.6);
-  padding:20px;
-  border-radius:10px;
-}
-input,button{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  border:none;
-  border-radius:5px;
-}
-button{
-  background:#00e676;
-  font-weight:bold;
-  cursor:pointer;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:20px;
-}
-th,td{
-  border-bottom:1px solid #444;
-  padding:8px;
-  text-align:center;
-}
+body{margin:0;font-family:Arial;background:#0f2027;color:#fff}
+header{background:#203a43;padding:20px;display:flex;justify-content:space-between;align-items:center}
+a{color:#00e676;text-decoration:none;font-weight:bold}
+main{max-width:1000px;margin:auto;padding:20px}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{border:1px solid #00e676;padding:10px;text-align:center}
+th{background:#1c2e35}
+button{padding:5px 10px;border:none;border-radius:5px;cursor:pointer;font-weight:bold}
+.green{background:#00e676;color:#000}
+.red{background:#ff5252;color:#fff}
 </style>
 </head>
-
 <body>
 
-<div class="box">
-  <h2>Wypłata środków</h2>
-  <input id="name" placeholder="Imię i nazwisko">
-  <input id="email" placeholder="Email PayPal">
-  <input id="points" placeholder="Twoje punkty" type="number">
-  <button onclick="send()">Wyślij wniosek</button>
+<header>
+  <h2>💸 Panel Wypłat</h2>
+  <a href="index.html">🏠 Powrót do gier</a>
+</header>
+
+<main>
+<h3>Twoje saldo: <span id="points">0</span> pkt</h3>
+
+<div>
+  <input type="text" id="email" placeholder="Email PayPal">
+  <input type="text" id="name" placeholder="Imię i nazwisko">
+  <input type="number" id="amount" placeholder="Ilość punktów do wypłaty">
+  <button class="green" onclick="createWithdrawal()">Złóż wniosek</button>
 </div>
 
-<div class="box">
-  <h3>Twoje wnioski:</h3>
-  <table id="userList">
-    <thead>
-      <tr>
-        <th>Kwota (zł)</th>
-        <th>Punkty</th>
-        <th>Status</th>
-        <th>Data</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+<table>
+  <thead>
+    <tr>
+      <th>Imię i nazwisko</th>
+      <th>Email PayPal</th>
+      <th>Punkty</th>
+      <th>Kwota (zł)</th>
+      <th>Data</th>
+      <th>Status</th>
+      <th>Akcja</th>
+    </tr>
+  </thead>
+  <tbody id="withdrawals"></tbody>
+</table>
+</main>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCVkqjA4Yw_cAyKJ5wZ_YojZmEsa_w3THs",
-  authDomain: "money-19005.firebaseapp.com",
-  projectId: "money-19005",
-  storageBucket: "money-19005.firebasestorage.app",
-  messagingSenderId: "843755877611",
-  appId: "1:843755877611:web:b62bfa25950a7a21227aae",
-  measurementId: "G-Z30W3GL7HN"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let points = Number(localStorage.getItem("points")) || 0;
+updateBalance();
 
-// ustawienia
-const POINTS_PER_ZL = 10000000; // 10 mln punktów = 1 zł
-const MIN_AMOUNT = 30;           // zł
-const MIN_POINTS = MIN_AMOUNT * POINTS_PER_ZL; // 300 mln pkt
+let withdrawals = JSON.parse(localStorage.getItem("withdrawals")) || [];
 
-function send(){
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const points = parseInt(document.getElementById("points").value);
+function saveWithdrawals(){
+  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
+}
 
-  if(!name || !email || !points){
-    alert("Uzupełnij wszystkie pola");
+function updateBalance(){
+  document.getElementById("points").innerText = points;
+}
+
+// Dodaj wniosek
+function createWithdrawal(){
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let pts = Number(document.getElementById("amount").value);
+
+  if(!name || !email || !pts){
+    alert("Wypełnij wszystkie pola");
+    return;
+  }
+  if(pts > points){
+    alert("Nie masz tylu punktów");
+    return;
+  }
+  let kwota = pts / 10000000; // 10 mln pkt = 1 zł
+  if(kwota < 30){
+    alert("Minimalna wypłata to 30 zł");
     return;
   }
 
-  if(points < MIN_POINTS){
-    alert(`Masz za mało punktów. Minimalnie ${MIN_POINTS} pkt (${MIN_AMOUNT} zł)`);
-    return;
-  }
-
-  const amount = points / POINTS_PER_ZL;
-
-  db.collection("withdrawals").add({
+  let wniosek = {
     name: name,
     email: email,
-    points: points,
-    amount: amount.toFixed(2),
-    status: "Oczekuje",
-    date: new Date().toLocaleString()
-  }).then(()=>{
-    alert("Wniosek wysłany ✔");
-    document.getElementById("name").value="";
-    document.getElementById("email").value="";
-    document.getElementById("points").value="";
-  }).catch(err=>{
-    alert("Błąd: "+err);
+    points: pts,
+    kwota: kwota.toFixed(2),
+    date: new Date().toLocaleString(),
+    status: "Oczekuje"
+  };
+  withdrawals.push(wniosek);
+  saveWithdrawals();
+  renderWithdrawals();
+  alert("Wniosek dodany!");
+}
+
+// Render tabeli
+function renderWithdrawals(){
+  let tbody = document.getElementById("withdrawals");
+  tbody.innerHTML = "";
+  withdrawals.forEach((w,index)=>{
+    let tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${w.name}</td>
+      <td>${w.email}</td>
+      <td>${w.points}</td>
+      <td>${w.kwota}</td>
+      <td>${w.date}</td>
+      <td id="status-${index}">${w.status}</td>
+      <td>
+        ${w.status=="Oczekuje"?`
+        <button class="green" onclick="approve(${index})">Zatwierdź</button>
+        <button class="red" onclick="reject(${index})">Odrzuć</button>`:""}
+      </td>
+    `;
+    tbody.appendChild(tr);
   });
-
-  // od razu odśwież historię
-  loadUserWithdrawals(email);
 }
 
-// funkcja do pokazywania historii wniosków użytkownika
-function loadUserWithdrawals(userEmail){
-  db.collection("withdrawals")
-    .where("email","==",userEmail)
-    .orderBy("date","desc")
-    .onSnapshot(snapshot=>{
-      const tbody = document.querySelector("#userList tbody");
-      tbody.innerHTML = "";
-      snapshot.forEach(doc=>{
-        const d = doc.data();
-        tbody.innerHTML += `
-          <tr>
-            <td>${d.amount} zł</td>
-            <td>${d.points}</td>
-            <td>${d.status}</td>
-            <td>${d.date}</td>
-          </tr>
-        `;
-      });
-    });
+// Zatwierdź wniosek
+function approve(index){
+  let w = withdrawals[index];
+  points -= w.points; // odejmij punkty od salda
+  if(points<0) points=0;
+  w.status = "Zatwierdzona";
+  localStorage.setItem("points", points);
+  saveWithdrawals();
+  updateBalance();
+  renderWithdrawals();
 }
+
+// Odrzuć wniosek
+function reject(index){
+  withdrawals[index].status = "Odrzucona";
+  saveWithdrawals();
+  renderWithdrawals();
+}
+
+renderWithdrawals();
 </script>
 
 </body>
