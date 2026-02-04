@@ -2,206 +2,175 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>PlayWatch – Gry Punktowe</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarobki – Gry edukacyjne</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:linear-gradient(to right,#1e3c72,#2a5298);
-  color:#fff;
-}
-header{
-  background:#0d1b33;
-  padding:15px;
-  text-align:center;
-}
-header h1{margin:5px 0;}
-#topBar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  max-width:1100px;
-  margin:auto;
-}
-a{color:#ff9800;text-decoration:none;font-weight:bold}
-section{
-  background:rgba(0,0,0,.6);
-  max-width:900px;
-  margin:20px auto;
-  padding:20px;
-  border-radius:10px;
-}
-button{
-  padding:10px 15px;
-  margin:5px;
-  border:none;
-  border-radius:5px;
-  background:#ff9800;
-  font-weight:bold;
-  cursor:pointer;
-}
-input{
-  padding:8px;
-  border-radius:5px;
-  border:none;
-}
-img{
-  width:200px;
-  height:auto;
-  border-radius:10px;
-  display:block;
-  margin:10px auto;
-}
-footer{
-  background:#0d1b33;
-  text-align:center;
-  padding:20px;
-  margin-top:40px;
-}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f2027;color:#fff}
+header{background:#203a43;padding:20px}
+.topbar{display:flex;justify-content:space-between;align-items:center}
+a{color:#00e676;text-decoration:none;font-weight:bold}
+main{max-width:1200px;margin:auto;padding:20px}
+.section{background:#1c2e35;padding:20px;border-radius:12px;margin-bottom:25px}
+button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer}
+.green{background:#00e676;color:#000}
+input{padding:8px;border-radius:5px;border:none;margin-right:5px;margin-top:5px;margin-bottom:10px}
+.desc{line-height:1.7;opacity:0.9}
+.game-title{color:#00e676;margin-bottom:5px}
+footer{text-align:center;padding:20px;background:#203a43;margin-top:40px}
+footer a{margin:0 10px}
 </style>
 </head>
-
 <body>
 
 <header>
-  <div id="topBar">
-    <div>
-      Punkty: <b id="points">0</b> |
-      Rebirth: <b id="rebirth">0</b> |
-      Mnożnik: <b id="multiplier">x1</b>
-    </div>
-    <div>
-      <a href="wyplaty.html">Wypłaty</a>
-    </div>
+  <div class="topbar">
+    <h2>Zarobki – gry edukacyjne</h2>
+    <a href="wplaty.html">💸 Wypłaty</a>
   </div>
-  <h1>PlayWatch – Mega Gry</h1>
 </header>
 
-<!-- KLIKACZ -->
-<section>
-  <h2>🖱 Klikacz</h2>
-  <button onclick="clicker()">Kliknij +1 pkt</button>
-</section>
+<main>
 
-<!-- LOSOWANIE -->
-<section>
-  <h2>🎲 Losowanie 1–100</h2>
-  <button onclick="drawNumber()">Losuj</button>
-  <p id="drawResult"></p>
-</section>
+<!-- SALDO -->
+<div class="section">
+  <h3>Twoje saldo</h3>
+  <p><strong>Punkty:</strong> <span id="points">0</span></p>
+  <p><strong>Wartość:</strong> <span id="money">0</span> zł</p>
+  <p class="desc">
+    Punkty zdobywane w grach edukacyjnych są zapisywane lokalnie.
+    System pokazuje mechanizmy punktowe w edukacji i aplikacjach lojalnościowych.
+  </p>
+</div>
+
+<!-- KLIKACZ -->
+<div class="section">
+  <h2 class="game-title">🖱️ Klikacz punktów</h2>
+  <p class="desc">
+    Każde kliknięcie przycisku dodaje 1 punkt. Gra uczy cierpliwości i systematyczności.
+  </p>
+  <button class="green" onclick="addPoint()">Kliknij (+1 pkt)</button>
+</div>
+
+<!-- ZGADNIJ LICZBĘ (1–5) -->
+<div class="section">
+  <h2 class="game-title">🎲 Zgadnij liczbę (1–5)</h2>
+  <p class="desc">
+    Spróbuj odgadnąć wylosowaną liczbę. Za poprawną odpowiedź otrzymujesz punkty.
+    Gra rozwija logiczne myślenie i analizę.
+  </p>
+  <input type="number" id="guess" placeholder="1–5">
+  <button class="green" onclick="guessNumber()">Sprawdź</button>
+</div>
 
 <!-- KOŁO FORTUNY -->
-<section>
-  <h2>🎡 Koło Fortuny</h2>
-  <button onclick="wheel()">Zakręć</button>
-  <p id="wheelResult"></p>
-</section>
+<div class="section">
+  <h2 class="game-title">🎰 Koło Fortuny</h2>
+  <p class="desc">
+    Zakręć kołem i zdobądź od 0 do 20 punktów. Gra pokazuje działanie losowości w aplikacjach edukacyjnych.
+  </p>
+  <button class="green" onclick="wheel()">Zakręć kołem</button>
+</div>
 
-<!-- ZGADNIJ POSTAĆ -->
-<section>
-  <h2>🎬 Zgadnij postać</h2>
-  <img id="charImg">
-  <input id="charInput" placeholder="Kto to?">
-  <button onclick="checkChar()">Sprawdź</button>
-  <p id="charResult"></p>
-</section>
+<!-- SŁOWIANICZKI -->
+<div class="section">
+  <h2 class="game-title">🔤 Słowianiczki</h2>
+  <p class="desc">
+    Odpowiadaj na pytania i zdobywaj punkty. Gra rozwija słownictwo, koncentrację i logiczne myślenie.
+  </p>
+  <p><strong>Pytanie:</strong> Stolica Polski?</p>
+  <input id="word" placeholder="Twoja odpowiedź">
+  <button class="green" onclick="wordGame()">Sprawdź</button>
+</div>
 
-<!-- REBIRTH -->
-<section>
-  <h2>🔥 Rebirth</h2>
-  <p>Koszt: <b id="rebirthCost"></b> pkt</p>
-  <button onclick="doRebirth()">Zrób Rebirth</button>
-</section>
+<!-- ZGADYWANIE LICZB 1–10 -->
+<div class="section">
+  <h2 class="game-title">🔢 Zgadywanie liczb (1–10)</h2>
+  <p class="desc">
+    System losuje liczbę 1–10. Spróbuj ją odgadnąć. Poprawne odpowiedzi dają punkty.
+    Gra uczy przewidywania, analizy i logicznego myślenia.
+  </p>
+  <input type="number" id="guess10" placeholder="1–10">
+  <button class="green" onclick="guessTen()">Sprawdź</button>
+</div>
+
+</main>
 
 <footer>
-  <a href="o-nas.html">O nas</a> |
-  <a href="regulamin.html">Regulamin</a> |
+  <a href="o-nas.html">O nas</a>
+  <a href="regulamin.html">Regulamin</a>
   <a href="polityka-prywatnosci.html">Polityka prywatności</a>
 </footer>
 
 <script>
-/* ====== STAN ====== */
+// PUNKTY
 let points = Number(localStorage.getItem("points")) || 0;
-let rebirth = Number(localStorage.getItem("rebirth")) || 0;
 
-function multiplier(){
-  return rebirth + 1;
+// ZGADNIJ LICZBĘ (1–5)
+let secret5 = Math.floor(Math.random()*5)+1;
+
+// ZGADNIJ LICZBĘ (1–10)
+let secret10 = Math.floor(Math.random()*10)+1;
+
+function save(){
+  localStorage.setItem("points", points);
 }
 
-function rebirthCost(){
-  if(rebirth === 0) return 100000;
-  return 10 ** (rebirth + 5);
-}
-
-/* ====== UPDATE ====== */
 function update(){
   document.getElementById("points").innerText = points;
-  document.getElementById("rebirth").innerText = rebirth;
-  document.getElementById("multiplier").innerText = "x"+multiplier();
-  document.getElementById("rebirthCost").innerText = rebirthCost().toLocaleString();
-  localStorage.setItem("points", points);
-  localStorage.setItem("rebirth", rebirth);
+  document.getElementById("money").innerText = (points/10000000).toFixed(2);
 }
 
-/* ====== KLIKACZ ====== */
-function clicker(){
-  points += 1 * multiplier();
-  update();
+// Klikacz
+function addPoint(){
+  points += 1;
+  save(); update();
 }
 
-/* ====== LOSOWANIE ====== */
-function drawNumber(){
-  const n = Math.floor(Math.random()*100)+1;
-  points += n; // BEZ mnożnika
-  document.getElementById("drawResult").innerText = "Wylosowano: "+n;
-  update();
+// Zgadnij 1–5
+function guessNumber(){
+  let g = Number(document.getElementById("guess").value);
+  if(g===secret5){
+    alert("Dobrze! +5 punktów");
+    points += 5;
+    secret5 = Math.floor(Math.random()*5)+1;
+  } else {
+    alert("Źle, spróbuj ponownie");
+  }
+  save(); update();
 }
 
-/* ====== KOŁO ====== */
+// Koło Fortuny
 function wheel(){
-  const win = Math.floor(Math.random()*500)+1;
-  points += win * multiplier();
-  document.getElementById("wheelResult").innerText = "Wygrana: "+win;
-  update();
+  let win = Math.floor(Math.random()*21);
+  alert("Wygrałeś "+win+" punktów");
+  points += win;
+  save(); update();
 }
 
-/* ====== POSTACIE ====== */
-const characters = [
- {name:"Eleven", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/milly-bobby-brown-as-eleven-in-stranger-things-season-4.jpg"},
- {name:"Wednesday", img:"https://www.nme.com/wp-content/uploads/2022/11/Jenna-Ortega-Wednesday.jpg"},
- {name:"Furioza", img:"https://ayther.fr/wp-content/uploads/2022/04/furioza-2-netflix-768x419.jpg"},
- {name:"Tony Stark", img:"https://static1.srcdn.com/wordpress/wp-content/uploads/2025/02/iron-man-tony-stark-new-ultimate-redesign.jpg"},
- {name:"Harry Potter", img:"https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/11/harry-potter-as-an-adult-cropped.jpg"}
-];
-
-let currentChar = characters[Math.floor(Math.random()*characters.length)];
-document.getElementById("charImg").src = currentChar.img;
-
-function checkChar(){
-  const val = document.getElementById("charInput").value.toLowerCase();
-  if(val === currentChar.name.toLowerCase()){
-    points += 200 * multiplier();
-    document.getElementById("charResult").innerText = "Dobrze! +200 pkt";
-    currentChar = characters[Math.floor(Math.random()*characters.length)];
-    document.getElementById("charImg").src = currentChar.img;
-  }else{
-    document.getElementById("charResult").innerText = "Źle";
+// Słowianiczki
+function wordGame(){
+  let w = document.getElementById("word").value.toLowerCase();
+  if(w==="warszawa"){
+    alert("Poprawnie! +10 punktów");
+    points += 10;
+  } else {
+    alert("Niepoprawnie");
   }
-  document.getElementById("charInput").value="";
-  update();
+  save(); update();
 }
 
-/* ====== REBIRTH ====== */
-function doRebirth(){
-  if(points >= rebirthCost()){
-    points = 0;
-    rebirth++;
-    update();
-  }else{
-    alert("Za mało punktów");
+// Zgadywanie 1–10
+function guessTen(){
+  let g = Number(document.getElementById("guess10").value);
+  if(g===secret10){
+    alert("Dobrze! +10 punktów");
+    points += 10;
+    secret10 = Math.floor(Math.random()*10)+1;
+  } else {
+    alert("Źle, spróbuj ponownie");
   }
+  save(); update();
 }
 
 update();
