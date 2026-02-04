@@ -2,30 +2,36 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Zarobki – Gry edukacyjne</title>
+<title>Zarobki – gry edukacyjne</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{margin:0;font-family:Arial;background:#0f2027;color:#fff}
-header{background:#203a43;padding:20px}
-.topbar{display:flex;justify-content:space-between;align-items:center}
+header{background:#203a43;padding:15px}
+.top{display:flex;align-items:center}
+.top h1{flex:1;text-align:center;margin:0;color:#00e676}
+.top-right{display:flex;gap:15px;align-items:center}
 a{color:#00e676;text-decoration:none;font-weight:bold}
 main{max-width:1200px;margin:auto;padding:20px}
 .section{background:#1c2e35;padding:20px;border-radius:12px;margin-bottom:25px}
 button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer}
 .green{background:#00e676;color:#000}
-input{padding:8px;border-radius:5px;border:none;margin-right:5px;margin-top:5px;margin-bottom:10px}
-.desc{line-height:1.7;opacity:0.9}
-.game-title{color:#00e676;margin-bottom:5px}
-footer{text-align:center;padding:20px;background:#203a43;margin-top:40px}
+input{padding:8px;border-radius:5px;border:none;margin-top:5px}
+.desc{line-height:1.6;opacity:.9}
+.game-title{color:#00e676}
+footer{text-align:center;padding:20px;background:#203a43}
 footer a{margin:0 10px}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="topbar">
-    <h2>Zarobki – gry edukacyjne</h2>
-    <a href="wplaty.html">💸 Wypłaty</a>
+  <div class="top">
+    <div></div>
+    <h1>Zarobki</h1>
+    <div class="top-right">
+      <span>Rebirth: <strong id="rebirth">0</strong></span>
+      <a href="wyplaty.html">💸 Wypłaty</a>
+    </div>
   </div>
 </header>
 
@@ -33,58 +39,53 @@ footer a{margin:0 10px}
 
 <div class="section">
   <h3>Twoje saldo</h3>
-  <p><strong>Punkty:</strong> <span id="points">0</span></p>
-  <p><strong>Wartość:</strong> <span id="money">0</span> zł</p>
-  <p><strong>Rebirth:</strong> <span id="rebirth">100000</span></p>
+  <p>Punkty: <strong id="points">0</strong></p>
+  <p>Wartość: <strong id="money">0</strong> zł</p>
 </div>
 
-<!-- Klikacz -->
+<!-- KLIKACZ -->
 <div class="section">
   <h2 class="game-title">🖱️ Klikacz</h2>
   <p class="desc">Każde kliknięcie dodaje 1 punkt × rebirth.</p>
-  <button class="green" onclick="addPoint()">Kliknij (+1 pkt × rebirth)</button>
+  <button class="green" onclick="clicker()">Kliknij</button>
 </div>
 
-<!-- Zgadnij liczbę 1–10 -->
+<!-- ZGADNIJ LICZBĘ -->
 <div class="section">
   <h2 class="game-title">🎲 Zgadnij liczbę (1–10)</h2>
-  <p class="desc">
-    System losuje liczbę 1–10. Poprawna odpowiedź daje +150 pkt × rebirth.
-  </p>
-  <input type="number" id="guess10" placeholder="1–10">
-  <button class="green" onclick="guessTen()">Sprawdź</button>
+  <p class="desc">Poprawna odpowiedź: 150 pkt × rebirth.</p>
+  <input type="number" id="guess" placeholder="1–10">
+  <button class="green" onclick="guessNumber()">Sprawdź</button>
 </div>
 
-<!-- Koło Fortuny -->
+<!-- KOŁO FORTUNY -->
 <div class="section">
   <h2 class="game-title">🎰 Koło Fortuny</h2>
-  <p class="desc">Zakręć kołem i zdobądź 1–500 pkt × rebirth.</p>
-  <button class="green" onclick="wheel()">Zakręć kołem</button>
+  <p class="desc">Losujesz od 1 do 500 pkt × rebirth.</p>
+  <button class="green" onclick="wheel()">Zakręć</button>
 </div>
 
-<!-- Słowianiczki -->
+<!-- SŁOWIANICZKI -->
 <div class="section">
   <h2 class="game-title">🔤 Słowianiczki</h2>
-  <p class="desc">Poprawna odpowiedź daje 250 pkt × rebirth.</p>
+  <p class="desc">Poprawna odpowiedź: 250 pkt × rebirth.</p>
   <p><strong>Pytanie:</strong> Stolica Polski?</p>
-  <input id="word" placeholder="Twoja odpowiedź">
-  <button class="green" onclick="wordGame()">Sprawdź</button>
+  <input id="word" placeholder="Odpowiedź">
+  <button class="green" onclick="words()">Sprawdź</button>
 </div>
 
 </main>
 
 <footer>
-  <a href="o-nas.html">O nas</a>
-  <a href="regulamin.html">Regulamin</a>
-  <a href="polityka-prywatnosci.html">Polityka prywatności</a>
-  <a href="wyplaty.html">Wypłaty</a>
+  <a href="#">O nas</a>
+  <a href="#">Regulamin</a>
+  <a href="#">Polityka prywatności</a>
 </footer>
 
 <script>
 let points = Number(localStorage.getItem("points")) || 0;
 let rebirth = Number(localStorage.getItem("rebirth")) || 100000;
-
-let secret10 = Math.floor(Math.random()*10)+1;
+let secret = Math.floor(Math.random()*10)+1;
 
 function save(){
   localStorage.setItem("points", points);
@@ -98,41 +99,43 @@ function update(){
 }
 
 // Klikacz
-function addPoint(){
+function clicker(){
   points += 1 * rebirth;
   save(); update();
 }
 
-// Zgadnij 1–10
-function guessTen(){
-  let g = Number(document.getElementById("guess10").value);
-  if(g===secret10){
-    let earned = 150 * rebirth;
-    alert("Poprawnie! +"+earned+" pkt");
-    points += earned;
-    secret10 = Math.floor(Math.random()*10)+1;
+// Zgadnij liczbę
+function guessNumber(){
+  let g = Number(document.getElementById("guess").value);
+  if(g === secret){
+    let earn = 150 * rebirth;
+    alert("Dobrze! +" + earn + " pkt");
+    points += earn;
+    secret = Math.floor(Math.random()*10)+1;
   } else {
     alert("Niepoprawna odpowiedź");
   }
   save(); update();
 }
 
-// Koło Fortuny 1–500
+// Koło fortuny
 function wheel(){
   let win = Math.floor(Math.random()*500)+1;
   points += win * rebirth;
-  alert("Wygrałeś "+(win*rebirth)+" pkt");
+  alert("Wygrana: " + (win*rebirth) + " pkt");
   save(); update();
 }
 
-// Słowianiczki 250 pkt
-function wordGame(){
-  let w = document.getElementById("word").value.toLowerCase();
-  if(w==="warszawa"){
-    let earned = 250 * rebirth;
-    alert("Poprawna odpowiedź! +"+earned+" pkt");
-    points += earned;
-  } else { alert("Niepoprawna odpowiedź"); }
+// Słowianiczki
+function words(){
+  let w = document.getElementById("word").value.trim().toLowerCase();
+  if(w === "warszawa"){
+    let earn = 250 * rebirth;
+    alert("Poprawnie! +" + earn + " pkt");
+    points += earn;
+  } else {
+    alert("Niepoprawna odpowiedź");
+  }
   save(); update();
 }
 
