@@ -1,162 +1,55 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Wypłaty</title>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVkqjA4Yw_cAyKJ5wZ_YojZmEsa_w3THs",
+  authDomain: "money-19005.firebaseapp.com",
+  projectId: "money-19005",
+  storageBucket: "money-19005.firebasestorage.app",
+  messagingSenderId: "843755877611",
+  appId: "1:843755877611:web:b62bfa25950a7a21227aae"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.wyslij = async function() {
+  const email = document.getElementById("email").value;
+  const kwota = document.getElementById("kwota").value;
+
+  if(!email || !kwota) return alert("Wpisz dane!");
+
+  await addDoc(collection(db, "wyplaty"), {
+    email: email,
+    kwota: Number(kwota),
+    status: "oczekuje",
+    data: serverTimestamp()
+  });
+
+  alert("Wniosek wysłany!");
+}
+</script>
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#0f1220;
-  color:#fff;
-  margin:0;
-  padding:20px;
-}
-h1{
-  text-align:center;
-}
-.box{
-  max-width:600px;
-  margin:auto;
-  background:#181c3a;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:20px;
-}
-input, button{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  border-radius:8px;
-  border:none;
-  font-size:16px;
-}
-button{
-  background:#4caf50;
-  color:#fff;
-  cursor:pointer;
-}
-button:hover{
-  background:#43a047;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-}
-th, td{
-  padding:8px;
-  border-bottom:1px solid #333;
-  text-align:center;
-}
-.status-pending{color:#ffc107;}
-.status-ok{color:#4caf50;}
-.status-no{color:#f44336;}
-.info{
-  font-size:14px;
-  opacity:.8;
-}
+body{background:#0c0f1f;color:white;font-family:Arial;text-align:center}
+.box{background:#181c3a;padding:20px;border-radius:12px;max-width:400px;margin:100px auto}
+input,button{padding:10px;margin:10px;width:90%;border-radius:8px;border:none}
+button{background:#00c853;color:white;font-weight:bold}
 </style>
 </head>
 <body>
 
-<h1>💸 Wypłaty</h1>
-
 <div class="box">
-  <p class="info">
-    💡 Zasady:
-    <br>• 1 000 000 pkt = 1 zł
-    <br>• Minimalna wypłata: <b>30 zł</b>
-  </p>
-
-  <p>Twoje punkty: <b><span id="points">0</span></b></p>
-  <p>Twoje saldo: <b><span id="balance">0</span> zł</b></p>
-
-  <input id="name" placeholder="Imię i nazwisko">
-  <input id="paypal" placeholder="E-mail PayPal">
-  <input id="amount" type="number" placeholder="Kwota (min. 30 zł)">
-
-  <button onclick="sendWithdraw()">Wyślij wniosek</button>
+<h2>Wypłata</h2>
+<input id="email" placeholder="PayPal email">
+<input id="kwota" type="number" placeholder="Kwota">
+<button onclick="wyslij()">Wyślij</button>
 </div>
-
-<div class="box">
-  <h2>📜 Historia wypłat</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Kwota</th>
-        <th>Data</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="history"></tbody>
-  </table>
-</div>
-
-<script>
-const POINTS_PER_ZL = 1000000;
-const MIN_WITHDRAW = 30;
-
-let points = Number(localStorage.getItem("points") || 0);
-let withdrawals = JSON.parse(localStorage.getItem("withdrawals") || "[]");
-
-function refresh(){
-  document.getElementById("points").innerText = points.toLocaleString();
-  document.getElementById("balance").innerText =
-    Math.floor(points / POINTS_PER_ZL);
-
-  const h = document.getElementById("history");
-  h.innerHTML = "";
-  withdrawals.forEach(w=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${w.amount} zł</td>
-      <td>${w.date}</td>
-      <td class="status-${w.status}">
-        ${w.status === "pending" ? "Oczekuje" :
-          w.status === "ok" ? "Zatwierdzona" : "Odrzucona"}
-      </td>`;
-    h.appendChild(tr);
-  });
-}
-
-function sendWithdraw(){
-  const name = document.getElementById("name").value.trim();
-  const paypal = document.getElementById("paypal").value.trim();
-  const amount = Number(document.getElementById("amount").value);
-
-  if(!name || !paypal){
-    alert("Uzupełnij dane");
-    return;
-  }
-  if(amount < MIN_WITHDRAW){
-    alert("Minimalna wypłata to 30 zł");
-    return;
-  }
-
-  const neededPoints = amount * POINTS_PER_ZL;
-  if(points < neededPoints){
-    alert("Brak wystarczających punktów");
-    return;
-  }
-
-  points -= neededPoints;
-  localStorage.setItem("points", points);
-
-  withdrawals.unshift({
-    name,
-    paypal,
-    amount,
-    date: new Date().toLocaleString(),
-    status: "pending"
-  });
-
-  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
-  refresh();
-  alert("Wniosek wysłany");
-}
-
-refresh();
-</script>
 
 </body>
 </html>
