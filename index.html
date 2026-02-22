@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Money Game</title>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -13,44 +11,28 @@ const firebaseConfig = {
   authDomain: "money-19005.firebaseapp.com",
   projectId: "money-19005"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// UID
 let uid = localStorage.getItem("uid");
-if(!uid){
-  uid = crypto.randomUUID();
-  localStorage.setItem("uid", uid);
-}
+if(!uid){ uid = crypto.randomUUID(); localStorage.setItem("uid", uid); }
 
-// Tworzenie użytkownika
 const userRef = doc(db,"users",uid);
 const userSnap = await getDoc(userRef);
-if(!userSnap.exists()){
-  await setDoc(userRef,{
-    name:"Gracz",
-    points:0,
-    rebirths:0,
-    withdrawalsCount:0
-  });
-}
+if(!userSnap.exists()){ await setDoc(userRef,{name:"Gracz",points:0,rebirths:0,withdrawalsCount:0}); }
 
-// LIVE DANE
 onSnapshot(userRef,(snap)=>{
   const d = snap.data();
   document.getElementById("points").innerText=d.points;
   document.getElementById("rebirths").innerText=d.rebirths;
 });
 
-// === MNOŻNIK
 async function getMultiplier(){
   const snap = await getDoc(userRef);
   const d = snap.data();
-  return Math.pow(2,d.rebirths); // x2 za każdy rebirth
+  return Math.pow(2,d.rebirths);
 }
 
-// === CLICKER
 window.clickPoints = async function(){
   const mult = await getMultiplier();
   const snap = await getDoc(userRef);
@@ -58,7 +40,6 @@ window.clickPoints = async function(){
   await updateDoc(userRef,{points:d.points + (100*mult)});
 }
 
-// === ZGADNIJ 1-10
 let secret = Math.floor(Math.random()*10)+1;
 window.guessNumber = async function(){
   const val = Number(document.getElementById("guess").value);
@@ -69,51 +50,33 @@ window.guessNumber = async function(){
     await updateDoc(userRef,{points:d.points+(1000*mult)});
     alert("Dobrze! + pkt");
     secret=Math.floor(Math.random()*10)+1;
-  }else{
-    alert("Źle!");
-  }
+  }else alert("Źle!");
 }
 
-// === KOŁO FORTUNY
 window.spin = async function(){
   const reward = Math.floor(Math.random()*500)+1;
   const mult = await getMultiplier();
   const snap = await getDoc(userRef);
   const d = snap.data();
   await updateDoc(userRef,{points:d.points+(reward*mult)});
-  alert("Wygrana: "+reward);
+  alert("Wygrana: "+reward+" pkt");
 }
 
-// === REBIRTH
 window.rebirth = async function(){
   const snap = await getDoc(userRef);
   const d = snap.data();
   const cost = 100000*Math.pow(10,d.rebirths);
-  if(d.points<cost){
-    alert("Za mało punktów");
-    return;
-  }
-  await updateDoc(userRef,{
-    points:0,
-    rebirths:d.rebirths+1
-  });
+  if(d.points<cost){ alert("Za mało punktów na rebirth"); return; }
+  await updateDoc(userRef,{points:0,rebirths:d.rebirths+1});
 }
 
-// === WYPŁATA
 window.withdraw = async function(){
   const amount = Number(document.getElementById("amount").value);
-  if(amount<30){
-    alert("Min 30 zł");
-    return;
-  }
+  if(amount<30){ alert("Minimalna wypłata 30 zł"); return; }
   const snap = await getDoc(userRef);
   const d = snap.data();
   const needed = amount*1000000;
-  if(d.points<needed){
-    alert("Za mało pkt");
-    return;
-  }
-
+  if(d.points<needed){ alert("Za mało pkt"); return; }
   await addDoc(collection(db,"withdrawals"),{
     userId:uid,
     name:"Gracz",
@@ -123,23 +86,16 @@ window.withdraw = async function(){
     status:"oczekujące",
     createdAt:serverTimestamp()
   });
-
   alert("Wniosek wysłany");
 }
 
-// === HISTORIA
 const q = query(collection(db,"withdrawals"),where("userId","==",uid));
 onSnapshot(q,(snap)=>{
   const box=document.getElementById("history");
   box.innerHTML="";
   snap.forEach(doc=>{
     const d=doc.data();
-    box.innerHTML+=`
-      <div class="card">
-      ${d.amount} zł<br>
-      Status: ${d.status}
-      </div>
-    `;
+    box.innerHTML+=`<div class="card">${d.amount} zł<br>Status: ${d.status}</div>`;
   });
 });
 </script>
@@ -151,8 +107,8 @@ button{background:#00ffcc;border:none;padding:10px;margin:5px;border-radius:6px}
 input{padding:8px;margin:5px}
 </style>
 </head>
-<body>
 
+<body>
 <h1>Money Game</h1>
 
 <div class="card">
@@ -166,21 +122,24 @@ Rebirth: <span id="rebirths">0</span><br>
 <h3>Zgadnij 1-10</h3>
 <input id="guess" type="number">
 <button onclick="guessNumber()">Zgadnij</button>
+<p>Spróbuj zgadnąć liczbę od 1 do 10. Poprawna odpowiedź daje 1000 pkt x mnożnik rebirth.</p>
 </div>
 
 <div class="card">
 <h3>Koło Fortuny</h3>
 <button onclick="spin()">Losuj</button>
+<p>Kręć kołem fortuny i wygraj od 1 do 500 pkt x mnożnik rebirth.</p>
 </div>
 
 <div class="card">
 <h3>Wypłata</h3>
 <input id="paypal" placeholder="Email PayPal">
 <input id="amount" type="number" placeholder="Kwota">
-<button onclick="withdraw()">Wyślij</button>
+<button onclick="withdraw()">Wyślij wniosek</button>
+<p>Minimalna wypłata 30 zł, 1 zł = 1 000 000 pkt.</p>
 </div>
 
-<h3>Historia</h3>
+<h3>Historia wypłat</h3>
 <div id="history"></div>
 
 </body>
