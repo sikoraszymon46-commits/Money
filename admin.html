@@ -1,83 +1,65 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Admin – Wypłaty</title>
+<title>Admin</title>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<style>
-body{background:#111;color:#fff;font-family:Arial}
-table{width:100%;border-collapse:collapse;margin-top:20px}
-th,td{border-bottom:1px solid #444;padding:8px;text-align:center}
-.ok{background:#4caf50;color:#fff;border-radius:4px}
-.no{background:#f44336;color:#fff;border-radius:4px}
-button{border:none;padding:5px 8px;cursor:pointer}
-</style>
-</head>
-
-<body>
-
-<h1>Panel Admina – Wypłaty</h1>
-
-<table>
-<thead>
-<tr>
-<th>Imię</th>
-<th>Email</th>
-<th>Punkty</th>
-<th>Kwota</th>
-<th>Data</th>
-<th>Status</th>
-<th>Akcja</th>
-</tr>
-</thead>
-<tbody id="list"></tbody>
-</table>
-
-<script>
 const firebaseConfig = {
   apiKey: "AIzaSyCVkqjA4Yw_cAyKJ5wZ_YojZmEsa_w3THs",
   authDomain: "money-19005.firebaseapp.com",
   projectId: "money-19005",
   storageBucket: "money-19005.firebasestorage.app",
   messagingSenderId: "843755877611",
-  appId: "1:843755877611:web:b62bfa25950a7a21227aae",
-  measurementId: "G-Z30W3GL7HN"
+  appId: "1:843755877611:web:b62bfa25950a7a21227aae"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// pobieranie wszystkich wniosków w czasie rzeczywistym
-db.collection("withdrawals").orderBy("date","desc")
-  .onSnapshot(snapshot=>{
-  const list = document.getElementById("list");
-  list.innerHTML="";
-  snapshot.forEach(doc=>{
-    const d = doc.data();
-    list.innerHTML += `
-      <tr>
-        <td>${d.name}</td>
-        <td>${d.email}</td>
-        <td>${d.points}</td>
-        <td>${d.amount} zł</td>
-        <td>${d.date}</td>
-        <td>${d.status}</td>
-        <td>
-          <button class="ok" onclick="setStatus('${doc.id}','Zatwierdzona')">✔</button>
-          <button class="no" onclick="setStatus('${doc.id}','Odrzucona')">✖</button>
-        </td>
-      </tr>
+const lista = document.getElementById("lista");
+
+onSnapshot(collection(db, "wyplaty"), (snapshot)=>{
+  lista.innerHTML="";
+  snapshot.forEach((docSnap)=>{
+    const d = docSnap.data();
+    lista.innerHTML += `
+      <div class="item">
+        <b>${d.email}</b><br>
+        ${d.kwota} pkt<br>
+        Status: ${d.status}<br>
+        <button onclick="zatwierdz('${docSnap.id}')">Zatwierdź</button>
+        <button onclick="odrzuc('${docSnap.id}')">Odrzuć</button>
+      </div>
     `;
   });
 });
 
-function setStatus(id,status){
-  db.collection("withdrawals").doc(id).update({status});
+window.zatwierdz = async function(id){
+  await updateDoc(doc(db,"wyplaty",id),{
+    status:"zatwierdzono"
+  });
+}
+
+window.odrzuc = async function(id){
+  await updateDoc(doc(db,"wyplaty",id),{
+    status:"odrzucono"
+  });
 }
 </script>
+
+<style>
+body{background:#0c0f1f;color:white;font-family:Arial;text-align:center}
+.item{background:#181c3a;padding:15px;margin:15px;border-radius:10px}
+button{margin:5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<h1>Panel Admina</h1>
+<div id="lista"></div>
 
 </body>
 </html>
