@@ -2,145 +2,186 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Zarobki – gry edukacyjne</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Money Game</title>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVkqjA4Yw_cAyKJ5wZ_YojZmEsa_w3THs",
+  authDomain: "money-19005.firebaseapp.com",
+  projectId: "money-19005"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// UID
+let uid = localStorage.getItem("uid");
+if(!uid){
+  uid = crypto.randomUUID();
+  localStorage.setItem("uid", uid);
+}
+
+// Tworzenie użytkownika
+const userRef = doc(db,"users",uid);
+const userSnap = await getDoc(userRef);
+if(!userSnap.exists()){
+  await setDoc(userRef,{
+    name:"Gracz",
+    points:0,
+    rebirths:0,
+    withdrawalsCount:0
+  });
+}
+
+// LIVE DANE
+onSnapshot(userRef,(snap)=>{
+  const d = snap.data();
+  document.getElementById("points").innerText=d.points;
+  document.getElementById("rebirths").innerText=d.rebirths;
+});
+
+// === MNOŻNIK
+async function getMultiplier(){
+  const snap = await getDoc(userRef);
+  const d = snap.data();
+  return Math.pow(2,d.rebirths); // x2 za każdy rebirth
+}
+
+// === CLICKER
+window.clickPoints = async function(){
+  const mult = await getMultiplier();
+  const snap = await getDoc(userRef);
+  const d = snap.data();
+  await updateDoc(userRef,{points:d.points + (100*mult)});
+}
+
+// === ZGADNIJ 1-10
+let secret = Math.floor(Math.random()*10)+1;
+window.guessNumber = async function(){
+  const val = Number(document.getElementById("guess").value);
+  if(val===secret){
+    const mult = await getMultiplier();
+    const snap = await getDoc(userRef);
+    const d = snap.data();
+    await updateDoc(userRef,{points:d.points+(1000*mult)});
+    alert("Dobrze! + pkt");
+    secret=Math.floor(Math.random()*10)+1;
+  }else{
+    alert("Źle!");
+  }
+}
+
+// === KOŁO FORTUNY
+window.spin = async function(){
+  const reward = Math.floor(Math.random()*500)+1;
+  const mult = await getMultiplier();
+  const snap = await getDoc(userRef);
+  const d = snap.data();
+  await updateDoc(userRef,{points:d.points+(reward*mult)});
+  alert("Wygrana: "+reward);
+}
+
+// === REBIRTH
+window.rebirth = async function(){
+  const snap = await getDoc(userRef);
+  const d = snap.data();
+  const cost = 100000*Math.pow(10,d.rebirths);
+  if(d.points<cost){
+    alert("Za mało punktów");
+    return;
+  }
+  await updateDoc(userRef,{
+    points:0,
+    rebirths:d.rebirths+1
+  });
+}
+
+// === WYPŁATA
+window.withdraw = async function(){
+  const amount = Number(document.getElementById("amount").value);
+  if(amount<30){
+    alert("Min 30 zł");
+    return;
+  }
+  const snap = await getDoc(userRef);
+  const d = snap.data();
+  const needed = amount*1000000;
+  if(d.points<needed){
+    alert("Za mało pkt");
+    return;
+  }
+
+  await addDoc(collection(db,"withdrawals"),{
+    userId:uid,
+    name:"Gracz",
+    paypal:document.getElementById("paypal").value,
+    amount:amount,
+    pointsUsed:needed,
+    status:"oczekujące",
+    createdAt:serverTimestamp()
+  });
+
+  alert("Wniosek wysłany");
+}
+
+// === HISTORIA
+const q = query(collection(db,"withdrawals"),where("userId","==",uid));
+onSnapshot(q,(snap)=>{
+  const box=document.getElementById("history");
+  box.innerHTML="";
+  snap.forEach(doc=>{
+    const d=doc.data();
+    box.innerHTML+=`
+      <div class="card">
+      ${d.amount} zł<br>
+      Status: ${d.status}
+      </div>
+    `;
+  });
+});
+</script>
+
 <style>
-body{margin:0;font-family:Arial;background:#0f2027;color:#fff}
-header{background:#203a43;padding:15px}
-.top{display:flex;align-items:center}
-.top h1{flex:1;text-align:center;margin:0;color:#00e676}
-.top-right{display:flex;gap:15px;align-items:center}
-a{color:#00e676;text-decoration:none;font-weight:bold}
-main{max-width:1200px;margin:auto;padding:20px}
-.section{background:#1c2e35;padding:20px;border-radius:12px;margin-bottom:25px}
-button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer}
-.green{background:#00e676;color:#000}
-input{padding:8px;border-radius:5px;border:none;margin-top:5px}
-.desc{line-height:1.6;opacity:.9}
-.game-title{color:#00e676}
-footer{text-align:center;padding:20px;background:#203a43}
-footer a{margin:0 10px}
+body{background:#111;color:white;font-family:Arial;text-align:center}
+.card{background:#1e1e1e;margin:10px;padding:15px;border-radius:10px}
+button{background:#00ffcc;border:none;padding:10px;margin:5px;border-radius:6px}
+input{padding:8px;margin:5px}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="top">
-    <div></div>
-    <h1>Zarobki</h1>
-    <div class="top-right">
-      <span>Rebirth: <strong id="rebirth">0</strong></span>
-      <a href="wyplaty.html">💸 Wypłaty</a>
-    </div>
-  </div>
-</header>
+<h1>Money Game</h1>
 
-<main>
-
-<div class="section">
-  <h3>Twoje saldo</h3>
-  <p>Punkty: <strong id="points">0</strong></p>
-  <p>Wartość: <strong id="money">0</strong> zł</p>
+<div class="card">
+Punkty: <span id="points">0</span><br>
+Rebirth: <span id="rebirths">0</span><br>
+<button onclick="clickPoints()">Kliknij (+100)</button>
+<button onclick="rebirth()">Rebirth</button>
 </div>
 
-<!-- KLIKACZ -->
-<div class="section">
-  <h2 class="game-title">🖱️ Klikacz</h2>
-  <p class="desc">Każde kliknięcie dodaje 1 punkt × rebirth.</p>
-  <button class="green" onclick="clicker()">Kliknij</button>
+<div class="card">
+<h3>Zgadnij 1-10</h3>
+<input id="guess" type="number">
+<button onclick="guessNumber()">Zgadnij</button>
 </div>
 
-<!-- ZGADNIJ LICZBĘ -->
-<div class="section">
-  <h2 class="game-title">🎲 Zgadnij liczbę (1–10)</h2>
-  <p class="desc">Poprawna odpowiedź: 150 pkt × rebirth.</p>
-  <input type="number" id="guess" placeholder="1–10">
-  <button class="green" onclick="guessNumber()">Sprawdź</button>
+<div class="card">
+<h3>Koło Fortuny</h3>
+<button onclick="spin()">Losuj</button>
 </div>
 
-<!-- KOŁO FORTUNY -->
-<div class="section">
-  <h2 class="game-title">🎰 Koło Fortuny</h2>
-  <p class="desc">Losujesz od 1 do 500 pkt × rebirth.</p>
-  <button class="green" onclick="wheel()">Zakręć</button>
+<div class="card">
+<h3>Wypłata</h3>
+<input id="paypal" placeholder="Email PayPal">
+<input id="amount" type="number" placeholder="Kwota">
+<button onclick="withdraw()">Wyślij</button>
 </div>
 
-<!-- SŁOWIANICZKI -->
-<div class="section">
-  <h2 class="game-title">🔤 Słowianiczki</h2>
-  <p class="desc">Poprawna odpowiedź: 250 pkt × rebirth.</p>
-  <p><strong>Pytanie:</strong> Stolica Polski?</p>
-  <input id="word" placeholder="Odpowiedź">
-  <button class="green" onclick="words()">Sprawdź</button>
-</div>
-
-</main>
-
-<footer>
-  <a href="#">O nas</a>
-  <a href="#">Regulamin</a>
-  <a href="#">Polityka prywatności</a>
-</footer>
-
-<script>
-let points = Number(localStorage.getItem("points")) || 0;
-let rebirth = Number(localStorage.getItem("rebirth")) || 100000;
-let secret = Math.floor(Math.random()*10)+1;
-
-function save(){
-  localStorage.setItem("points", points);
-  localStorage.setItem("rebirth", rebirth);
-}
-
-function update(){
-  document.getElementById("points").innerText = points;
-  document.getElementById("money").innerText = (points/10000000).toFixed(2);
-  document.getElementById("rebirth").innerText = rebirth;
-}
-
-// Klikacz
-function clicker(){
-  points += 1 * rebirth;
-  save(); update();
-}
-
-// Zgadnij liczbę
-function guessNumber(){
-  let g = Number(document.getElementById("guess").value);
-  if(g === secret){
-    let earn = 150 * rebirth;
-    alert("Dobrze! +" + earn + " pkt");
-    points += earn;
-    secret = Math.floor(Math.random()*10)+1;
-  } else {
-    alert("Niepoprawna odpowiedź");
-  }
-  save(); update();
-}
-
-// Koło fortuny
-function wheel(){
-  let win = Math.floor(Math.random()*500)+1;
-  points += win * rebirth;
-  alert("Wygrana: " + (win*rebirth) + " pkt");
-  save(); update();
-}
-
-// Słowianiczki
-function words(){
-  let w = document.getElementById("word").value.trim().toLowerCase();
-  if(w === "warszawa"){
-    let earn = 250 * rebirth;
-    alert("Poprawnie! +" + earn + " pkt");
-    points += earn;
-  } else {
-    alert("Niepoprawna odpowiedź");
-  }
-  save(); update();
-}
-
-update();
-</script>
+<h3>Historia</h3>
+<div id="history"></div>
 
 </body>
 </html>
