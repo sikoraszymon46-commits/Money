@@ -8,67 +8,85 @@
 body{
 margin:0;
 font-family:Arial;
-background:#0f172a;
+background:#0b1120;
 color:white
 }
 
 nav{
-background:#1e293b;
-padding:15px;
+background:#0f172a;
+padding:18px;
 display:flex;
-justify-content:center;
-gap:30px
+justify-content:space-between;
+align-items:center
 }
 
-nav button{
+nav .logo{
+font-size:22px;
+font-weight:bold
+}
+
+nav .menu button{
 background:none;
 border:none;
 color:white;
-font-size:16px;
+margin-left:20px;
+font-size:15px;
 cursor:pointer
 }
 
-header{
-background:#1e293b;
-padding:30px;
-text-align:center
+.hero{
+text-align:center;
+padding:60px 20px;
+background:linear-gradient(180deg,#0f172a,#020617)
+}
+
+.hero h1{
+font-size:40px;
+margin-bottom:10px
+}
+
+.hero p{
+opacity:0.8
 }
 
 .stats{
 display:flex;
 justify-content:center;
 gap:40px;
-margin-top:10px
+margin-top:30px
 }
 
-.stats div{
-background:#334155;
-padding:10px 20px;
-border-radius:8px
+.stat{
+background:#1e293b;
+padding:15px 25px;
+border-radius:10px
 }
 
-.container{
-max-width:1100px;
+.section{
+max-width:1200px;
 margin:auto;
-padding:20px;
+padding:40px 20px
+}
+
+.grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:20px
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:25px
 }
 
 .card{
 background:#1e293b;
-padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.5)
+padding:25px;
+border-radius:12px;
+transition:0.2s
 }
 
-.card h3{
-margin-top:0
+.card:hover{
+transform:translateY(-5px)
 }
 
 button{
-background:#3b82f6;
+background:#2563eb;
 border:none;
 padding:10px 16px;
 border-radius:6px;
@@ -77,27 +95,25 @@ cursor:pointer
 }
 
 button:hover{
-background:#2563eb
+background:#1d4ed8
 }
 
 input{
 padding:8px;
-border-radius:6px;
 border:none;
-margin-top:6px
+border-radius:6px;
+margin-top:8px
 }
 
 .page{display:none}
 .active{display:block}
 
-.history .card{
-margin-top:10px
-}
-
 footer{
 text-align:center;
-padding:30px;
-opacity:0.6
+padding:40px;
+background:#020617;
+margin-top:40px;
+opacity:0.7
 }
 
 </style>
@@ -109,170 +125,123 @@ let rebirth=0
 let secret=Math.floor(Math.random()*10)+1
 
 function update(){
-
 pointsView.innerText=points
 rebirthView.innerText=rebirth
-
 }
 
 function openPage(id){
-
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
-
 document.getElementById(id).classList.add("active")
-
 }
 
 function clickGame(){
-
 points+=100*(rebirth+1)
 update()
-
 }
 
 function guessGame(){
-
 let v=guess.value
-
 if(v==secret){
-
 points+=1000*(rebirth+1)
 alert("Dobrze!")
-
 secret=Math.floor(Math.random()*10)+1
-
-}else{
-
-alert("Źle!")
-
-}
-
+}else alert("Źle")
 update()
-
 }
 
 function spinGame(){
-
 let win=Math.floor(Math.random()*500)+1
-
 points+=win*(rebirth+1)
-
-alert("Wygrana "+win+" pkt")
-
+alert("Wygrana "+win)
 update()
-
 }
 
 function rebirthGame(){
-
 let cost=100000*Math.pow(10,rebirth)
-
-if(points<cost){
-
-alert("Za mało punktów")
-
-return
-
-}
-
+if(points<cost){alert("Za mało punktów");return}
 points=0
 rebirth++
-
 update()
-
 }
 
 function wordGame(){
-
-let ans=word.value.toLowerCase()
-
-if(ans=="kot"){
-
+let a=word.value.toLowerCase()
+if(a=="kot"){
 points+=250*(rebirth+1)
 alert("Poprawna odpowiedź")
-
-}else{
-
-alert("Niepoprawna odpowiedź")
-
-}
-
+}else alert("Źle")
 update()
-
 }
 
 function withdraw(){
-
 let amount=wAmount.value
-
-if(amount<30){
-
-alert("Minimalna wypłata 30 zł")
-return
-
-}
-
+if(amount<30){alert("Min wypłata 30 zł");return}
 let need=amount*1000000
-
-if(points<need){
-
-alert("Za mało punktów")
-return
-
-}
-
+if(points<need){alert("Za mało punktów");return}
 points-=need
-
-history.innerHTML+=`
-<div class="card">
-${amount} zł<br>
-Status: oczekujące
-</div>
-`
-
+history.innerHTML+=`<div class="card">${amount} zł - oczekujące</div>`
 update()
-
 }
 
 </script>
 </head>
 
+
 <nav>
 
-<button onclick="openPage('games')">Gry</button>
-<button onclick="openPage('withdrawPage')">Wypłaty</button>
+<div class="logo">Money Games</div>
+
+<div class="menu">
+
+<button onclick="openPage('home')">Gry</button>
+<button onclick="openPage('withdraw')">Wypłaty</button>
 <button onclick="openPage('about')">O nas</button>
 <button onclick="openPage('rules')">Regulamin</button>
-<button onclick="openPage('privacy')">Polityka prywatności</button>
-
-</nav>
-
-<header>
-
-<h1>Money Games</h1>
-
-<div class="stats">
-
-<div>Punkty<br><b id="pointsView">0</b></div>
-
-<div>Rebirth<br><b id="rebirthView">0</b></div>
+<button onclick="openPage('privacy')">Polityka</button>
 
 </div>
 
-</header>
+</nav>
 
 
-<div id="games" class="page active">
+<div id="home" class="page active">
 
-<div class="container">
+<div class="hero">
+
+<h1>Zarabiaj grając</h1>
+
+<p>Gra w gry, zdobywaj punkty i wymieniaj je na nagrody.</p>
+
+<div class="stats">
+
+<div class="stat">
+Punkty<br>
+<b id="pointsView">0</b>
+</div>
+
+<div class="stat">
+Rebirth<br>
+<b id="rebirthView">0</b>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>Gry</h2>
+
+<div class="grid">
 
 <div class="card">
 
 <h3>Klikacz</h3>
 
-<button onclick="clickGame()">Kliknij</button>
+<p>Klikaj aby zdobywać punkty.</p>
 
-<p>Każde kliknięcie daje 100 punktów razy mnożnik rebirth.</p>
+<button onclick="clickGame()">Kliknij</button>
 
 </div>
 
@@ -287,8 +256,6 @@ update()
 
 <button onclick="guessGame()">Zgadnij</button>
 
-<p>Zgadnij liczbę od 1 do 10 i wygraj 1000 punktów.</p>
-
 </div>
 
 
@@ -296,9 +263,9 @@ update()
 
 <h3>Koło fortuny</h3>
 
-<button onclick="spinGame()">Losuj</button>
+<p>Losuj nagrody punktowe.</p>
 
-<p>Wygrywasz od 1 do 500 punktów.</p>
+<button onclick="spinGame()">Losuj</button>
 
 </div>
 
@@ -307,38 +274,42 @@ update()
 
 <h3>Słowniczek</h3>
 
-<input id="word" placeholder="małe zwierzę domowe">
+<input id="word" placeholder="małe zwierzę">
 
 <br><br>
 
 <button onclick="wordGame()">Odpowiedz</button>
 
-<p>Poprawna odpowiedź daje 250 punktów.</p>
-
 </div>
+
 
 <div class="card">
 
 <h3>Rebirth</h3>
 
+<p>Zwiększ mnożnik nagród.</p>
+
 <button onclick="rebirthGame()">Rebirth</button>
 
-<p>Resetuje punkty ale zwiększa mnożnik nagród.</p>
-
 </div>
 
 </div>
 
 </div>
 
+</div>
 
-<div id="withdrawPage" class="page">
 
-<div class="container">
+
+<div id="withdraw" class="page">
+
+<div class="section">
+
+<h2>Wypłaty</h2>
+
+<div class="grid">
 
 <div class="card">
-
-<h3>Wypłata</h3>
 
 <input id="wAmount" type="number" placeholder="kwota zł">
 
@@ -347,13 +318,12 @@ update()
 <button onclick="withdraw()">Wypłać</button>
 
 <p>Minimalna wypłata 30 zł</p>
-<p>1 zł = 1 000 000 punktów</p>
 
 </div>
 
-<div class="history">
+<div>
 
-<h3>Historia wypłat</h3>
+<h3>Historia</h3>
 
 <div id="history"></div>
 
@@ -363,19 +333,19 @@ update()
 
 </div>
 
+</div>
+
+
 
 <div id="about" class="page">
 
-<div class="container">
-
-<div class="card">
+<div class="section">
 
 <h2>O nas</h2>
 
 <p>
 
-Money Games to platforma gier online gdzie użytkownicy zdobywają punkty poprzez zabawę.
-Punkty mogą zostać wykorzystane do wniosków o nagrody zgodnie z zasadami strony.
+Money Games to platforma gier online gdzie użytkownicy zdobywają punkty poprzez gry.
 
 </p>
 
@@ -383,23 +353,19 @@ Punkty mogą zostać wykorzystane do wniosków o nagrody zgodnie z zasadami stro
 
 </div>
 
-</div>
 
 
 <div id="rules" class="page">
 
-<div class="container">
-
-<div class="card">
+<div class="section">
 
 <h2>Regulamin</h2>
 
 <p>
 
-1. Punkty zdobywa się poprzez gry.  
-2. Minimalna wypłata wynosi 30 zł.  
-3. Administracja ma prawo weryfikować konta.  
-4. Nadużycia mogą skutkować blokadą konta.  
+1. Punkty zdobywa się w grach.  
+2. Minimalna wypłata 30 zł.  
+3. Administracja może weryfikować konta.
 
 </p>
 
@@ -407,21 +373,17 @@ Punkty mogą zostać wykorzystane do wniosków o nagrody zgodnie z zasadami stro
 
 </div>
 
-</div>
 
 
 <div id="privacy" class="page">
 
-<div class="container">
-
-<div class="card">
+<div class="section">
 
 <h2>Polityka prywatności</h2>
 
 <p>
 
-Strona przechowuje dane potrzebne do działania systemu gier i wypłat.
-Dane nie są sprzedawane ani przekazywane osobom trzecim.
+Strona przechowuje dane potrzebne do działania systemu.
 
 </p>
 
@@ -429,7 +391,6 @@ Dane nie są sprzedawane ani przekazywane osobom trzecim.
 
 </div>
 
-</div>
 
 
 <footer>
