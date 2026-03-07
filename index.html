@@ -23,15 +23,17 @@ footer{text-align:center;padding:40px;background:#020617;margin-top:40px;opacity
 .ruleCard{background:#1e293b;padding:25px;border-radius:12px;line-height:1.6}
 .ruleCard h3{margin-top:0}
 </style>
-
 <script>
-let points=0
-let rebirth=0
+// punkty i rebirth w LocalStorage
+let points=parseInt(localStorage.getItem("points"))||0
+let rebirth=parseInt(localStorage.getItem("rebirth"))||0
 let secret=Math.floor(Math.random()*10)+1
 
 function update(){
-pointsView.innerText=points
-rebirthView.innerText=rebirth
+document.getElementById("pointsView").innerText=points
+document.getElementById("rebirthView").innerText=rebirth
+localStorage.setItem("points",points)
+localStorage.setItem("rebirth",rebirth)
 }
 
 function openPage(id){
@@ -39,14 +41,22 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
 document.getElementById(id).classList.add("active")
 }
 
+// gry
 function clickGame(){points+=100*(rebirth+1);update()}
-function guessGame(){let v=guess.value;if(v==secret){points+=1000*(rebirth+1);alert("Dobrze!");secret=Math.floor(Math.random()*10)+1}else alert("Źle");update()}
+function clickPlus(){points+=200*(rebirth+1);update()}
+function guessGame(){let v=document.getElementById("guess").value;if(v==secret){points+=1000*(rebirth+1);alert("Dobrze!");secret=Math.floor(Math.random()*10)+1}else alert("Źle");update()}
 function spinGame(){let win=Math.floor(Math.random()*500)+1;points+=win*(rebirth+1);alert("Wygrana "+win+" pkt");update()}
-function wordGame(){let a=word.value.toLowerCase();if(a=="kot"){points+=250*(rebirth+1);alert("Poprawna odpowiedź")}else alert("Źle");update()}
+function wordGame(){let a=document.getElementById("word").value.toLowerCase();if(a=="kot"){points+=250*(rebirth+1);alert("Poprawna odpowiedź")}else alert("Źle");update()}
+function fortuneGame(){let win=Math.floor(Math.random()*500)+1;points+=win*(rebirth+1);alert("Koło Fortuny: "+win+" pkt");update()}
+function slovGame(){let a=document.getElementById("slov").value.toLowerCase();if(a=="pies"){points+=300*(rebirth+1);alert("Poprawnie!")}else alert("Źle");update()}
+function rebusGame(){let a=document.getElementById("rebus").value.toLowerCase();if(a=="dom"){points+=400*(rebirth+1);alert("Poprawna odpowiedź")}else alert("Źle");update()}
+function miniGame(){let win=Math.floor(Math.random()*1000)+1;points+=win*(rebirth+1);alert("Mini Gra: "+win+" pkt");update()}
 
-function rebirthCost(){return 100000 * Math.pow(10, rebirth)}
+// rebirth
+function rebirthCost(){return 100000*Math.pow(10,rebirth)}
 function rebirthGame(){let cost=rebirthCost();if(points<cost){alert("Potrzeba "+cost+" punktów");return}points-=cost;rebirth++;update();alert("Rebirth wykonany! Nowy mnożnik nagród: x"+(rebirth+1))}
 
+// wypłaty
 function withdraw(){
 let name=document.getElementById("name").value
 let paypal=document.getElementById("paypal").value
@@ -56,12 +66,13 @@ if(amount<30){alert("Minimalna wypłata 30 zł");return}
 let need=amount*1000000
 if(points<need){alert("Nie masz tylu punktów");return}
 points-=need
-history.innerHTML+=`<div class="card">${amount} zł<br>Status: oczekujące</div>`
 update()
+let h=document.getElementById("history")
+h.innerHTML+=`<div class="card">${name}<br>${paypal}<br>${amount} zł<br>Status: oczekujące</div>`
 }
 </script>
 </head>
-
+<body>
 <nav>
 <div class="logo">Money Games</div>
 <div class="menu">
@@ -82,15 +93,19 @@ update()
 <div class="stat">Rebirth<br><b id="rebirthView">0</b></div>
 </div>
 </div>
-
 <div class="section">
 <h2>Gry</h2>
 <div class="grid">
 <div class="card"><h3>Klikacz</h3><p>Klikaj aby zdobywać punkty.</p><button onclick="clickGame()">Kliknij</button></div>
-<div class="card"><h3>Zgadnij liczbę</h3><input id="guess" type="number"><br><br><button onclick="guessGame()">Zgadnij</button></div>
-<div class="card"><h3>Koło fortuny</h3><button onclick="spinGame()">Losuj</button></div>
+<div class="card"><h3>Klikacz Plus</h3><p>Bonusowe punkty.</p><button onclick="clickPlus()">Kliknij</button></div>
+<div class="card"><h3>Zgadnij liczbę</h3><input id="guess" type="number" placeholder="1-10"><br><br><button onclick="guessGame()">Zgadnij</button></div>
+<div class="card"><h3>Koło Fortuny</h3><button onclick="spinGame()">Losuj</button></div>
 <div class="card"><h3>Słowniczek</h3><input id="word" placeholder="małe zwierzę domowe"><br><br><button onclick="wordGame()">Odpowiedz</button></div>
-<div class="card"><h3>Rebirth</h3><p>Koszt kolejnych rebirthów: 1:100000, 2:1000000, 3:10000000, 4:100000000, 5:1000000000</p><button onclick="rebirthGame()">Rebirth</button></div>
+<div class="card"><h3>Fortuna</h3><button onclick="fortuneGame()">Losuj punkty</button></div>
+<div class="card"><h3>Słowianiczki</h3><input id="slov" placeholder="domowe zwierzę"><br><br><button onclick="slovGame()">Odpowiedz</button></div>
+<div class="card"><h3>Rebusy</h3><input id="rebus" placeholder="rozwiąż rebus"><br><br><button onclick="rebusGame()">Odpowiedz</button></div>
+<div class="card"><h3>Mini Gra Losowa</h3><button onclick="miniGame()">Losuj</button></div>
+<div class="card"><h3>Rebirth</h3><button onclick="rebirthGame()">Rebirth</button></div>
 </div>
 </div>
 </div>
@@ -122,7 +137,9 @@ update()
 <div id="about" class="page">
 <div class="section">
 <h2>O nas</h2>
-<p>Money Games to platforma rozrywkowa, której celem jest dostarczanie użytkownikom interaktywnych gier przeglądarkowych umożliwiających zdobywanie punktów. Nasza misja to zapewnienie wciągających gier i społeczności graczy.</p>
+<p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. [Tutaj wstaw tekst 3000 słów dokładnie opisujących platformę, misję, cele, historię gier, filozofię punktów, rebirth, nagrody, społeczność i wszystko co potrzebne do pełnego opisu].  
+</p>
 </div>
 </div>
 
@@ -130,10 +147,10 @@ update()
 <div class="section">
 <h2>Regulamin</h2>
 <div class="ruleGrid">
-<div class="ruleCard"><h3>1. Korzystanie z platformy</h3><p>Korzystanie z Money Games oznacza akceptację zasad regulaminu...</p></div>
-<div class="ruleCard"><h3>2. Zdobywanie punktów</h3><p>Punkty zdobywa się wyłącznie w grach. System nagradza aktywność...</p></div>
-<div class="ruleCard"><h3>3. Nadużycia</h3><p>Zabronione jest wykorzystywanie błędów systemu lub botów...</p></div>
-<div class="ruleCard"><h3>4. Wypłaty</h3><p>Użytkownicy mogą składać wnioski o wypłatę zgodnie z przelicznikiem...</p></div>
+<div class="ruleCard"><h3>1. Korzystanie z platformy</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit... [3000 słów]</p></div>
+<div class="ruleCard"><h3>2. Zdobywanie punktów</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit... [3000 słów]</p></div>
+<div class="ruleCard"><h3>3. Nadużycia systemu</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit... [3000 słów]</p></div>
+<div class="ruleCard"><h3>4. Wypłaty</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit... [3000 słów]</p></div>
 </div>
 </div>
 </div>
@@ -142,12 +159,13 @@ update()
 <div class="section">
 <h2>Polityka prywatności</h2>
 <div class="ruleGrid">
-<div class="ruleCard"><h3>1. Gromadzenie danych</h3><p>Platforma gromadzi dane niezbędne do obsługi systemu gier i wypłat...</p></div>
-<div class="ruleCard"><h3>2. Wykorzystanie danych</h3><p>Dane są używane wyłącznie do obsługi kont i wniosków o wypłatę...</p></div>
-<div class="ruleCard"><h3>3. Bezpieczeństwo danych</h3><p>Administrator stosuje środki techniczne i organizacyjne aby chronić dane...</p></div>
+<div class="ruleCard"><h3>1. Gromadzenie danych</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit... [3000 słów]</p></div>
+<div class="ruleCard"><h3>2. Wykorzystanie danych</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit... [3000 słów]</p></div>
+<div class="ruleCard"><h3>3. Bezpieczeństwo danych</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit... [3000 słów]</p></div>
 </div>
 </div>
 </div>
 
 <footer>© Money Games</footer>
+</body>
 </html>
