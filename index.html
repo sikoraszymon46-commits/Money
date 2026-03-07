@@ -16,8 +16,8 @@ nav{
 background:#1e293b;
 padding:15px;
 display:flex;
-gap:20px;
-justify-content:center
+justify-content:center;
+gap:30px
 }
 
 nav button{
@@ -29,10 +29,22 @@ cursor:pointer
 }
 
 header{
-text-align:center;
+background:#1e293b;
 padding:30px;
-font-size:28px;
-font-weight:bold
+text-align:center
+}
+
+.stats{
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:10px
+}
+
+.stats div{
+background:#334155;
+padding:10px 20px;
+border-radius:8px
 }
 
 .container{
@@ -51,6 +63,10 @@ border-radius:10px;
 box-shadow:0 0 10px rgba(0,0,0,0.5)
 }
 
+.card h3{
+margin-top:0
+}
+
 button{
 background:#3b82f6;
 border:none;
@@ -66,17 +82,16 @@ background:#2563eb
 
 input{
 padding:8px;
+border-radius:6px;
 border:none;
-border-radius:5px;
-margin-top:5px
+margin-top:6px
 }
 
-.page{
-display:none
-}
+.page{display:none}
+.active{display:block}
 
-.active{
-display:block
+.history .card{
+margin-top:10px
 }
 
 footer{
@@ -89,21 +104,23 @@ opacity:0.6
 
 <script>
 
+let points=0
+let rebirth=0
+let secret=Math.floor(Math.random()*10)+1
+
+function update(){
+
+pointsView.innerText=points
+rebirthView.innerText=rebirth
+
+}
+
 function openPage(id){
 
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
 
 document.getElementById(id).classList.add("active")
 
-}
-
-let points=0
-let rebirth=0
-let secret=Math.floor(Math.random()*10)+1
-
-function update(){
-document.getElementById("points").innerText=points
-document.getElementById("rebirth").innerText=rebirth
 }
 
 function clickGame(){
@@ -115,7 +132,7 @@ update()
 
 function guessGame(){
 
-let v=document.getElementById("guess").value
+let v=guess.value
 
 if(v==secret){
 
@@ -126,7 +143,7 @@ secret=Math.floor(Math.random()*10)+1
 
 }else{
 
-alert("Źle")
+alert("Źle!")
 
 }
 
@@ -140,7 +157,7 @@ let win=Math.floor(Math.random()*500)+1
 
 points+=win*(rebirth+1)
 
-alert("Wygrana "+win)
+alert("Wygrana "+win+" pkt")
 
 update()
 
@@ -167,7 +184,7 @@ update()
 
 function wordGame(){
 
-let ans=document.getElementById("word").value.toLowerCase()
+let ans=word.value.toLowerCase()
 
 if(ans=="kot"){
 
@@ -176,7 +193,7 @@ alert("Poprawna odpowiedź")
 
 }else{
 
-alert("Niepoprawna")
+alert("Niepoprawna odpowiedź")
 
 }
 
@@ -186,12 +203,11 @@ update()
 
 function withdraw(){
 
-let amount=document.getElementById("amount").value
+let amount=wAmount.value
 
 if(amount<30){
 
-alert("Min wypłata 30 zł")
-
+alert("Minimalna wypłata 30 zł")
 return
 
 }
@@ -201,16 +217,18 @@ let need=amount*1000000
 if(points<need){
 
 alert("Za mało punktów")
-
 return
 
 }
 
 points-=need
 
-let h=document.getElementById("history")
-
-h.innerHTML+="<div class='card'>"+amount+" zł - oczekujące</div>"
+history.innerHTML+=`
+<div class="card">
+${amount} zł<br>
+Status: oczekujące
+</div>
+`
 
 update()
 
@@ -219,39 +237,42 @@ update()
 </script>
 </head>
 
-
 <nav>
 
-<button onclick="openPage('home')">Gry</button>
-<button onclick="openPage('withdraw')">Wypłaty</button>
+<button onclick="openPage('games')">Gry</button>
+<button onclick="openPage('withdrawPage')">Wypłaty</button>
 <button onclick="openPage('about')">O nas</button>
 <button onclick="openPage('rules')">Regulamin</button>
 <button onclick="openPage('privacy')">Polityka prywatności</button>
 
 </nav>
 
+<header>
 
-<header>Money Games</header>
+<h1>Money Games</h1>
+
+<div class="stats">
+
+<div>Punkty<br><b id="pointsView">0</b></div>
+
+<div>Rebirth<br><b id="rebirthView">0</b></div>
+
+</div>
+
+</header>
 
 
-<div id="home" class="page active">
+<div id="games" class="page active">
 
 <div class="container">
 
 <div class="card">
 
-<h3>Panel gracza</h3>
+<h3>Klikacz</h3>
 
-Punkty: <span id="points">0</span><br>
-Rebirth: <span id="rebirth">0</span>
+<button onclick="clickGame()">Kliknij</button>
 
-<br><br>
-
-<button onclick="clickGame()">Kliknij +100</button>
-
-<button onclick="rebirthGame()">Rebirth</button>
-
-<p>Klikaj aby zdobywać punkty. Rebirth zwiększa mnożnik nagród.</p>
+<p>Każde kliknięcie daje 100 punktów razy mnożnik rebirth.</p>
 
 </div>
 
@@ -277,7 +298,7 @@ Rebirth: <span id="rebirth">0</span>
 
 <button onclick="spinGame()">Losuj</button>
 
-<p>Losuj nagrodę od 1 do 500 punktów.</p>
+<p>Wygrywasz od 1 do 500 punktów.</p>
 
 </div>
 
@@ -296,13 +317,22 @@ Rebirth: <span id="rebirth">0</span>
 
 </div>
 
+<div class="card">
+
+<h3>Rebirth</h3>
+
+<button onclick="rebirthGame()">Rebirth</button>
+
+<p>Resetuje punkty ale zwiększa mnożnik nagród.</p>
+
+</div>
+
 </div>
 
 </div>
 
 
-
-<div id="withdraw" class="page">
+<div id="withdrawPage" class="page">
 
 <div class="container">
 
@@ -310,7 +340,7 @@ Rebirth: <span id="rebirth">0</span>
 
 <h3>Wypłata</h3>
 
-<input id="amount" type="number" placeholder="kwota zł">
+<input id="wAmount" type="number" placeholder="kwota zł">
 
 <br><br>
 
@@ -321,7 +351,7 @@ Rebirth: <span id="rebirth">0</span>
 
 </div>
 
-<div>
+<div class="history">
 
 <h3>Historia wypłat</h3>
 
@@ -334,7 +364,6 @@ Rebirth: <span id="rebirth">0</span>
 </div>
 
 
-
 <div id="about" class="page">
 
 <div class="container">
@@ -345,8 +374,8 @@ Rebirth: <span id="rebirth">0</span>
 
 <p>
 
-Money Games to platforma rozrywkowa gdzie użytkownicy mogą zdobywać punkty grając w gry.
-Punkty mogą być zamieniane na nagrody zgodnie z zasadami platformy.
+Money Games to platforma gier online gdzie użytkownicy zdobywają punkty poprzez zabawę.
+Punkty mogą zostać wykorzystane do wniosków o nagrody zgodnie z zasadami strony.
 
 </p>
 
@@ -355,7 +384,6 @@ Punkty mogą być zamieniane na nagrody zgodnie z zasadami platformy.
 </div>
 
 </div>
-
 
 
 <div id="rules" class="page">
@@ -368,10 +396,10 @@ Punkty mogą być zamieniane na nagrody zgodnie z zasadami platformy.
 
 <p>
 
-1. Użytkownik zdobywa punkty poprzez gry dostępne na stronie.  
-2. Punkty mogą zostać wykorzystane do wniosków o wypłatę.  
-3. Minimalna wypłata wynosi 30 zł.  
-4. Administracja ma prawo weryfikacji kont.  
+1. Punkty zdobywa się poprzez gry.  
+2. Minimalna wypłata wynosi 30 zł.  
+3. Administracja ma prawo weryfikować konta.  
+4. Nadużycia mogą skutkować blokadą konta.  
 
 </p>
 
@@ -380,7 +408,6 @@ Punkty mogą być zamieniane na nagrody zgodnie z zasadami platformy.
 </div>
 
 </div>
-
 
 
 <div id="privacy" class="page">
@@ -393,8 +420,8 @@ Punkty mogą być zamieniane na nagrody zgodnie z zasadami platformy.
 
 <p>
 
-Strona przechowuje podstawowe dane użytkownika potrzebne do działania systemu gier
-i realizacji wypłat. Dane nie są udostępniane osobom trzecim.
+Strona przechowuje dane potrzebne do działania systemu gier i wypłat.
+Dane nie są sprzedawane ani przekazywane osobom trzecim.
 
 </p>
 
