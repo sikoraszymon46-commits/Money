@@ -20,12 +20,12 @@ justify-content:space-between;
 align-items:center
 }
 
-nav .logo{
+.logo{
 font-size:22px;
 font-weight:bold
 }
 
-nav .menu button{
+.menu button{
 background:none;
 border:none;
 color:white;
@@ -40,20 +40,11 @@ padding:60px 20px;
 background:linear-gradient(180deg,#0f172a,#020617)
 }
 
-.hero h1{
-font-size:40px;
-margin-bottom:10px
-}
-
-.hero p{
-opacity:0.8
-}
-
 .stats{
 display:flex;
 justify-content:center;
 gap:40px;
-margin-top:30px
+margin-top:20px
 }
 
 .stat{
@@ -77,12 +68,7 @@ gap:25px
 .card{
 background:#1e293b;
 padding:25px;
-border-radius:12px;
-transition:0.2s
-}
-
-.card:hover{
-transform:translateY(-5px)
+border-radius:12px
 }
 
 button{
@@ -102,7 +88,8 @@ input{
 padding:8px;
 border:none;
 border-radius:6px;
-margin-top:8px
+margin-top:8px;
+width:100%
 }
 
 .page{display:none}
@@ -152,15 +139,7 @@ update()
 function spinGame(){
 let win=Math.floor(Math.random()*500)+1
 points+=win*(rebirth+1)
-alert("Wygrana "+win)
-update()
-}
-
-function rebirthGame(){
-let cost=100000*Math.pow(10,rebirth)
-if(points<cost){alert("Za mało punktów");return}
-points=0
-rebirth++
+alert("Wygrana "+win+" pkt")
 update()
 }
 
@@ -173,13 +152,71 @@ alert("Poprawna odpowiedź")
 update()
 }
 
+function rebirthCost(){
+
+let costs=[
+100000,
+1000000,
+10000000,
+100000000,
+1000000000
+]
+
+return costs[rebirth] || null
+}
+
+function rebirthGame(){
+
+let cost=rebirthCost()
+
+if(cost==null){
+alert("Osiągnięto maksymalny rebirth")
+return
+}
+
+if(points<cost){
+alert("Potrzeba "+cost+" punktów")
+return
+}
+
+points=0
+rebirth++
+
+update()
+}
+
 function withdraw(){
-let amount=wAmount.value
-if(amount<30){alert("Min wypłata 30 zł");return}
+
+let name=document.getElementById("name").value
+let paypal=document.getElementById("paypal").value
+let amount=document.getElementById("amount").value
+
+if(!name || !paypal || !amount){
+alert("Wypełnij wszystkie pola")
+return
+}
+
+if(amount<30){
+alert("Minimalna wypłata 30 zł")
+return
+}
+
 let need=amount*1000000
-if(points<need){alert("Za mało punktów");return}
+
+if(points<need){
+alert("Nie masz tylu punktów")
+return
+}
+
 points-=need
-history.innerHTML+=`<div class="card">${amount} zł - oczekujące</div>`
+
+history.innerHTML+=`
+<div class="card">
+${amount} zł<br>
+Status: oczekujące
+</div>
+`
+
 update()
 }
 
@@ -197,7 +234,7 @@ update()
 <button onclick="openPage('withdraw')">Wypłaty</button>
 <button onclick="openPage('about')">O nas</button>
 <button onclick="openPage('rules')">Regulamin</button>
-<button onclick="openPage('privacy')">Polityka</button>
+<button onclick="openPage('privacy')">Polityka prywatności</button>
 
 </div>
 
@@ -263,8 +300,6 @@ Rebirth<br>
 
 <h3>Koło fortuny</h3>
 
-<p>Losuj nagrody punktowe.</p>
-
 <button onclick="spinGame()">Losuj</button>
 
 </div>
@@ -274,7 +309,7 @@ Rebirth<br>
 
 <h3>Słowniczek</h3>
 
-<input id="word" placeholder="małe zwierzę">
+<input id="word" placeholder="małe zwierzę domowe">
 
 <br><br>
 
@@ -287,7 +322,15 @@ Rebirth<br>
 
 <h3>Rebirth</h3>
 
-<p>Zwiększ mnożnik nagród.</p>
+<p>Koszt kolejnych rebirthów:</p>
+
+<ul>
+<li>1: 100 000 pkt</li>
+<li>2: 1 000 000 pkt</li>
+<li>3: 10 000 000 pkt</li>
+<li>4: 100 000 000 pkt</li>
+<li>5: 1 000 000 000 pkt</li>
+</ul>
 
 <button onclick="rebirthGame()">Rebirth</button>
 
@@ -311,19 +354,54 @@ Rebirth<br>
 
 <div class="card">
 
-<input id="wAmount" type="number" placeholder="kwota zł">
+<h3>Wniosek o wypłatę</h3>
+
+<p>
+
+Punkty zdobyte w grach mogą zostać wymienione na nagrody pieniężne.
+
+</p>
+
+<p>
+
+<b>Przelicznik:</b><br>
+1 zł = 1 000 000 punktów
+
+</p>
+
+<p>
+
+<b>Minimalna wypłata:</b> 30 zł
+
+</p>
+
+<p>
+
+Wypłaty realizowane są poprzez PayPal.
+
+</p>
+
+<br>
+
+<input id="name" placeholder="Imię i nazwisko">
 
 <br><br>
 
-<button onclick="withdraw()">Wypłać</button>
+<input id="paypal" placeholder="Email PayPal">
 
-<p>Minimalna wypłata 30 zł</p>
+<br><br>
+
+<input id="amount" type="number" placeholder="Kwota zł">
+
+<br><br>
+
+<button onclick="withdraw()">Złóż wniosek</button>
 
 </div>
 
 <div>
 
-<h3>Historia</h3>
+<h3>Historia wypłat</h3>
 
 <div id="history"></div>
 
@@ -345,7 +423,22 @@ Rebirth<br>
 
 <p>
 
-Money Games to platforma gier online gdzie użytkownicy zdobywają punkty poprzez gry.
+Money Games to platforma rozrywkowa, której celem jest dostarczanie użytkownikom
+interaktywnych gier przeglądarkowych umożliwiających zdobywanie punktów.
+Platforma została stworzona jako projekt demonstracyjny pokazujący jak gry
+internetowe mogą być połączone z systemem nagród i rankingów.
+
+Naszą misją jest zapewnienie użytkownikom prostych, ale wciągających gier,
+które pozwalają zdobywać punkty poprzez aktywność i zaangażowanie.
+Wierzymy, że gry przeglądarkowe mogą być zarówno rozrywką, jak i sposobem
+na budowanie społeczności graczy.
+
+Platforma stale się rozwija i w przyszłości planowane jest dodanie nowych
+funkcji, takich jak ranking graczy, nowe tryby gier, wydarzenia sezonowe
+oraz dodatkowe systemy nagród.
+
+Naszym celem jest także zapewnienie przejrzystych zasad działania,
+bezpieczeństwa danych użytkowników oraz stabilnego działania strony.
 
 </p>
 
@@ -363,9 +456,14 @@ Money Games to platforma gier online gdzie użytkownicy zdobywają punkty poprze
 
 <p>
 
-1. Punkty zdobywa się w grach.  
-2. Minimalna wypłata 30 zł.  
-3. Administracja może weryfikować konta.
+1. Korzystanie z platformy oznacza akceptację niniejszego regulaminu.  
+2. Użytkownik zdobywa punkty poprzez udział w grach dostępnych na stronie.  
+3. Punkty mogą być wykorzystywane do składania wniosków o nagrody.  
+4. Minimalna kwota wypłaty wynosi 30 zł.  
+5. Administracja ma prawo weryfikować konta użytkowników.  
+6. Zabronione jest wykorzystywanie błędów systemu do zdobywania punktów.  
+7. Konta naruszające regulamin mogą zostać zablokowane.  
+8. Administracja może wprowadzać zmiany w regulaminie.
 
 </p>
 
@@ -383,7 +481,15 @@ Money Games to platforma gier online gdzie użytkownicy zdobywają punkty poprze
 
 <p>
 
-Strona przechowuje dane potrzebne do działania systemu.
+Strona przechowuje dane niezbędne do działania systemu gier i wypłat.
+Dane takie jak adres e-mail PayPal lub imię użytkownika są wykorzystywane
+wyłącznie w celu realizacji wniosków o wypłatę oraz obsługi platformy.
+
+Dane użytkowników nie są sprzedawane ani przekazywane osobom trzecim
+bez zgody użytkownika, chyba że wymagają tego przepisy prawa.
+
+Administrator dokłada wszelkich starań aby zapewnić bezpieczeństwo
+przechowywanych informacji.
 
 </p>
 
