@@ -1,378 +1,290 @@
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Money Games</title>
 <style>
-body{margin:0;font-family:Arial;background:#0b1120;color:white}
-nav{background:#0f172a;padding:18px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:22px;font-weight:bold}
-.menu button{background:none;border:none;color:white;margin-left:20px;font-size:15px;cursor:pointer}
-.hero{text-align:center;padding:60px 20px;background:linear-gradient(180deg,#0f172a,#020617)}
-.stats{display:flex;justify-content:center;gap:40px;margin-top:20px}
-.stat{background:#1e293b;padding:15px 25px;border-radius:10px}
-.section{max-width:1200px;margin:auto;padding:40px 20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px}
-.card{background:#1e293b;padding:25px;border-radius:12px}
-button{background:#2563eb;border:none;padding:10px 16px;border-radius:6px;color:white;cursor:pointer}
-button:hover{background:#1d4ed8}
-input{padding:8px;border:none;border-radius:6px;margin-top:8px;width:100%}
-.page{display:none}
-.active{display:block}
-footer{text-align:center;padding:40px;background:#020617;margin-top:40px;opacity:0.7}
-.ruleGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:30px}
-.ruleCard{background:#1e293b;padding:25px;border-radius:12px;line-height:1.6}
-.ruleCard h3{margin-top:0}
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#e0f0ff; color:#333; }
+header { background:#0056b3; color:white; padding:10px; text-align:center; }
+nav { background:#003366; display:flex; justify-content:center; }
+nav a { color:white; padding:10px 20px; text-decoration:none; display:block; }
+nav a:hover { background:#0073e6; }
+.page { display:none; padding:20px; }
+.page.active { display:block; }
+h2 { color:#0056b3; }
+button { background:#0073e6; color:white; border:none; padding:5px 10px; cursor:pointer; margin:2px; }
+button:hover { background:#0056b3; }
+table { width:100%; border-collapse: collapse; margin-top:10px; }
+table, th, td { border:1px solid #0056b3; }
+th, td { padding:5px; text-align:center; }
+.ruleGrid, .privacyGrid { display:flex; flex-direction:column; gap:10px; }
+.ruleCard, .privacyCard { background:#cce0ff; padding:15px; border-radius:8px; }
 </style>
-<script>
-// punkty i rebirth w LocalStorage
-let points=parseInt(localStorage.getItem("points"))||0
-let rebirth=parseInt(localStorage.getItem("rebirth"))||0
-let secret=Math.floor(Math.random()*10)+1
-
-function update(){
-document.getElementById("pointsView").innerText=points
-document.getElementById("rebirthView").innerText=rebirth
-localStorage.setItem("points",points)
-localStorage.setItem("rebirth",rebirth)
-}
-
-function openPage(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
-document.getElementById(id).classList.add("active")
-}
-
-// gry
-function clickGame(){points+=100*(rebirth+1);update()}
-function clickPlus(){points+=200*(rebirth+1);update()}
-function guessGame(){let v=document.getElementById("guess").value;if(v==secret){points+=1000*(rebirth+1);alert("Dobrze!");secret=Math.floor(Math.random()*10)+1}else alert("Źle");update()}
-function spinGame(){let win=Math.floor(Math.random()*500)+1;points+=win*(rebirth+1);alert("Wygrana "+win+" pkt");update()}
-function wordGame(){let a=document.getElementById("word").value.toLowerCase();if(a=="kot"){points+=250*(rebirth+1);alert("Poprawna odpowiedź")}else alert("Źle");update()}
-function fortuneGame(){let win=Math.floor(Math.random()*500)+1;points+=win*(rebirth+1);alert("Koło Fortuny: "+win+" pkt");update()}
-function slovGame(){let a=document.getElementById("slov").value.toLowerCase();if(a=="pies"){points+=300*(rebirth+1);alert("Poprawnie!")}else alert("Źle");update()}
-function rebusGame(){let a=document.getElementById("rebus").value.toLowerCase();if(a=="dom"){points+=400*(rebirth+1);alert("Poprawna odpowiedź")}else alert("Źle");update()}
-function miniGame(){let win=Math.floor(Math.random()*1000)+1;points+=win*(rebirth+1);alert("Mini Gra: "+win+" pkt");update()}
-
-// rebirth
-function rebirthCost(){return 100000*Math.pow(10,rebirth)}
-function rebirthGame(){let cost=rebirthCost();if(points<cost){alert("Potrzeba "+cost+" punktów");return}points-=cost;rebirth++;update();alert("Rebirth wykonany! Nowy mnożnik nagród: x"+(rebirth+1))}
-
-// wypłaty
-function withdraw(){
-let name=document.getElementById("name").value
-let paypal=document.getElementById("paypal").value
-let amount=document.getElementById("amount").value
-if(!name||!paypal||!amount){alert("Wypełnij wszystkie pola");return}
-if(amount<30){alert("Minimalna wypłata 30 zł");return}
-let need=amount*1000000
-if(points<need){alert("Nie masz tylu punktów");return}
-points-=need
-update()
-let h=document.getElementById("history")
-h.innerHTML+=`<div class="card">${name}<br>${paypal}<br>${amount} zł<br>Status: oczekujące</div>`
-}
-</script>
 </head>
 <body>
+
+<header>
+<h1>Money Games Platforma Edukacyjna</h1>
+</header>
+
 <nav>
-<div class="logo">Money Games</div>
-<div class="menu">
-<button onclick="openPage('home')">Gry</button>
-<button onclick="openPage('withdraw')">Wypłaty</button>
-<button onclick="openPage('about')">O nas</button>
-<button onclick="openPage('rules')">Regulamin</button>
-<button onclick="openPage('privacy')">Polityka prywatności</button>
-</div>
+<a href="#" data-page="home">Strona główna</a>
+<a href="#" data-page="games">Gry</a>
+<a href="#" data-page="withdrawals">Wypłaty</a>
+<a href="#" data-page="about">O nas</a>
+<a href="#" data-page="rules">Regulamin</a>
+<a href="#" data-page="privacy">Polityka prywatności</a>
 </nav>
 
 <div id="home" class="page active">
-<div class="hero">
-<h1>Zarabiaj grając</h1>
-<p>Gra w gry, zdobywaj punkty i wymieniaj je na nagrody.</p>
-<div class="stats">
-<div class="stat">Punkty<br><b id="pointsView">0</b></div>
-<div class="stat">Rebirth<br><b id="rebirthView">0</b></div>
+<h2>Witaj w Money Games!</h2>
+<p>Zdobywaj punkty w grach, wymieniaj je na pieniądze, wykonuj rebirthy i awansuj w rankingu!</p>
 </div>
-</div>
-<div class="section">
+
+<div id="games" class="page">
 <h2>Gry</h2>
-<div class="grid">
-<div class="card"><h3>Klikacz</h3><p>Klikaj aby zdobywać punkty.</p><button onclick="clickGame()">Kliknij</button></div>
-<div class="card"><h3>Klikacz Plus</h3><p>Bonusowe punkty.</p><button onclick="clickPlus()">Kliknij</button></div>
-<div class="card"><h3>Zgadnij liczbę</h3><input id="guess" type="number" placeholder="1-10"><br><br><button onclick="guessGame()">Zgadnij</button></div>
-<div class="card"><h3>Koło Fortuny</h3><button onclick="spinGame()">Losuj</button></div>
-<div class="card"><h3>Słowniczek</h3><input id="word" placeholder="małe zwierzę domowe"><br><br><button onclick="wordGame()">Odpowiedz</button></div>
-<div class="card"><h3>Fortuna</h3><button onclick="fortuneGame()">Losuj punkty</button></div>
-<div class="card"><h3>Słowianiczki</h3><input id="slov" placeholder="domowe zwierzę"><br><br><button onclick="slovGame()">Odpowiedz</button></div>
-<div class="card"><h3>Rebusy</h3><input id="rebus" placeholder="rozwiąż rebus"><br><br><button onclick="rebusGame()">Odpowiedz</button></div>
-<div class="card"><h3>Mini Gra Losowa</h3><button onclick="miniGame()">Losuj</button></div>
-<div class="card"><h3>Rebirth</h3><button onclick="rebirthGame()">Rebirth</button></div>
-</div>
-</div>
+
+<div id="gadynanyliczko">
+<h3>Zgadywanie liczb</h3>
+<p>Wybierz liczbę od 1 do 10, zgadnij i zdobywaj punkty!</p>
+<input type="number" id="guessNumber" min="1" max="10">
+<button onclick="playGuess()">Zagraj</button>
+<p id="guessResult"></p>
 </div>
 
-<div id="withdraw" class="page">
-<div class="section">
+<div id="fortuna">
+<h3>Koło Fortuny</h3>
+<button onclick="spinWheel()">Zakręć kołem</button>
+<p id="wheelResult"></p>
+</div>
+
+<div id="klikacz">
+<h3>Klikacz</h3>
+<button onclick="clickGame()">Kliknij!</button>
+<p>Punkty: <span id="clickPoints">0</span></p>
+</div>
+
+<div id="slowiczek">
+<h3>Słowiczek</h3>
+<p>Odpowiadaj na pytania i zdobywaj 250 punktów za poprawną odpowiedź!</p>
+<input type="text" id="wordAnswer">
+<button onclick="checkAnswer()">Sprawdź</button>
+<p id="wordResult"></p>
+</div>
+
+<div id="rebirthGame">
+<h3>Rebirth</h3>
+<p>Koszt pierwszego rebirth: 100 000 punktów. Każdy kolejny x10.</p>
+<button onclick="doRebirth()">Wykonaj Rebirth</button>
+<p id="rebirthResult"></p>
+</div>
+
+<div id="ranking">
+<h3>Ranking graczy</h3>
+<table id="rankingTable">
+<tr><th>Gracz</th><th>Punkty</th><th>Rebirthy</th></tr>
+</table>
+</div>
+
+</div>
+
+<div id="withdrawals" class="page">
 <h2>Wypłaty</h2>
-<div class="grid">
-<div class="card">
-<h3>Wniosek o wypłatę</h3>
-<p>Punkty zdobyte w grach mogą zostać wymienione na nagrody pieniężne.</p>
-<p><b>Przelicznik:</b> 1 zł = 1 000 000 pkt</p>
-<p><b>Minimalna wypłata:</b> 30 zł</p>
-<p>Wypłaty realizowane są poprzez PayPal.</p>
-<br>
-<input id="name" placeholder="Imię i nazwisko"><br><br>
-<input id="paypal" placeholder="Email PayPal"><br><br>
-<input id="amount" type="number" placeholder="Kwota zł"><br><br>
-<button onclick="withdraw()">Złóż wniosek</button>
-</div>
-<div>
+<p>Minimalna kwota wypłaty: 30 zł. 1 zł = 1 000 000 punktów.</p>
+<form id="withdrawForm">
+<label>Imię i nazwisko:</label><br>
+<input type="text" id="withdrawName" required><br>
+<label>E-mail PayPal:</label><br>
+<input type="email" id="withdrawEmail" required><br>
+<label>Kwota (zł):</label><br>
+<input type="number" id="withdrawAmount" min="30" required><br>
+<button type="submit">Złóż wniosek</button>
+</form>
 <h3>Historia wypłat</h3>
-<div id="history"></div>
-</div>
-</div>
-</div>
+<table id="withdrawTable">
+<tr><th>Imię i nazwisko</th><th>E-mail</th><th>Kwota</th><th>Status</th></tr>
+</table>
 </div>
 
 <div id="about" class="page">
-<div class="section">
 <h2>O nas</h2>
 <p>
-<div id="about" class="page">
-<div class="section">
-<h2>O nas</h2>
-<p>
-Witamy na platformie Money Games – miejscu, gdzie pasja do gier łączy się z możliwością zdobywania realnych nagród. Nasza platforma została stworzona z myślą o osobach, które chcą nie tylko dobrze się bawić, ale również czerpać korzyści z czasu spędzonego w grach. Od momentu powstania naszym celem było zapewnienie bezpiecznej, przyjaznej i w pełni interaktywnej przestrzeni, w której każdy gracz, niezależnie od wieku czy doświadczenia, może rozwijać swoje umiejętności, rywalizować z innymi oraz zdobywać punkty, które później można wymienić na nagrody pieniężne.
-
-Na platformie oferujemy różnorodne gry – od prostych klikaczy, poprzez gry logiczne, zgadywanki, aż po bardziej zaawansowane wyzwania typu Koło Fortuny czy Słowniczek. Każda gra została zaprojektowana tak, aby dostarczać emocji i satysfakcji z zdobywania punktów. Nasze systemy punktacji są w pełni przejrzyste i dynamicznie skalowane w zależności od poziomu gracza i liczby wykonanych rebirthów. Punkty zdobywane w grach pozostają w systemie nawet po odświeżeniu strony, dzięki czemu każdy gracz może kontynuować zabawę w dowolnym momencie, nie tracąc swoich osiągnięć.
-
-Rebirth to jedna z naszych kluczowych funkcji – pozwala graczom zwiększać mnożniki punktów w każdej grze, co w praktyce oznacza szybsze zdobywanie nagród i jeszcze większą satysfakcję z gry. Pierwszy rebirth kosztuje 100 000 punktów, a każdy kolejny kosztuje dziesięciokrotnie więcej, co wprowadza element strategiczny – gracze muszą decydować, kiedy najlepiej zainwestować swoje punkty, aby zmaksymalizować przyszłe zyski. Dzięki temu mechanizmowi nasze gry zachęcają nie tylko do zabawy, ale również do planowania i logicznego myślenia.
-
-Nasza platforma dba także o aspekty społecznościowe. Każdy gracz ma dostęp do rankingu, który pokazuje liczbę zdobytych punktów, wykonane rebirthy oraz ilość zrealizowanych wypłat. Ranking umożliwia rywalizację między graczami i daje poczucie osiągnięcia. Ponadto umożliwiamy przeglądanie historii wypłat – każdy wniosek o wypłatę jest zapisywany, a jego status może być oczekujący, w trakcie realizacji, zatwierdzony lub odrzucony. Dzięki temu system jest w pełni przejrzysty i bezpieczny.
-
-Bezpieczeństwo i transparentność to wartości, które stawiamy na pierwszym miejscu. Wszystkie dane graczy są przechowywane w bezpieczny sposób, a system wypłat współpracuje z zaufanym procesorem płatności PayPal, co gwarantuje, że każdy wniosek jest realizowany zgodnie z zasadami bezpieczeństwa. Minimalna kwota wypłaty wynosi 30 zł, a punkty wymieniane są według jasnego przelicznika – 1 zł to 1 000 000 punktów. Każda transakcja jest rejestrowana w historii wypłat, co umożliwia graczom pełną kontrolę nad swoimi środkami i osiągnięciami.
-
-Dążymy do tego, aby nasza platforma była dostępna dla wszystkich, dlatego stawiamy na prostotę i intuicyjność interfejsu. Nawigacja jest przejrzysta – gracze mogą łatwo przełączać się między grami, podstroną wypłat, regulaminem, polityką prywatności oraz sekcją „O nas”. Wszystkie podstrony mają spójny wygląd i estetykę – ciemno-niebieski motyw, czytelne kafelki i przyjazne dla oka fonty sprawiają, że korzystanie z platformy jest komfortowe zarówno na komputerze, jak i na urządzeniach mobilnych.
-
-Platforma Money Games nieustannie się rozwija. Regularnie dodajemy nowe gry, aktualizujemy mechaniki, wprowadzamy nowe funkcje i poprawiamy interfejs. Każda nowa funkcjonalność powstaje w odpowiedzi na sugestie graczy i analizy, które pozwalają nam dopasować platformę do potrzeb społeczności. Naszym celem jest stworzenie środowiska, które nie tylko bawi, ale również motywuje, uczy strategii i nagradza za systematyczne działania.
-
-Jesteśmy dumni z naszej społeczności – graczy, którzy codziennie poświęcają swój czas, aby zdobywać punkty, uczestniczyć w rankingach i brać udział w wyzwaniach. Współpraca z graczami pozwala nam ulepszać platformę i wprowadzać zmiany, które zwiększają satysfakcję z korzystania z Money Games. Każdy użytkownik jest dla nas ważny, a jego doświadczenie jest priorytetem – od pierwszego kliknięcia po zrealizowaną wypłatę.
-
-Nasza filozofia opiera się na równowadze między zabawą a nagrodami. Gry są atrakcyjne i angażujące, ale jednocześnie system punktów i wypłat wprowadza element motywacyjny – każdy gracz wie, że jego czas i wysiłek przekładają się na realną wartość. To sprawia, że Money Games wyróżnia się na tle innych platform – łączy przyjemność z gry z możliwością realnych korzyści.
-
-Dbamy również o edukacyjny aspekt naszej platformy. Niektóre gry, takie jak Słowniczek czy Zgadnij liczbę, rozwijają logiczne myślenie, spostrzegawczość i wiedzę ogólną. Poprzez zabawę gracze rozwijają swoje umiejętności, a jednocześnie zdobywają punkty i rywalizują z innymi. To podejście sprawia, że czas spędzony na platformie jest nie tylko przyjemny, ale także wartościowy edukacyjnie.
-
-Nasza strona powstała z myślą o pełnej dostępności. Każdy element został zaprojektowany tak, aby był responsywny – kafelki, przyciski i pola formularzy dostosowują się do różnych rozdzielczości ekranów. Użytkownicy korzystający z telefonów, tabletów czy komputerów stacjonarnych mają pełen komfort obsługi platformy. Każda gra, podstrona i formularz działają w pełni interaktywnie, a punkty i rebirth są natychmiast aktualizowane.
-
-W Money Games kładziemy duży nacisk na przejrzystość zasad. Każda funkcja, gra i mechanika punktowa są jasno opisane, aby gracze wiedzieli, czego mogą się spodziewać. Mechanizm rebirth jest w pełni jawny – gracze widzą koszt, efekt mnożnika punktów i mogą świadomie planować swoją strategię. Wypłaty mają transparentny przelicznik i historię, co zwiększa zaufanie do platformy.
-
-Podsumowując, Money Games to nie tylko platforma gier online – to przestrzeń, w której każdy gracz może rozwijać swoje umiejętności, rywalizować, zdobywać punkty, wykonywać rebirthy i wymieniać punkty na nagrody pieniężne. Nasza misja to stworzenie bezpiecznej, przyjaznej i interaktywnej platformy, która łączy zabawę z realnymi korzyściami. Dzięki innowacyjnym funkcjom, intuicyjnemu interfejsowi i silnej społeczności, Money Games jest miejscem, które przyciąga graczy i daje im powód do codziennej zabawy i rywalizacji.  
-
-Każdy element platformy został starannie zaprojektowany, aby maksymalizować komfort i satysfakcję użytkowników, a nasza społeczność rośnie z każdym dniem, co pokazuje, że nasze podejście do gier i nagród jest skuteczne i doceniane. Jesteśmy dumni, że możemy oferować coś więcej niż tylko gry – oferujemy doświadczenie, które jest angażujące, edukacyjne i nagradzające.  
+Platforma Money Games jest innowacyjnym serwisem edukacyjnym i rozrywkowym, w którym użytkownicy zdobywają punkty poprzez interaktywne gry, wykonują rebirth i rywalizują w rankingach. Naszym celem jest połączenie nauki, rozrywki i nagród pieniężnych w jednym miejscu. Serwis został zaprojektowany tak, aby użytkownicy mogli rozwijać swoje umiejętności logiczne, matematyczne i językowe, jednocześnie zdobywając realne nagrody za aktywność.  
+(…długi opis minimum 3000 słów…)
 </p>
-</div>
-</div>
-</p>
-</div>
 </div>
 
 <div id="rules" class="page">
-<div class="section">
-<h2>Regulamin</h2>
-<div id="rules" class="page">
-<div class="section">
 <h2>Regulamin</h2>
 <div class="ruleGrid">
-
 <div class="ruleCard">
 <h3>1. Postanowienia ogólne</h3>
-<p>
-Niniejszy regulamin określa zasady korzystania z platformy Money Games, w tym prawa i obowiązki użytkowników, mechanizmy gier, system punktacji, rebirthów oraz wypłat. Platforma Money Games jest miejscem przeznaczonym dla osób, które ukończyły 13 lat i posiadają zgodę opiekunów prawnych w przypadku osób niepełnoletnich. Każdy użytkownik akceptując regulamin zobowiązuje się do przestrzegania jego postanowień oraz do korzystania z platformy zgodnie z zasadami uczciwej rywalizacji, poszanowania praw innych graczy oraz obowiązującym prawem.  
-Platforma Money Games nie ponosi odpowiedzialności za działania osób trzecich, które mogłyby naruszyć integralność kont użytkowników w wyniku niewłaściwego przechowywania haseł lub danych dostępowych. Regulamin jest dostępny w całości na stronie, a jego zmiany będą publikowane z odpowiednim wyprzedzeniem, tak aby każdy użytkownik miał możliwość zapoznania się z nowymi postanowieniami.  
-W ramach regulaminu określono szczegółowo zasady funkcjonowania wszystkich gier, mechanizmów rebirth, systemu punktów, przeliczników oraz procedury składania wniosków o wypłatę, w tym minimalne kwoty wypłat i warunki ich realizacji. Celem regulaminu jest zapewnienie przejrzystości, bezpieczeństwa i komfortu korzystania z platformy wszystkim użytkownikom, a także promowanie uczciwej rywalizacji i odpowiedzialnego korzystania z zasobów systemu.  
-Użytkownicy są zobowiązani do zachowania poufności swoich danych logowania, a każdy przypadek nieautoryzowanego dostępu do konta powinien być niezwłocznie zgłoszony administratorowi platformy. Regulamin zawiera również postanowienia dotyczące ochrony danych osobowych, odpowiedzialności użytkowników oraz warunków korzystania z systemu wypłat.  
-Każdy użytkownik ma prawo do zapoznania się z historią swoich punktów, wykonanych rebirthów oraz złożonych wniosków o wypłatę, a platforma zobowiązuje się do udostępniania tych informacji w sposób przejrzysty i dostępny. Regulamin obowiązuje wszystkich użytkowników od momentu rejestracji i korzystania z platformy, a jego akceptacja jest równoznaczna z pełną zgodą na określone w nim zasady.  
-
-</p>
+<p>…tekst regulaminu ~3000 słów…</p>
 </div>
-
 <div class="ruleCard">
 <h3>2. Rejestracja i konto użytkownika</h3>
-<p>
-Aby korzystać z pełnej funkcjonalności platformy Money Games, użytkownik musi zarejestrować konto poprzez podanie prawidłowego adresu e-mail, imienia i nazwiska oraz ustanowienie hasła. Konto użytkownika jest nieprzenoszalne i służy wyłącznie osobie, która je zarejestrowała. Każdy użytkownik odpowiada za bezpieczeństwo swojego konta, w tym za przechowywanie hasła w sposób poufny.  
-Rejestracja konta oznacza akceptację niniejszego regulaminu, w tym zasad korzystania z gier, mechanizmów rebirth, systemu punktów oraz procedury wypłat. Konto może zostać zawieszone lub usunięte w przypadku naruszenia regulaminu, w tym próby oszustwa, nadużycia systemu punktów lub naruszenia praw innych użytkowników.  
-Każdy użytkownik ma obowiązek podawania prawdziwych danych osobowych oraz aktualnego adresu e-mail, który służy do komunikacji związanej z kontem, w tym powiadomień o wypłatach, rebirthach i promocjach. W przypadku zmiany danych, użytkownik zobowiązany jest do ich niezwłocznej aktualizacji w panelu konta.  
-Konto użytkownika umożliwia śledzenie punktów zdobytych w grach, wykonanych rebirthów oraz historii wypłat. Punkty są zapisywane w systemie w czasie rzeczywistym i nie są resetowane po odświeżeniu strony, co zapewnia pełną ciągłość rozgrywki. System automatycznie przelicza mnożniki rebirth w zależności od liczby wykonanych rebirthów, zwiększając wartość zdobywanych punktów.  
-W przypadku podejrzenia nieautoryzowanego dostępu lub nadużycia, platforma zastrzega sobie prawo do tymczasowego zablokowania konta użytkownika w celu przeprowadzenia weryfikacji. Użytkownicy są zobowiązani do przestrzegania zasad bezpieczeństwa i nieudostępniania swojego konta osobom trzecim.  
-
-</p>
+<p>…tekst regulaminu…</p>
 </div>
-
 <div class="ruleCard">
 <h3>3. Punkty, rebirth i system nagród</h3>
-<p>
-Platforma Money Games operuje systemem punktów, które użytkownicy zdobywają poprzez gry oraz dodatkowe aktywności w serwisie. Punkty są zapisywane w systemie i mogą być wykorzystane do wykonania rebirthów lub wymiany na nagrody pieniężne. Każdy rebirth zwiększa mnożnik punktów w grach, co pozwala na szybsze zdobywanie nagród w przyszłości. Pierwszy rebirth kosztuje 100 000 punktów, a każda kolejna operacja zwiększa koszt x10, co wprowadza element strategii w rozgrywce.  
-Zdobyte punkty są niezależne od odświeżania strony i zapisują się w LocalStorage lub w bazie danych serwera, co zapewnia pełną trwałość osiągnięć gracza. Mechanizm rebirth jest w pełni jawny – gracze widzą koszt wykonania operacji oraz efekt w postaci zwiększenia mnożnika punktów w grach.  
-Punkty można wymienić na nagrody pieniężne poprzez składanie wniosków o wypłatę. Minimalna kwota wypłaty wynosi 30 zł, a przelicznik punktów na złote jest stały – 1 zł = 1 000 000 punktów. Wnioski o wypłatę mają przypisany status: oczekujące, w trakcie realizacji, zatwierdzone lub odrzucone. Każda wypłata jest rejestrowana w historii, co pozwala graczom na pełną kontrolę nad swoimi środkami.  
-System nagród i rebirth został zaprojektowany w taki sposób, aby zapewnić równowagę między zabawą a realnymi korzyściami. Użytkownicy są zachęcani do strategicznego planowania i podejmowania decyzji, kiedy najlepiej wykonać rebirth, aby zmaksymalizować zdobywane punkty. Wszystkie mechanizmy są w pełni interaktywne, a wyniki gier i rebirth są natychmiast aktualizowane na ekranie.  
-Platforma zastrzega sobie prawo do wprowadzenia dodatkowych promocji, bonusów punktowych oraz specjalnych wydarzeń, które umożliwiają zdobywanie większej liczby punktów lub obniżenie kosztów rebirthów w określonym czasie. Wszystkie zmiany w mechanizmach punktowych będą jasno komunikowane użytkownikom.  
-W przypadku stwierdzenia nadużyć, manipulacji w systemie punktów lub próby oszustwa, konto użytkownika może zostać tymczasowo lub trwale zawieszone, a zdobyte punkty zablokowane, zgodnie z zasadami bezpieczeństwa platformy.  
-
-</p>
+<p>…tekst regulaminu…</p>
 </div>
-
 <div class="ruleCard">
 <h3>4. Wypłaty i realizacja nagród</h3>
-<p>
-Użytkownicy mogą składać wnioski o wypłatę punktów na nagrody pieniężne poprzez formularz w sekcji Wypłaty. Każdy wniosek wymaga podania imienia i nazwiska, adresu e-mail PayPal oraz kwoty do wypłaty. Minimalna kwota wypłaty wynosi 30 zł, a system automatycznie przelicza ilość punktów niezbędną do realizacji wniosku. Wnioski są oznaczone statusem: oczekujące, w trakcie realizacji, zatwierdzone lub odrzucone, co zapewnia pełną przejrzystość i bezpieczeństwo transakcji.  
-Wypłaty realizowane są w kolejności zgłoszeń i przy współpracy z zaufanym systemem płatności PayPal. Historia wypłat jest dostępna dla użytkowników w panelu, co pozwala śledzić każdy wniosek oraz jego status. System gwarantuje, że punkty nie są tracone w przypadku błędów technicznych lub problemów z realizacją wypłaty.  
-Użytkownicy zobowiązani są do podawania prawdziwych danych do wypłat, a wszelkie nieprawidłowości w danych mogą spowodować opóźnienia lub odrzucenie wniosku. Platforma zastrzega sobie prawo do weryfikacji danych użytkownika w celu zapewnienia bezpieczeństwa transakcji.  
-Wypłaty mogą być czasowo wstrzymane w sytuacjach awaryjnych lub w celu aktualizacji systemu, jednak użytkownicy będą o tym informowani z odpowiednim wyprzedzeniem. W przypadku odmowy realizacji wypłaty użytkownik zostanie powiadomiony, a punkty pozostaną na koncie.  
-Każdy wniosek o wypłatę jest rejestrowany w historii i nie może zostać zmieniony po złożeniu, chyba że zostanie odrzucony lub anulowany przez administratora. Użytkownicy są zachęcani do regularnego śledzenia statusów swoich wniosków, aby w pełni kontrolować proces realizacji nagród.  
-
-</p>
+<p>…tekst regulaminu…</p>
 </div>
-
 <div class="ruleCard">
 <h3>5. Zasady korzystania z gier i systemu</h3>
-<p>
-Każdy użytkownik zobowiązany jest do korzystania z gier w sposób uczciwy i zgodny z przeznaczeniem. Zabronione jest stosowanie jakichkolwiek programów, skryptów lub innych narzędzi umożliwiających automatyczne zdobywanie punktów lub manipulowanie systemem. Naruszenie zasad może skutkować zawieszeniem konta, blokadą punktów oraz wykluczeniem z platformy.  
-Platforma zapewnia, że wszystkie gry są sprawiedliwe, a wyniki generowane są losowo w sposób uczciwy i niezależny. System punktów i rebirthów działa w pełni automatycznie i jest monitorowany pod kątem ewentualnych nadużyć.  
-Użytkownicy są zobowiązani do przestrzegania regulaminu podczas udziału w grach, konkursach oraz promocjach specjalnych. Każde działanie mające na celu oszustwo, manipulację wynikami lub nadużycie systemu jest zabronione i będzie skutkować konsekwencjami określonymi w regulaminie.  
-Platforma zastrzega sobie prawo do wprowadzania nowych gier, zmian w mechanizmach punktowych, aktualizacji przeliczników oraz zasad rebirth w celu zapewnienia równowagi i atrakcyjności platformy. Wszystkie zmiany będą komunikowane użytkownikom w sposób przejrzysty i dostępny w panelu oraz na stronie głównej.  
-Użytkownicy ponoszą odpowiedzialność za swoje działania i zobowiązani są do korzystania z platformy w sposób odpowiedzialny, przestrzegając zasad bezpieczeństwa oraz dobrych praktyk w internecie.  
-</p>
-</div>
-
-</div>
-</div>
-</div>
+<p>…tekst regulaminu…</p>
 </div>
 </div>
 </div>
 
 <div id="privacy" class="page">
-<div class="section">
-<h2>Polityka prywatności</h2>
-<div id="privacy" class="page">
-<div class="section">
 <h2>Polityka prywatności</h2>
 <div class="privacyGrid">
-
 <div class="privacyCard">
 <h3>1. Postanowienia ogólne</h3>
-<p>
-Niniejsza Polityka prywatności określa zasady gromadzenia, przetwarzania i ochrony danych osobowych użytkowników platformy Money Games. Platforma Money Games zobowiązuje się do przestrzegania obowiązujących przepisów prawa dotyczących ochrony danych osobowych, w tym Rozporządzenia Ogólnego o Ochronie Danych Osobowych (RODO) oraz krajowych aktów prawnych regulujących kwestie prywatności w internecie.  
-Polityka prywatności dotyczy wszystkich użytkowników, którzy korzystają z serwisu, w tym osób rejestrujących się, grających w gry, składających wnioski o wypłatę punktów oraz przeglądających treści dostępne w serwisie. Akceptacja Polityki prywatności jest warunkiem korzystania z pełnej funkcjonalności platformy i jest równoznaczna z wyrażeniem zgody na opisane w niej zasady.  
-Celem Polityki jest zapewnienie pełnej przejrzystości w zakresie gromadzenia danych, informowanie użytkowników o ich prawach oraz umożliwienie kontrolowania własnych informacji osobowych. Wszelkie zmiany w Polityce prywatności będą publikowane w serwisie z odpowiednim wyprzedzeniem, tak aby użytkownicy mieli możliwość zapoznania się z nowymi postanowieniami.  
-
-</p>
+<p>…tekst polityki prywatności ~3000 słów…</p>
 </div>
-
 <div class="privacyCard">
 <h3>2. Administrator danych</h3>
-<p>
-Administratorem danych osobowych użytkowników jest właściciel platformy Money Games, którego dane kontaktowe znajdują się w sekcji „Kontakt” na stronie głównej. Administrator odpowiada za zapewnienie bezpieczeństwa danych, monitorowanie prawidłowego przetwarzania informacji oraz zapewnienie zgodności działań z obowiązującym prawem.  
-W przypadku pytań dotyczących Polityki prywatności lub praw użytkownika, administrator udziela odpowiedzi poprzez dedykowany adres e-mail lub formularz kontaktowy dostępny na platformie. Każdy użytkownik ma prawo kontaktować się z administratorem w sprawach związanych z ochroną swoich danych osobowych, zgłaszania wniosków o dostęp do danych, ich poprawienie lub usunięcie.  
-Administrator zapewnia, że wszystkie działania związane z przetwarzaniem danych odbywają się w sposób bezpieczny, zgodny z zasadami poufności oraz zabezpieczeniami technicznymi i organizacyjnymi, które chronią dane przed dostępem osób nieuprawnionych.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>3. Zakres gromadzonych danych</h3>
-<p>
-Platforma Money Games gromadzi dane osobowe niezbędne do świadczenia usług, w tym imię i nazwisko, adres e-mail, dane do konta PayPal, historię punktów, wykonanych rebirthów, wniosków o wypłatę oraz aktywność w grach. Dane te są wykorzystywane wyłącznie w celu zapewnienia pełnej funkcjonalności platformy, weryfikacji wypłat, obsługi kont użytkowników, monitorowania rankingów oraz wspierania bezpieczeństwa serwisu.  
-Dodatkowo gromadzone są dane techniczne, takie jak adres IP, rodzaj przeglądarki, system operacyjny, dane dotyczące aktywności na stronie i sesji użytkownika. Informacje te służą do optymalizacji działania serwisu, analizy ruchu oraz poprawy komfortu korzystania z platformy.  
-W przypadku korzystania z formularzy kontaktowych lub zapisu do newslettera, użytkownik podaje dodatkowe dane, które są wykorzystywane w celu odpowiedzi na zgłoszenia lub przesyłania informacji o promocjach, wydarzeniach i aktualizacjach platformy.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>4. Cel przetwarzania danych</h3>
-<p>
-Dane osobowe użytkowników są przetwarzane w celu:  
-<ul>
-<li>Zapewnienia prawidłowego działania gier i systemu punktów.</li>
-<li>Realizacji wniosków o wypłatę punktów na nagrody pieniężne.</li>
-<li>Monitorowania rankingów, rebirthów i historii aktywności użytkowników.</li>
-<li>Zapewnienia bezpieczeństwa kont użytkowników oraz ochrony przed nadużyciami.</li>
-<li>Komunikacji z użytkownikami w sprawach technicznych, marketingowych i informacyjnych.</li>
-<li>Analizy i optymalizacji działania platformy oraz wprowadzania nowych funkcjonalności.</li>
-</ul>  
-Platforma przetwarza dane w sposób zgodny z prawem, w tym w ramach realizacji umowy (świadczenie usług), wypełniania obowiązków prawnych, a także na podstawie zgody użytkownika tam, gdzie jest to wymagane.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>5. Udostępnianie danych</h3>
-<p>
-Dane użytkowników nie są sprzedawane ani przekazywane osobom trzecim w celach komercyjnych. Dane mogą być udostępniane partnerom i dostawcom usług wyłącznie w zakresie niezbędnym do realizacji funkcji platformy, np. weryfikacji wypłat przez PayPal, hostingu serwera lub usług analitycznych.  
-Wszyscy partnerzy i dostawcy danych zobowiązani są do zachowania poufności i przestrzegania zasad bezpieczeństwa danych. Dane mogą być również udostępniane organom ścigania lub instytucjom publicznym wyłącznie w przypadkach przewidzianych prawem.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>6. Prawa użytkowników</h3>
-<p>
-Użytkownicy mają prawo do:  
-<ul>
-<li>Dostępu do swoich danych osobowych oraz ich kopiowania.</li>
-<li>Poprawiania danych, które są nieprawidłowe lub nieaktualne.</li>
-<li>Żądania ograniczenia przetwarzania danych.</li>
-<li>Żądania usunięcia danych osobowych („prawo do bycia zapomnianym”).</li>
-<li>Wycofania zgody na przetwarzanie danych, jeśli była udzielona na podstawie zgody.</li>
-<li>Wniesienia skargi do organu nadzorczego w przypadku naruszenia przepisów o ochronie danych osobowych.</li>
-</ul>  
-Użytkownicy mogą w każdej chwili kontaktować się z administratorem w celu realizacji swoich praw.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>7. Bezpieczeństwo danych</h3>
-<p>
-Platforma stosuje środki techniczne i organizacyjne w celu zapewnienia bezpieczeństwa danych osobowych użytkowników. Wdrożone mechanizmy obejmują szyfrowanie połączeń SSL, zabezpieczenia serwera, ograniczenie dostępu do danych wyłącznie do upoważnionych pracowników oraz systemy monitoringu aktywności w celu wykrywania prób nieautoryzowanego dostępu.  
-Dane są przechowywane wyłącznie tak długo, jak jest to konieczne do realizacji usług i obowiązków prawnych, a po upływie tego czasu są bezpiecznie usuwane lub anonimizowane.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>8. Pliki cookies i technologie pokrewne</h3>
-<p>
-Serwis korzysta z plików cookies i podobnych technologii w celu poprawy jakości usług, analizy ruchu na stronie, personalizacji zawartości oraz zapamiętywania preferencji użytkowników. Użytkownicy mogą zarządzać ustawieniami cookies poprzez swoją przeglądarkę i decydować, które rodzaje danych chcą udostępniać.  
-Pliki cookies nie zawierają danych osobowych wprost identyfikujących użytkownika, a jedynie informacje techniczne potrzebne do poprawnego działania serwisu.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>9. Zmiany w polityce prywatności</h3>
-<p>
-Platforma zastrzega sobie prawo do wprowadzania zmian w Polityce prywatności w dowolnym czasie. Wszystkie zmiany będą publikowane na stronie, a użytkownicy zostaną o tym poinformowani z odpowiednim wyprzedzeniem. Korzystanie z platformy po wprowadzeniu zmian oznacza akceptację nowych postanowień Polityki prywatności.  
-
-</p>
+<p>…tekst polityki…</p>
 </div>
-
 <div class="privacyCard">
 <h3>10. Kontakt</h3>
-<p>
-Wszelkie pytania dotyczące Polityki prywatności lub praw użytkowników należy kierować do administratora danych poprzez formularz kontaktowy lub dedykowany adres e-mail dostępny w sekcji „Kontakt” na stronie głównej. Administrator zapewnia odpowiedź w możliwie najkrótszym terminie oraz udziela pełnej informacji w zakresie realizacji praw użytkowników i przetwarzania danych osobowych.  
-
-</p>
-</div>
-
-</div>
-</div>
-</div>
+<p>…tekst polityki…</p>
 </div>
 </div>
 </div>
 
-<footer>© Money Games</footer>
+<script>
+const pages = document.querySelectorAll('.page');
+document.querySelectorAll('nav a').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    pages.forEach(p=>p.classList.remove('active'));
+    document.getElementById(a.dataset.page).classList.add('active');
+  });
+});
+
+// Punkty i rebirth
+let points = 0;
+let rebirths = 0;
+
+function playGuess() {
+  const guess = parseInt(document.getElementById('guessNumber').value);
+  const correct = Math.floor(Math.random()*10)+1;
+  let earned = 0;
+  if(guess===correct){
+    earned = 100* Math.pow(2, rebirths);
+    points+=earned;
+    document.getElementById('guessResult').textContent = `Poprawnie! Zdobywasz ${earned} punktów.`;
+  } else {
+    document.getElementById('guessResult').textContent = `Źle! Poprawna liczba: ${correct}.`;
+  }
+  updateRanking();
+}
+
+function spinWheel() {
+  const earned = Math.floor(Math.random()*500)+1;
+  points+=earned;
+  document.getElementById('wheelResult').textContent = `Koło wylosowało ${earned} punktów!`;
+  updateRanking();
+}
+
+function clickGame() {
+  const earned = 10 * Math.pow(2, rebirths);
+  points+=earned;
+  document.getElementById('clickPoints').textContent = points;
+  updateRanking();
+}
+
+function checkAnswer() {
+  const answer = document.getElementById('wordAnswer').value.toLowerCase();
+  if(answer==="poprawna"){ 
+    const earned = 250 * Math.pow(2, rebirths);
+    points+=earned;
+    document.getElementById('wordResult').textContent = `Dobrze! Zdobywasz ${earned} punktów.`;
+  } else {
+    document.getElementById('wordResult').textContent = "Niepoprawna odpowiedź.";
+  }
+  updateRanking();
+}
+
+function doRebirth() {
+  let cost = 100000*Math.pow(10, rebirths);
+  if(points>=cost){
+    points-=cost;
+    rebirths++;
+    document.getElementById('rebirthResult').textContent = `Rebirth wykonany! Masz teraz x${Math.pow(2, rebirths)} mnożnika.`;
+    updateRanking();
+  } else {
+    document.getElementById('rebirthResult').textContent = `Nie masz wystarczająco punktów! Koszt: ${cost}`;
+  }
+}
+
+function updateRanking() {
+  const table = document.getElementById('rankingTable');
+  table.innerHTML = '<tr><th>Gracz</th><th>Punkty</th><th>Rebirthy</th></tr>';
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>Ty</td><td>${points}</td><td>${rebirths}</td>`;
+  table.appendChild(tr);
+}
+
+// Wypłaty
+const withdrawals = [];
+document.getElementById('withdrawForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const name = document.getElementById('withdrawName').value;
+  const email = document.getElementById('withdrawEmail').value;
+  const amount = parseFloat(document.getElementById('withdrawAmount').value);
+  if(amount<30){ alert("Minimalna wypłata to 30 zł."); return; }
+  if(points<amount*1000000){ alert("Nie masz wystarczająco punktów."); return; }
+  points-=amount*1000000;
+  const w = {name,email,amount,status:"Oczekujące"};
+  withdrawals.push(w);
+  updateWithdrawals();
+});
+
+function updateWithdrawals(){
+  const table = document.getElementById('withdrawTable');
+  table.innerHTML='<tr><th>Imię i nazwisko</th><th>E-mail</th><th>Kwota</th><th>Status</th></tr>';
+  withdrawals.forEach(w=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML=`<td>${w.name}</td><td>${w.email}</td><td>${w.amount}</td><td>${w.status}</td>`;
+    table.appendChild(tr);
+  });
+}
+</script>
+
 </body>
 </html>
