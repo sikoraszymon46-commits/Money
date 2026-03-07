@@ -2,111 +2,29 @@
 <head>
 <meta charset="UTF-8">
 <title>Money Games</title>
-
 <style>
-
-body{
-margin:0;
-font-family:Arial;
-background:#0b1120;
-color:white
-}
-
-nav{
-background:#0f172a;
-padding:18px;
-display:flex;
-justify-content:space-between;
-align-items:center
-}
-
-.logo{
-font-size:22px;
-font-weight:bold
-}
-
-.menu button{
-background:none;
-border:none;
-color:white;
-margin-left:20px;
-font-size:15px;
-cursor:pointer
-}
-
-.hero{
-text-align:center;
-padding:60px 20px;
-background:linear-gradient(180deg,#0f172a,#020617)
-}
-
-.stats{
-display:flex;
-justify-content:center;
-gap:40px;
-margin-top:20px
-}
-
-.stat{
-background:#1e293b;
-padding:15px 25px;
-border-radius:10px
-}
-
-.section{
-max-width:1200px;
-margin:auto;
-padding:40px 20px
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:25px
-}
-
-.card{
-background:#1e293b;
-padding:25px;
-border-radius:12px
-}
-
-button{
-background:#2563eb;
-border:none;
-padding:10px 16px;
-border-radius:6px;
-color:white;
-cursor:pointer
-}
-
-button:hover{
-background:#1d4ed8
-}
-
-input{
-padding:8px;
-border:none;
-border-radius:6px;
-margin-top:8px;
-width:100%
-}
-
+body{margin:0;font-family:Arial;background:#0b1120;color:white}
+nav{background:#0f172a;padding:18px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:22px;font-weight:bold}
+.menu button{background:none;border:none;color:white;margin-left:20px;font-size:15px;cursor:pointer}
+.hero{text-align:center;padding:60px 20px;background:linear-gradient(180deg,#0f172a,#020617)}
+.stats{display:flex;justify-content:center;gap:40px;margin-top:20px}
+.stat{background:#1e293b;padding:15px 25px;border-radius:10px}
+.section{max-width:1200px;margin:auto;padding:40px 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px}
+.card{background:#1e293b;padding:25px;border-radius:12px}
+button{background:#2563eb;border:none;padding:10px 16px;border-radius:6px;color:white;cursor:pointer}
+button:hover{background:#1d4ed8}
+input{padding:8px;border:none;border-radius:6px;margin-top:8px;width:100%}
 .page{display:none}
 .active{display:block}
-
-footer{
-text-align:center;
-padding:40px;
-background:#020617;
-margin-top:40px;
-opacity:0.7
-}
-
+footer{text-align:center;padding:40px;background:#020617;margin-top:40px;opacity:0.7}
+.ruleGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:30px}
+.ruleCard{background:#1e293b;padding:25px;border-radius:12px;line-height:1.6}
+.ruleCard h3{margin-top:0}
 </style>
 
 <script>
-
 let points=0
 let rebirth=0
 let secret=Math.floor(Math.random()*10)+1
@@ -121,387 +39,115 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
 document.getElementById(id).classList.add("active")
 }
 
-function clickGame(){
-points+=100*(rebirth+1)
-update()
-}
+function clickGame(){points+=100*(rebirth+1);update()}
+function guessGame(){let v=guess.value;if(v==secret){points+=1000*(rebirth+1);alert("Dobrze!");secret=Math.floor(Math.random()*10)+1}else alert("Źle");update()}
+function spinGame(){let win=Math.floor(Math.random()*500)+1;points+=win*(rebirth+1);alert("Wygrana "+win+" pkt");update()}
+function wordGame(){let a=word.value.toLowerCase();if(a=="kot"){points+=250*(rebirth+1);alert("Poprawna odpowiedź")}else alert("Źle");update()}
 
-function guessGame(){
-let v=guess.value
-if(v==secret){
-points+=1000*(rebirth+1)
-alert("Dobrze!")
-secret=Math.floor(Math.random()*10)+1
-}else alert("Źle")
-update()
-}
-
-function spinGame(){
-let win=Math.floor(Math.random()*500)+1
-points+=win*(rebirth+1)
-alert("Wygrana "+win+" pkt")
-update()
-}
-
-function wordGame(){
-let a=word.value.toLowerCase()
-if(a=="kot"){
-points+=250*(rebirth+1)
-alert("Poprawna odpowiedź")
-}else alert("Źle")
-update()
-}
-
-function rebirthCost(){
-
-let costs=[
-100000,
-1000000,
-10000000,
-100000000,
-1000000000
-]
-
-return costs[rebirth] || null
-}
-
-function rebirthGame(){
-
-let cost=rebirthCost()
-
-if(cost==null){
-alert("Osiągnięto maksymalny rebirth")
-return
-}
-
-if(points<cost){
-alert("Potrzeba "+cost+" punktów")
-return
-}
-
-points=0
-rebirth++
-
-update()
-}
+function rebirthCost(){return 100000 * Math.pow(10, rebirth)}
+function rebirthGame(){let cost=rebirthCost();if(points<cost){alert("Potrzeba "+cost+" punktów");return}points-=cost;rebirth++;update();alert("Rebirth wykonany! Nowy mnożnik nagród: x"+(rebirth+1))}
 
 function withdraw(){
-
 let name=document.getElementById("name").value
 let paypal=document.getElementById("paypal").value
 let amount=document.getElementById("amount").value
-
-if(!name || !paypal || !amount){
-alert("Wypełnij wszystkie pola")
-return
-}
-
-if(amount<30){
-alert("Minimalna wypłata 30 zł")
-return
-}
-
+if(!name||!paypal||!amount){alert("Wypełnij wszystkie pola");return}
+if(amount<30){alert("Minimalna wypłata 30 zł");return}
 let need=amount*1000000
-
-if(points<need){
-alert("Nie masz tylu punktów")
-return
-}
-
+if(points<need){alert("Nie masz tylu punktów");return}
 points-=need
-
-history.innerHTML+=`
-<div class="card">
-${amount} zł<br>
-Status: oczekujące
-</div>
-`
-
+history.innerHTML+=`<div class="card">${amount} zł<br>Status: oczekujące</div>`
 update()
 }
-
 </script>
 </head>
 
-
 <nav>
-
 <div class="logo">Money Games</div>
-
 <div class="menu">
-
 <button onclick="openPage('home')">Gry</button>
 <button onclick="openPage('withdraw')">Wypłaty</button>
 <button onclick="openPage('about')">O nas</button>
 <button onclick="openPage('rules')">Regulamin</button>
 <button onclick="openPage('privacy')">Polityka prywatności</button>
-
 </div>
-
 </nav>
 
-
 <div id="home" class="page active">
-
 <div class="hero">
-
 <h1>Zarabiaj grając</h1>
-
 <p>Gra w gry, zdobywaj punkty i wymieniaj je na nagrody.</p>
-
 <div class="stats">
-
-<div class="stat">
-Punkty<br>
-<b id="pointsView">0</b>
+<div class="stat">Punkty<br><b id="pointsView">0</b></div>
+<div class="stat">Rebirth<br><b id="rebirthView">0</b></div>
 </div>
-
-<div class="stat">
-Rebirth<br>
-<b id="rebirthView">0</b>
 </div>
-
-</div>
-
-</div>
-
 
 <div class="section">
-
 <h2>Gry</h2>
-
 <div class="grid">
-
-<div class="card">
-
-<h3>Klikacz</h3>
-
-<p>Klikaj aby zdobywać punkty.</p>
-
-<button onclick="clickGame()">Kliknij</button>
-
+<div class="card"><h3>Klikacz</h3><p>Klikaj aby zdobywać punkty.</p><button onclick="clickGame()">Kliknij</button></div>
+<div class="card"><h3>Zgadnij liczbę</h3><input id="guess" type="number"><br><br><button onclick="guessGame()">Zgadnij</button></div>
+<div class="card"><h3>Koło fortuny</h3><button onclick="spinGame()">Losuj</button></div>
+<div class="card"><h3>Słowniczek</h3><input id="word" placeholder="małe zwierzę domowe"><br><br><button onclick="wordGame()">Odpowiedz</button></div>
+<div class="card"><h3>Rebirth</h3><p>Koszt kolejnych rebirthów: 1:100000, 2:1000000, 3:10000000, 4:100000000, 5:1000000000</p><button onclick="rebirthGame()">Rebirth</button></div>
 </div>
-
-
-<div class="card">
-
-<h3>Zgadnij liczbę</h3>
-
-<input id="guess" type="number">
-
-<br><br>
-
-<button onclick="guessGame()">Zgadnij</button>
-
 </div>
-
-
-<div class="card">
-
-<h3>Koło fortuny</h3>
-
-<button onclick="spinGame()">Losuj</button>
-
 </div>
-
-
-<div class="card">
-
-<h3>Słowniczek</h3>
-
-<input id="word" placeholder="małe zwierzę domowe">
-
-<br><br>
-
-<button onclick="wordGame()">Odpowiedz</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>Rebirth</h3>
-
-<p>Koszt kolejnych rebirthów:</p>
-
-<ul>
-<li>1: 100 000 pkt</li>
-<li>2: 1 000 000 pkt</li>
-<li>3: 10 000 000 pkt</li>
-<li>4: 100 000 000 pkt</li>
-<li>5: 1 000 000 000 pkt</li>
-</ul>
-
-<button onclick="rebirthGame()">Rebirth</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
 
 <div id="withdraw" class="page">
-
 <div class="section">
-
 <h2>Wypłaty</h2>
-
 <div class="grid">
-
 <div class="card">
-
 <h3>Wniosek o wypłatę</h3>
-
-<p>
-
-Punkty zdobyte w grach mogą zostać wymienione na nagrody pieniężne.
-
-</p>
-
-<p>
-
-<b>Przelicznik:</b><br>
-1 zł = 1 000 000 punktów
-
-</p>
-
-<p>
-
-<b>Minimalna wypłata:</b> 30 zł
-
-</p>
-
-<p>
-
-Wypłaty realizowane są poprzez PayPal.
-
-</p>
-
+<p>Punkty zdobyte w grach mogą zostać wymienione na nagrody pieniężne.</p>
+<p><b>Przelicznik:</b> 1 zł = 1 000 000 pkt</p>
+<p><b>Minimalna wypłata:</b> 30 zł</p>
+<p>Wypłaty realizowane są poprzez PayPal.</p>
 <br>
-
-<input id="name" placeholder="Imię i nazwisko">
-
-<br><br>
-
-<input id="paypal" placeholder="Email PayPal">
-
-<br><br>
-
-<input id="amount" type="number" placeholder="Kwota zł">
-
-<br><br>
-
+<input id="name" placeholder="Imię i nazwisko"><br><br>
+<input id="paypal" placeholder="Email PayPal"><br><br>
+<input id="amount" type="number" placeholder="Kwota zł"><br><br>
 <button onclick="withdraw()">Złóż wniosek</button>
-
 </div>
-
 <div>
-
 <h3>Historia wypłat</h3>
-
 <div id="history"></div>
-
 </div>
-
 </div>
-
 </div>
-
 </div>
-
-
 
 <div id="about" class="page">
-
 <div class="section">
-
 <h2>O nas</h2>
-
-<p>
-
-Money Games to platforma rozrywkowa, której celem jest dostarczanie użytkownikom
-interaktywnych gier przeglądarkowych umożliwiających zdobywanie punktów.
-Platforma została stworzona jako projekt demonstracyjny pokazujący jak gry
-internetowe mogą być połączone z systemem nagród i rankingów.
-
-Naszą misją jest zapewnienie użytkownikom prostych, ale wciągających gier,
-które pozwalają zdobywać punkty poprzez aktywność i zaangażowanie.
-Wierzymy, że gry przeglądarkowe mogą być zarówno rozrywką, jak i sposobem
-na budowanie społeczności graczy.
-
-Platforma stale się rozwija i w przyszłości planowane jest dodanie nowych
-funkcji, takich jak ranking graczy, nowe tryby gier, wydarzenia sezonowe
-oraz dodatkowe systemy nagród.
-
-Naszym celem jest także zapewnienie przejrzystych zasad działania,
-bezpieczeństwa danych użytkowników oraz stabilnego działania strony.
-
-</p>
-
+<p>Money Games to platforma rozrywkowa, której celem jest dostarczanie użytkownikom interaktywnych gier przeglądarkowych umożliwiających zdobywanie punktów. Nasza misja to zapewnienie wciągających gier i społeczności graczy.</p>
 </div>
-
 </div>
-
-
 
 <div id="rules" class="page">
-
 <div class="section">
-
 <h2>Regulamin</h2>
-
-<p>
-
-1. Korzystanie z platformy oznacza akceptację niniejszego regulaminu.  
-2. Użytkownik zdobywa punkty poprzez udział w grach dostępnych na stronie.  
-3. Punkty mogą być wykorzystywane do składania wniosków o nagrody.  
-4. Minimalna kwota wypłaty wynosi 30 zł.  
-5. Administracja ma prawo weryfikować konta użytkowników.  
-6. Zabronione jest wykorzystywanie błędów systemu do zdobywania punktów.  
-7. Konta naruszające regulamin mogą zostać zablokowane.  
-8. Administracja może wprowadzać zmiany w regulaminie.
-
-</p>
-
+<div class="ruleGrid">
+<div class="ruleCard"><h3>1. Korzystanie z platformy</h3><p>Korzystanie z Money Games oznacza akceptację zasad regulaminu...</p></div>
+<div class="ruleCard"><h3>2. Zdobywanie punktów</h3><p>Punkty zdobywa się wyłącznie w grach. System nagradza aktywność...</p></div>
+<div class="ruleCard"><h3>3. Nadużycia</h3><p>Zabronione jest wykorzystywanie błędów systemu lub botów...</p></div>
+<div class="ruleCard"><h3>4. Wypłaty</h3><p>Użytkownicy mogą składać wnioski o wypłatę zgodnie z przelicznikiem...</p></div>
 </div>
-
 </div>
-
-
+</div>
 
 <div id="privacy" class="page">
-
 <div class="section">
-
 <h2>Polityka prywatności</h2>
-
-<p>
-
-Strona przechowuje dane niezbędne do działania systemu gier i wypłat.
-Dane takie jak adres e-mail PayPal lub imię użytkownika są wykorzystywane
-wyłącznie w celu realizacji wniosków o wypłatę oraz obsługi platformy.
-
-Dane użytkowników nie są sprzedawane ani przekazywane osobom trzecim
-bez zgody użytkownika, chyba że wymagają tego przepisy prawa.
-
-Administrator dokłada wszelkich starań aby zapewnić bezpieczeństwo
-przechowywanych informacji.
-
-</p>
-
+<div class="ruleGrid">
+<div class="ruleCard"><h3>1. Gromadzenie danych</h3><p>Platforma gromadzi dane niezbędne do obsługi systemu gier i wypłat...</p></div>
+<div class="ruleCard"><h3>2. Wykorzystanie danych</h3><p>Dane są używane wyłącznie do obsługi kont i wniosków o wypłatę...</p></div>
+<div class="ruleCard"><h3>3. Bezpieczeństwo danych</h3><p>Administrator stosuje środki techniczne i organizacyjne aby chronić dane...</p></div>
+</div>
+</div>
 </div>
 
-</div>
-
-
-
-<footer>
-
-© Money Games
-
-</footer>
+<footer>© Money Games</footer>
 </html>
